@@ -6,7 +6,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
-@Constraints.Validate
 @Entity
 public class MallCategory extends BaseModel {
 
@@ -36,4 +35,9 @@ public class MallCategory extends BaseModel {
     @Constraints.Required
     @Column(columnDefinition = "boolean default true")
     public Boolean valid;
+
+    @Constraints.Required
+    @Column(columnDefinition = "boolean default true")
+    public Boolean isCrawlTarget;
+
 }
