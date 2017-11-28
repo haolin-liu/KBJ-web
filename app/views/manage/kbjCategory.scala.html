@@ -1,0 +1,53 @@
+@**********************************
+* @author daiqingyi
+* @date 2017-11-27
+***********************************@
+@import models.entities.KbjCategory
+@(kbjCategories: List[KbjCategory], currentSortBy: String, currentOrder: String)
+
+@**********************************
+* Helper generating table headers *
+***********************************@
+@header(key:String, title:String) = {
+  <th class="@key.replace(".","_") header @if(currentSortBy == key) { @{if(currentOrder == "asc") "headerSortDown" else "headerSortUp" } }">
+    <a href="#">@title</a>
+  </th>
+}
+
+@main("") {
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-2" >
+      @views.html.manage.leftMenu.render
+      </div><!--col-md-2 -->
+      <div class="col-md-10">
+        <!--画面内容-->
+        <div class="content-box-large min-height">
+          <div class="actions">
+            <table class="table zebra-striped">
+              <thead>
+                <tr>
+                  @header("name", "分类名")
+                  @header("parentId", "父分类ID")
+                  @header("isCrawleTarget", "爬取对象")
+                  @header("valid", "是否有效")
+                </tr>
+              </thead>
+              <tbody>
+              @for(kbjCategory <- kbjCategories.asScala) {
+                <tr>
+                  <td> @kbjCategory.name </td>
+                  <td> @kbjCategory.parentId </td>
+                  <td> @kbjCategory.isCrawleTarget </td>
+                  <td> @kbjCategory.valid </td>
+                </tr>
+              }
+              </tbody>
+            </table>
+          </div><!--actions-->
+        </div><!--content-box-large-->
+      </div><!--col-md-10 -->
+    </div><!--row-->
+  </div><!--container-fluid-->
+
+}
