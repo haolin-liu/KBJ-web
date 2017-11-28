@@ -1,6 +1,7 @@
 package controllers.gui;
 
 import models.entities.KeySearch;
+import models.entities.User;
 import play.data.Form;
 import play.data.FormFactory;
 import play.libs.concurrent.HttpExecutionContext;
@@ -138,6 +139,11 @@ public class HomeController extends Controller {
         List<String> hotProductL = new ArrayList<>(Arrays.asList("iphone X", "iphone 8", "小米", "华为p10", "iphone 7", "新ipad pro", "小米6"));
         return ok(views.html.index.render(categoryL, homeProductL, hotProductL, ""));
 
+    }
+
+    public Result login() {
+        Form<User> userForm = formFactory.form(User.class).fill(new User());
+        return ok(views.html.login.render(userForm));
     }
 
     public CompletionStage<Result> editPage(long id) {

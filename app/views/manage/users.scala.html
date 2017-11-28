@@ -1,0 +1,209 @@
+@import models.form.UserSearchForm
+@import io.ebean.PagedList
+@import models.entities.User
+
+@(userForm: Form[UserSearchForm], currentPage: PagedList[User])
+
+@import helper._
+
+@link() = @{
+    gui.manage.routes.UserController.find();
+}
+
+@header(key:String, title:String) = {
+    <th>@title</th>
+}
+
+@manageMain("") {
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-2">
+                @views.html.manage.leftMenu.render
+            </div>
+            <div class="col-md-10">
+                <div class="content-box-large min-height">
+                    <h2>用户一览</h2>
+                    <div><hr></div>
+
+                    <div class="content-box-large">
+                        <div class="col-md-12 panel-info">
+                            <div class="content-box-header panel-heading">
+                                <h3 class="panel-title">用户检索</h3>
+                            </div>
+                            <div class="content-box-large box-with-header form-inline">
+                                @form(gui.manage.routes.UserController.find(), 'id -> "myForm") {
+                                    <div class="form-group">
+                                        <fieldset>
+                                            @CSRF.formField
+                                            <div class="form-group">
+                                                @inputText(userForm("name"), '_label  -> "", 'value -> userForm("name"), 'id -> "name", '_help -> "", 'placeholder  -> "用户名")
+                                            </div>
+                                            <div class="form-group">
+                                                @inputText(userForm("email"), '_label  -> "", 'value -> userForm("email"), 'id -> "email", '_help -> "", 'placeholder  -> "邮箱")
+                                            </div>
+                                            <div class="form-group">
+                                                @inputText(userForm("phone"), '_label  -> "", 'value -> userForm("phone"), 'id -> "phone", '_help -> "", 'placeholder  -> "手机号")
+                                            </div>
+                                            <div class="form-group">
+                                                @inputText(userForm("page"), '_label  -> "", 'value -> userForm("page"), 'id -> "page", '_help -> "", 'hidden -> true)
+                                            </div>
+                                            <div class="form-group">
+                                                @inputText(userForm("isSearch"), '_label  -> "", 'value -> userForm("isSearch"), 'id -> "isSearch", 'hidden -> true, '_help -> "")
+                                            </div>
+                                        </fieldset>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <input type="submit"  onclick="search()" value="检索" class="btn primary">
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        @form(gui.manage.routes.UserController.update(), 'id -> "updateForm") {
+                            @CSRF.formField
+                            <table class="table table-striped table-hover" id="formTable">
+                                <thead>
+                                    <tr>
+                                        @header("name", "用户ID")
+                                        @header("name", "用户名")
+                                        @header("password", "密码")
+                                        @header("email", "邮箱")
+                                        @header("phone", "手机")
+                                        @header("valid", "是否有效")
+                                    </tr>
+                                </thead>
+
+                            @if(currentPage != null) {
+                                @if(currentPage.getTotalCount == 0) {
+                                    <tbody>
+                                        <tr>
+                                            <td></td>
+                                            <td></td>
+                                            <td>没有检索出数据</td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                        </tr>
+                                    </tbody>
+                                } else {
+                                    @for(user <- currentPage.getList.asScala) {
+                                        <tbody>
+                                            <tr>
+                                                <td>@user.id</td>
+                                                <td>@user.name</td>
+                                                <td>@user.password</td>
+                                                <td>@user.email</td>
+                                                <td>@user.phone</td>
+                                                <td><input type="checkbox" onchange="chgValid(@user.seqId)" name="valid"
+                                                    id="valid@user.seqId" value="@user.valid" @if(user.valid) {checked="true"}></td>
+                                                <input type="hidden" name="validChgFlg" id="itemChgFlg@user.seqId" value="0">
+                                                <input type="hidden" name="seqId" value="@user.seqId">
+                                                <input type="hidden" name="isChk" id="isChk@user.seqId" value="@user.valid">
+                                                <input type="hidden" name="searchName"  id="searchName" value="">
+                                                <input type="hidden" name="searchEmail" id="searchEmail" value="">
+                                                <input type="hidden" name="searchPhone" id="searchPhone" value="">
+                                                <input type="hidden" name="searchPage"  id="searchPage" value="">
+                                            </tr>
+                                        </tbody>
+                                    }
+                                    </table>
+                                    <div class="form-group col-md-offset-5">
+                                        <input type="submit" onclick="update()" value="更新" class="btn primary">
+                                    </div>
+                                }
+                            } else {
+                                </table>
+                            }
+                        }
+
+                        @if(currentPage != null) {
+                            <div id="pagination" class="pagination">
+                                <ul class="list-inline">
+                                    @if(currentPage.hasPrev) {
+                                        <li class="prev">
+                                            <a onclick="previous()">&larr; Previous</a>
+                                        </li>
+                                    }
+                                    <li class="current">
+                                        <a>Displaying @currentPage.getDisplayXtoYofZ(" to "," of ")</a>
+                                    </li>
+                                    @if(currentPage.hasNext) {
+                                        <li class="next">
+                                            <a onclick="next()">Next &rarr;</a>
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        function next() {
+            var isUpdate = false;
+            $("#formTable input[name='validChgFlg']").each(function(i){
+                if ($(this).val() == "1") {
+                    isUpdate = true;
+                }
+            })
+
+            if (isUpdate) {
+                alert("有数据变更，请先提交更新");
+            } else {
+                page = parseInt($("#page").val());
+                $("#page").val(page + 1);
+                $("#isSearch").val(false);
+                $("#myForm").submit();
+            }
+        }
+
+        function previous() {
+            var isUpdate = false;
+            $("#formTable input[name='validChgFlg']").each(function(i){
+                if ($(this).val() == "1") {
+                    isUpdate = true;
+                }
+            })
+
+            if (isUpdate) {
+                alert("有数据变更，请先提交更新");
+            } else {
+                page =  parseInt($("#page").val());
+                $("#page").val(page - 1);
+                $("#isSearch").val(false);
+                $("#myForm").submit();
+            }
+        }
+
+        function search() {
+            $("#isSearch").val(true)
+        }
+        
+        function update() {
+            $("#searchName").val($("#name").val())
+            $("#searchEmail").val($("#email").val())
+            $("#searchPhone").val($("#phone").val())
+            $("#searchPage").val($("#page").val())
+        }
+
+        function chgValid(id) {
+            if ($("#valid"+ id).is(":checked")) {
+                $("#isChk" + id).val(true);
+            } else {
+                $("#isChk" + id).val(false);
+            }
+
+            var oldData = $("#valid" + id).val();
+            var newData = $("#isChk" + id).val();
+
+            if (oldData != newData) {
+                $("#itemChgFlg" + id).val(1);
+            } else {
+                $("#itemChgFlg" + id).val(0);
+            }
+        }
+    </script>
+}
