@@ -36,26 +36,26 @@ class JDProductSpider(CrawlSpider):
     def parse_start_url(self, response):
         products = response.xpath('//li[@class="gl-item"]')
         for product in products:
-            sku_id = product.xpath('./div/@data-sku').extract_first()
+            skuid = product.xpath('./div/@data-sku').extract_first()
             item_url = product.xpath('./div/div[@class="p-img"]/a/@href').extract_first()
             if item_url:
                 yield scrapy.Request("http:" + item_url,
                                      callback=self.parse_detail,
-                                     meta={'sku_id': sku_id, 'category_url': response.url, 'item_url': item_url})
+                                     meta={'skuid': skuid, 'category_url': response.url, 'item_url': item_url})
 
     def parse_detail(self, response):
         item = Product()
-        sku_id = response.meta['sku_id']
+        skuid = response.meta['skuid']
 
         item['mall'] = 'jd'
-        item['sku_id'] = sku_id
+        item['skuid'] = skuid
         item['name'] = response.xpath('string(//div[@class="sku-name"])').extract_first().strip()
         item['url'] = "http:" + response.meta['item_url']
         item['kbj_cate_name'] = 'tv'
         item['kbj_cate_id'] = '1'
         item['mall_cate_url'] = response.meta['category_url']
-        # item['is_in_stock'] = 1 if response.xpath('string(//div[@id="store - prompt"]/strong)').extract_first() else 0
-        item['is_in_stock'] = response.xpath('//div[@class="store-prompt"]/strong').extract_first()
+        # item['stock_status'] = 1 if response.xpath('string(//div[@id="store - prompt"]/strong)').extract_first() else 0
+        item['stock_status'] = response.xpath('//div[@class="store-prompt"]/strong').extract_first()
         # imgs
         imgs = response.xpath('//div[@id="spec-list"]/ul/li')
         i = 1
@@ -90,7 +90,7 @@ class JDProductSpider(CrawlSpider):
         item['is_self_support'] = 1 if shop_temp.xpath('./em[@class="u-jd"]').extract() else 0
         item['date'] = strftime("%Y-%m-%d %H:%M:%S")
 
-        price_url = "http://pm.3.cn/prices/pcpmgets?callback=jQuery&skuids=" + sku_id + "&origin=2"
+        price_url = "http://pm.3.cn/prices/pcpmgets?callback=jQuery&skuids=" + skuid + "&origin=2"
         yield scrapy.Request(price_url,
                              callback=self.parse_price,
                              meta={'item': item})
@@ -108,7 +108,7 @@ class JDProductSpider(CrawlSpider):
         if js.has_key('m'):
             item['ref_price'] = js['m']
 
-        url = "http://club.jd.com/clubservice.aspx?method=GetCommentsCount&referenceIds=" + str(item['sku_id'])
+        url = "http://club.jd.com/clubservice.aspx?method=GetCommentsCount&referenceIds=" + str(item['skuid'])
         yield scrapy.Request(url, meta={'item': item}, callback=self.parse_comment_num)
 
     def parse_comment_num(self, response):
@@ -119,12 +119,12 @@ class JDProductSpider(CrawlSpider):
         cat = urlparse.parse_qs(urlparse.urlsplit(item['mall_cate_url']).query).get('cat')
         if cat:
             url = 'http://c0.3.cn/stock?skuId=' + item[
-                'sku_id'] + '&area=1_72_4137_0&cat=' + cat[0] + '&choseSuitSkuIds=&extraParam={"originid":"1"}'
+                'skuid'] + '&area=1_72_4137_0&cat=' + cat[0] + '&choseSuitSkuIds=&extraParam={"originid":"1"}'
             yield scrapy.Request(url, meta={'item': item}, callback=self.parse_stock)
 
     def parse_stock(self, response):
         item = response.meta['item']
         js = json.loads(str(response.body.decode("gbk").encode("utf-8")))
-        item['is_in_stock'] = js['stock']['stockDesc']
+        item['stock_status'] = js['stock']['stockDesc']
 
         return item

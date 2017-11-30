@@ -7,14 +7,14 @@ grant all privileges on kebja.* to kebja@localhost identified by 'kebja';
 CREATE TABLE `daily_price` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `mall` varchar(30) NOT NULL,
-  `sku_id` varchar(50) NOT NULL,
+  `skuid` varchar(50) NOT NULL,
   `price` decimal(15,2) NOT NULL,
   `ref_price` decimal(15,2) NOT NULL,
   `date` datetime NOT NULL,
   `timestamp` datetime NOT NULL,
   `create_date` datetime NOT NULL DEFAULT NOW(),
   `create_user` varchar(50) NOT NULL DEFAULT 'system',
-  `updated_date` datetime NOT NULL DEFAULT NOW(),
+  `update_date` datetime NOT NULL DEFAULT NOW(),
   `update_user` varchar(50) NOT NULL DEFAULT 'system',
   PRIMARY KEY (`id`)
 ) DEFAULT CHARSET=utf8;
@@ -28,7 +28,7 @@ CREATE TABLE `mall_category` (
   `valid` boolean NOT NULL,
   `create_date` datetime NOT NULL DEFAULT NOW(),
   `create_user` varchar(50) NOT NULL DEFAULT 'system',
-  `updated_date` datetime NOT NULL DEFAULT NOW(),
+  `update_date` datetime NOT NULL DEFAULT NOW(),
   `update_user` varchar(50) NOT NULL DEFAULT 'system',
   PRIMARY KEY (`id`)
 ) DEFAULT CHARSET=utf8;

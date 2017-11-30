@@ -35,7 +35,7 @@ class CategoryPipeline(object):
         timestamp = strftime("%Y-%m-%d %H:%M:%S")
         sql = "insert into mall_category "
         sql += " (name, link, mall, tag, valid,"
-        sql += " create_date, create_user, updated_date, update_user) "
+        sql += " create_date, create_user, update_date, update_user) "
         sql += " values(%s, %s, %s, %s, %s, %s, %s, %s, %s)"
         params = (item['name'], item['link'], item['mall'], item['tag'], 1,
                   timestamp, 'system', timestamp, 'system',)
@@ -91,10 +91,10 @@ class ProductPricePipeline(object):
         timestamp = strftime("%Y-%m-%d %H:%M:%S")
 
         sql = "insert into daily_price "
-        sql += " (mall, sku_id, price, ref_price, "
-        sql += " `date`, `timestamp`, create_date, create_user, updated_date, update_user) "
+        sql += " (mall, skuid, price, ref_price, "
+        sql += " `date`, `timestamp`, create_date, create_user, update_date, update_user) "
         sql += " values(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-        params = (item['mall'], item['sku_id'], item['price'], item['ref_price'],
+        params = (item['mall'], item['skuid'], item['price'], item['ref_price'],
                   date, timestamp, timestamp, 'system', timestamp, 'system',)
         tx.execute(sql, params)
 
