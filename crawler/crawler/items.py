@@ -14,6 +14,9 @@ class Category(scrapy.Item):
     link = scrapy.Field()
     mall = scrapy.Field()
     tag = scrapy.Field()
+    mall_cat = scrapy.Field()
+    mall_sub = scrapy.Field()
+    mall_tid = scrapy.Field()
     pass
 
 
@@ -28,6 +31,8 @@ class Product(scrapy.Item):
     mall_cate_url = scrapy.Field()
     price = scrapy.Field()
     ref_price = scrapy.Field()
+    discount = scrapy.Field()
+    discount_rate = scrapy.Field()
     sales_num = scrapy.Field()
     comments_num = scrapy.Field()
     stock_status = scrapy.Field()

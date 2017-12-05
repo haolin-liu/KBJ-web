@@ -1,15 +1,20 @@
 # coding=utf-8
 import json
 import urlparse
+
+import redis
 import scrapy
 
 from time import strftime
-from scrapy.spiders import CrawlSpider, Rule
+from scrapy.spiders import Rule
 from scrapy.linkextractors import LinkExtractor
+from scrapy_redis.spiders import RedisCrawlSpider
+from scrapy.utils.project import get_project_settings
+
 from crawler.items import Product
 
 
-class JDProductSpider(CrawlSpider):
+class JDProductSpider(RedisCrawlSpider):
     name = 'jd_prod'
     allow_domains = ["list.jd.com", "item.jd.com"]
     start_urls = []
@@ -19,21 +24,27 @@ class JDProductSpider(CrawlSpider):
             'crawler.pipelines.ProductPricePipeline': 300
         }
     }
+
     rules = (
         Rule(LinkExtractor(allow=(), restrict_xpaths=('//a[@class="pn-next"]',)), callback='parse_start_url',
              follow=True),
     )
 
-    def __init__(self, cat_path, cat_id, cat_name, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         super(JDProductSpider, self).__init__(*args, **kwargs)
-        self.cat_name = cat_name
-        file = open(cat_path, "r")
-        data = json.load(file, encoding="utf-8")["data"]
-        for item in data:
-            if item['id'] == int(cat_id):
-                self.start_urls.append("http://" + item['link'])
+        settings = get_project_settings()
+        pool = redis.ConnectionPool(host=settings['REDIS_HOST'],
+                                    port=settings['REDIS_PORT'],
+                                    decode_responses=True)
+        self.redis = redis.Redis(connection_pool=pool)
 
     def parse_start_url(self, response):
+        req_url = response.request.url
+        cat = urlparse.parse_qs(urlparse.urlsplit(req_url).query).get('cat')
+        tid = urlparse.parse_qs(urlparse.urlsplit(req_url).query).get('tid')
+        sub = urlparse.parse_qs(urlparse.urlsplit(req_url).query).get('sub')
+        redis_key = cat[0] if cat else tid
+        redis_key = 'jd' + (redis_key if redis_key else sub[0])
         products = response.xpath('//li[@class="gl-item"]')
         for product in products:
             skuid = product.xpath('./div/@data-sku').extract_first()
@@ -41,20 +52,21 @@ class JDProductSpider(CrawlSpider):
             if item_url:
                 yield scrapy.Request("http:" + item_url,
                                      callback=self.parse_detail,
-                                     meta={'skuid': skuid, 'category_url': response.url, 'item_url': item_url})
+                                     meta={'skuid': skuid, 'req_url': req_url, 'redis_key': redis_key, 'item_url': item_url})
 
     def parse_detail(self, response):
         item = Product()
         skuid = response.meta['skuid']
+        category_url = response.meta['req_url']
+        redis_key = response.meta['redis_key']
 
         item['mall'] = 'jd'
         item['skuid'] = skuid
         item['name'] = response.xpath('string(//div[@class="sku-name"])').extract_first().strip()
         item['url'] = "http:" + response.meta['item_url']
-        item['kbj_cate_name'] = 'tv'
-        item['kbj_cate_id'] = '1'
-        item['mall_cate_url'] = response.meta['category_url']
-        # item['stock_status'] = 1 if response.xpath('string(//div[@id="store - prompt"]/strong)').extract_first() else 0
+        item['kbj_cate_id'] = self.redis.hget(redis_key, 'id')
+        item['kbj_cate_name'] = self.redis.hget(redis_key, 'name')
+        item['mall_cate_url'] = category_url
         item['stock_status'] = response.xpath('//div[@class="store-prompt"]/strong').extract_first()
         # imgs
         imgs = response.xpath('//div[@id="spec-list"]/ul/li')

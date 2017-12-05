@@ -7,6 +7,7 @@
 import random
 
 import MySQLdb
+import redis
 from scrapy import signals
 from twisted.enterprise import adbapi
 
@@ -78,7 +79,6 @@ class ProxyMiddleware(object):
 
 
 class DBMiddleware(object):
-
     def __init__(self):
         pass
 

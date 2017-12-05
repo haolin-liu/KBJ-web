@@ -4,31 +4,46 @@ create user kebja;
 
 grant all privileges on kebja.* to kebja@localhost identified by 'kebja';
 
-CREATE TABLE `daily_price` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `mall` varchar(30) NOT NULL,
-  `skuid` varchar(50) NOT NULL,
-  `price` decimal(15,2) NOT NULL,
-  `ref_price` decimal(15,2) NOT NULL,
-  `date` datetime NOT NULL,
-  `timestamp` datetime NOT NULL,
-  `create_date` datetime NOT NULL DEFAULT NOW(),
-  `create_user` varchar(50) NOT NULL DEFAULT 'system',
-  `update_date` datetime NOT NULL DEFAULT NOW(),
-  `update_user` varchar(50) NOT NULL DEFAULT 'system',
-  PRIMARY KEY (`id`)
+create table daily_price (
+  id                            bigint auto_increment not null,
+  create_date                   TIMESTAMP DEFAULT CURRENT_TIMESTAMP not null,
+  create_user                   varchar(100) DEFAULT 'system' not null,
+  update_date                   TIMESTAMP DEFAULT CURRENT_TIMESTAMP not null,
+  update_user                   varchar(100) DEFAULT 'system' not null,
+  mall                          varchar(255),
+  skuid                         varchar(255),
+  price                         decimal(15,2),
+  ref_price                     decimal(15,2),
+  discount                      decimal(15,2),
+  discount_rate                 decimal(15,2),
+  kbj_cate_id                   bigint,
+  date                          date,
+  timestamp                     TIMESTAMP DEFAULT CURRENT_TIMESTAMP not null,
+  constraint pk_daily_price primary key (id)
 ) DEFAULT CHARSET=utf8;
 
-CREATE TABLE `mall_category` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `name` varchar(100) NOT NULL,
-  `link` varchar(500) NOT NULL,
-  `mall` varchar(30) NOT NULL,
-  `tag` varchar(500) NOT NULL,
-  `valid` boolean NOT NULL,
-  `create_date` datetime NOT NULL DEFAULT NOW(),
-  `create_user` varchar(50) NOT NULL DEFAULT 'system',
-  `update_date` datetime NOT NULL DEFAULT NOW(),
-  `update_user` varchar(50) NOT NULL DEFAULT 'system',
-  PRIMARY KEY (`id`)
+create table mall_category (
+  id                            bigint auto_increment not null,
+  create_date                   TIMESTAMP DEFAULT CURRENT_TIMESTAMP not null,
+  create_user                   varchar(100) DEFAULT 'system' not null,
+  update_date                   TIMESTAMP DEFAULT CURRENT_TIMESTAMP not null,
+  update_user                   varchar(100) DEFAULT 'system' not null,
+  name                          varchar(100),
+  link                          varchar(500),
+  mall                          varchar(30),
+  tag                           varchar(500),
+  mall_cat                      varchar(500),
+  mall_sub                      varchar(500),
+  mall_tid                      varchar(500),
+  valid                         boolean default true,
+  is_crawl_target               boolean default true,
+  constraint pk_mall_category primary key (id)
 ) DEFAULT CHARSET=utf8;
+
+update mall_category set valid=0 where id not in (1, 26, 12, 115, 211);
+-- 电视 冰箱 空调 手机 显示器
+INSERT INTO category_mapping(id, kbj_cate_id, mall_cate_id) VALUES (1,2001,1);
+INSERT INTO category_mapping(id, kbj_cate_id, mall_cate_id) VALUES (2,2002,26);
+INSERT INTO category_mapping(id, kbj_cate_id, mall_cate_id) VALUES (3,2003,12);
+INSERT INTO category_mapping(id, kbj_cate_id, mall_cate_id) VALUES (4,4002,115);
+INSERT INTO category_mapping(id, kbj_cate_id, mall_cate_id) VALUES (5,3003,211);
