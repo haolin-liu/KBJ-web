@@ -23,11 +23,10 @@ GET     /manage/cate/map/getleafcate/:cateRootId                controllers.gui.
 POST    /manage/cate/map/findmallcate                           controllers.gui.manage.CategoryController.getMallCates
 POST    /manage/cate/map/edit                                   controllers.gui.manage.CategoryController.edit
 # controllers for manage kbjCate
-GET      /manage/kbjcate/index                                   controllers.gui.manage.kbjCategoryController.index()
-#GET      /manage/kbjcate/:id                                    controllers.gui.manage.kbjCategoryController.find(id:Long)
-#GET      /manage/kbjcate/del/:id                                controllers.gui.manage.kbjCategory.delete(id:Long)
-#POST     /manage/kbjcate/add                                    controllers.gui.manage.kbjCategory.add()
-#POST     /manage/kbjcate/edit                                   controllers.gui.manage.kbjCategory.update(id:Long)
+GET      /manage/kbjcate/index                 controllers.gui.manage.kbjCategoryController.index()
+POST     /manage/kbjcate/find                  controllers.gui.manage.kbjCategoryController.list(s ?= "id", o ?= "asc")
+#POST     /manage/kbjcate/add                   controllers.gui.manage.kbjCategoryController.add()
+#POST     /manage/kbjcate/edit                  controllers.gui.manage.kbjCategoryController.update(id:Long)
 
 GET     /trend/:mall/:skuid                                     controllers.gui.DailyPriceController.priceTrend(mall:String, skuid:String)
 
