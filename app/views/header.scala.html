@@ -1,4 +1,6 @@
-@(hotProductL: List[String])
+@import helper._
+@(hotProductL: List[String], keyWord :String)
+
 <div class="container top-container">
   <div class="row top-row1">
     <div class="row">
@@ -16,6 +18,11 @@
   </div>
 
   <div class="row top-row2">
+
+    <form class="form-inline" name="srchForm" id="serchForm" action="@gui.routes.ProductController.searchGoods()" method="get">
+      <input type="hidden" id="hidSearch" name="keyWord">
+    </form>
+
     <div class="row">
     <div class="logo col-sm-4 col-md-4 col-xs-4">
       <img class="header-logo" src="@routes.Assets.versioned("assets/images/logo.png")" alt="慢慢买比价网——理性消费倡导者">
@@ -24,8 +31,8 @@
       <div class="top-col8">
         <div class="row">
           <div class="input-group">
-            <input type="text" class="form-control" placeholder="请输入您想比较的商品名或型号" aria-describedby="basic-addon2">
-            <span class="input-group-addon" id="basic-addon2" onclick="location.href='/product/search'">搜索</span>
+            <input type="text" class="form-control" id="keyName" placeholder="请输入您想比较的商品名或型号" aria-describedby="basic-addon2" value="@keyWord">
+            <span class="input-group-addon" id="basic-addon2" onclick="search()">搜索</span>
           </div>
         </div>
         <div class="row top-row22">
@@ -63,3 +70,10 @@
     </div>
   </div>
 </div>
+
+<script>
+  function search() {
+    $("#hidSearch").val($("#keyName").val());
+    $("#serchForm").submit();
+  }
+</script>

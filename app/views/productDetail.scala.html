@@ -1,7 +1,7 @@
-@(productCommentL: List[Map[String, String]], hotProductL: List[String])
+@(productCommentL: List[Map[String, String]], hotProductL: List[String], keyWord: String)
 
 @main() {
-  @header.render(hotProductL)
+  @header.render(hotProductL, keyWord)
 <div class="contanier main">
   <div class="head">
     <div class="main-title">

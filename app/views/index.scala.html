@@ -1,7 +1,7 @@
-@(categoryL: List[Map[String, Object]], homeProductL: List[Map[String, String]], hotProductL: List[String])
+@(categoryL: List[Map[String, Object]], homeProductL: List[Map[String, String]], hotProductL: List[String], keyWord: String)
 
 @main() {
-  @header.render(hotProductL)
+  @header.render(hotProductL, keyWord)
   <div class="container home-container">
     <div class="row home-row">
       @*分类模块*@

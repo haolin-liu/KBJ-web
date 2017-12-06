@@ -732,8 +732,54 @@
   margin: 0 2px;
 }
 
+.icon-bar-chart{
+  color: #999;
+}
+
 .goodsExist {
   margin-left: 12px;
+  color: #999;
+  font-size: 11px;
+  margin: 8px 10px 12px 10px;
+}
+
+.collection {
+  float: right;
+}
+
+.bgcolor {
+  color: #ea5252;
+}
+
+.store-icon {
+  font-size: 18px;
+  float: right;
+}
+
+.price-a {
+  overflow: visible;
+  cursor: pointer;
+}
+
+.chart-div {
+  display: none;
+  background-color: #ffffff;
+  border: 1px solid #d9d9d9;
+  z-index:9999;
+  position: absolute;
+  box-shadow: 1px 1px 5px rgba(0,0,0,.07), 1px 2px 5px rgba(0,0,0,.07);
+}
+
+.price a:hover .chart-div {
+  /*visibility: visible;*/
+  display: block;
+  text-decoration:none;
+}
+
+.pagination>li>a, .pagination>li>span {
+  color: black;
+  background-color: #f7f7f7;
+  border: 0px;
 }
 
 .pagination {
@@ -750,9 +796,8 @@
 .skip-text {
   max-width: 35px;
   min-height: 23px;
-  margin-top: 4px;
-  margin-left: 10px
 }
+
 /*product-search end*/
 
 /*product-detail st*/
