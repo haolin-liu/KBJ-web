@@ -43,6 +43,22 @@ public class UserServices {
     }
 
     /**
+     * 通过关键字查找用户
+     * @param name
+     * @param password
+     * @return
+     */
+    public User getUsers(String name, String password, int loginMode) {
+        if (loginMode == 1) {
+            return userRepository.findByEmail(name, password);
+        } else if( loginMode == 2) {
+            return userRepository.findByPhone(name, password);
+        } else {
+            return userRepository.findByName(name, password);
+        }
+    }
+
+    /**
      * 更新用户数据
      * @param data
      * @return

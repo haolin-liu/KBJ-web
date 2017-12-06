@@ -2,6 +2,7 @@ package controllers.gui;
 
 import models.entities.KeySearch;
 import models.entities.User;
+import models.form.LoginForm;
 import play.data.Form;
 import play.data.FormFactory;
 import play.libs.concurrent.HttpExecutionContext;
@@ -142,7 +143,7 @@ public class HomeController extends Controller {
     }
 
     public Result login() {
-        Form<User> userForm = formFactory.form(User.class).fill(new User());
+        Form<LoginForm> userForm = formFactory.form(LoginForm.class).fill(new LoginForm());
         return ok(views.html.login.render(userForm));
     }
 

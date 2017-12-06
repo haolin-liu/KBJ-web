@@ -1258,3 +1258,75 @@
   height: 5px;
 }
 /*footer end*/
+
+/*login st*/
+.login-header {
+  padding: 16px;
+  background: #FFFFFF;
+}
+
+.login-container {
+  padding-top: 50px;
+  background: #f3f2f3;
+  position: absolute;
+  top: 110px;
+  right: 0;
+  bottom: 0;
+  left: 0
+}
+
+.wrap {
+  width: 1400px;
+}
+
+.fr {
+  float: right;
+}
+
+.web-logo {
+  padding-left: 80px;
+}
+
+.content-wrap {
+  width: 980px;
+  margin: 0 auto;
+}
+
+.login-div {
+  position: relative;
+  float: right;
+  padding: 45px 35px 0 35px;
+  background-color: #FFFFFF;
+}
+
+.regist_new {
+  line-height: 30px;
+}
+
+.login-form {
+  position: relative;
+  padding: 0 0 18px;
+  float: left;
+  margin-top: 25px;
+}
+
+.form-item-wrap {
+  width: 330px;
+  margin: 3px;
+}
+
+.auto-login {
+  position: relative;
+  margin: 10px 0;
+  line-height: 24px;
+  min-height: 24px;
+}
+
+.login-footer {
+  position: fixed;
+  bottom: 50px;
+}
+/*login end*/
+
+
+

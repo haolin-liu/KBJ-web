@@ -35,6 +35,27 @@ public class UserRepository {
             .findPagedList();
     }
 
+    public User findByEmail(String email, String password) {
+        return ebeanServer.find(User.class).where()
+            .ilike("email", email)
+            .ilike("password", password)
+            .findUnique();
+    }
+
+    public User findByPhone(String phone, String password) {
+        return ebeanServer.find(User.class).where()
+            .ilike("phone", phone)
+            .ilike("password", password)
+            .findUnique();
+    }
+
+    public User findByName(String name, String password) {
+        return ebeanServer.find(User.class).where()
+            .ilike("name", name)
+            .ilike("password", password)
+            .findUnique();
+    }
+
     public Optional<Long> update(Map<String, String[]> data) {
         int count = data.get("seqId").length;
         Optional<Long> value = Optional.empty();
