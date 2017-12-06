@@ -1,6 +1,5 @@
 package models;
 
-import io.ebean.Model;
 import org.apache.solr.client.solrj.beans.Field;
 import play.data.validation.Constraints;
 

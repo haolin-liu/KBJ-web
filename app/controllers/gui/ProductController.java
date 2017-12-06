@@ -1,10 +1,16 @@
 package controllers.gui;
 
+import com.typesafe.config.Config;
+import models.ProductsWithNum;
+import models.entities.KeyWordForm;
+import play.data.Form;
+import play.data.FormFactory;
 import play.mvc.*;
-
+import services.SearchService;
 import views.html.productDetail;
 import views.html.productSearch;
 
+import javax.inject.Inject;
 import java.util.*;
 
 /**
@@ -15,23 +21,16 @@ import java.util.*;
  */
 public class ProductController extends Controller{
 
-    public Result search() {
+    private final SearchService searchService;
+    private final FormFactory formFactory;
+    private static Config config;
 
-        Map<String, String> searchProductL1 = new HashMap<>();
-        searchProductL1.put("shopicon", "http://sf.manmanbuy.com/images/sitelogo/1.png");
-        searchProductL1.put("title", "联想 拯救者R720 15.6英寸游戏本电脑 i7-7700HQ/8G/1T+256GSSD/GTX1050Ti 4G独显");
-        searchProductL1.put("price", "7498.00");
-        searchProductL1.put("image", "http://www.zuyushop.com:8013/ProPic/20176/2017060008101192947.jpg");
-        searchProductL1.put("total_commits", "1419");
-        searchProductL1.put("supplier", "自营");
-        searchProductL1.put("goodsexist", "沧浪区有货");
-
-        List<Map<String, String>> searchProductL = new ArrayList<>(Arrays.asList(searchProductL1, searchProductL1, searchProductL1, searchProductL1, searchProductL1, searchProductL1, searchProductL1, searchProductL1, searchProductL1));
-
-        List<String> hotProductL = new ArrayList<>(Arrays.asList("iphone X", "iphone 8", "小米", "华为p10", "iphone 7", "新ipad pro", "小米6"));
-        return ok(productSearch.render(searchProductL, hotProductL));
+    @Inject
+    public ProductController(SearchService searchService, FormFactory formFactory, Config config) {
+        this.searchService = searchService;
+        this.formFactory = formFactory;
+        this.config = config;
     }
-
 
     public Result productDetail() {
         Map<String, String> productCommentL1 = new HashMap<>();
@@ -44,6 +43,44 @@ public class ProductController extends Controller{
         List<Map<String, String>> productCommentL = new ArrayList<>(Arrays.asList(productCommentL1, productCommentL1));
 
         List<String> hotProductL = new ArrayList<>(Arrays.asList("iphone X", "iphone 8", "小米", "华为p10", "iphone 7", "新ipad pro", "小米6"));
-        return ok(productDetail.render(productCommentL, hotProductL));
+        return ok(productDetail.render(productCommentL, hotProductL, ""));
+    }
+
+    public Result searchGoods() {
+        Form<KeyWordForm> key = formFactory.form(KeyWordForm.class).bindFromRequest();
+        String keyWord = key.get().keyWord;
+
+        if (keyWord == null) {
+            keyWord = "";
+        }
+
+        ProductsWithNum products = searchService.query(keyWord, 0, config.getInt("rows"), "", "");
+        Double totalPage = Math.ceil(products.getNumFound() / 12.0);
+        Long countPage = new Double(totalPage).longValue();
+        List<String> hotProducts = new ArrayList<>(Arrays.asList("iphone X", "iphone 8", "小米", "华为p10", "iphone 7", "新ipad pro", "小米6"));
+        return ok(productSearch.render(products, hotProducts, keyWord, "1", countPage));
+    }
+
+    public Result generalGoods(String keyword, String start, String rows, String sorter, String filter) {
+
+        if (keyword.equals("*")) {
+            keyword = "";
+        }
+        if (sorter.equals("*")) {
+            sorter = "";
+        }
+        if (filter.equals("*")) {
+            filter = "";
+        }
+
+        String star =  String.valueOf(Long.valueOf(start) / Long.valueOf(rows) + 1);
+
+        ProductsWithNum products = searchService.query(keyword, Integer.valueOf(start),
+                Integer.valueOf(rows), sorter, filter);
+
+        Double totalPage = Math.ceil(products.getNumFound()/Double.valueOf(rows));
+        Long countPage = new Double(totalPage).longValue();
+        List<String> hotProducts = new ArrayList<>(Arrays.asList("iphone X", "iphone 8", "小米", "华为p10", "iphone 7", "新ipad pro", "小米6"));
+        return ok(productSearch.render(products, hotProducts, keyword, star, countPage));
     }
 }

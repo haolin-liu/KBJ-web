@@ -136,7 +136,7 @@ public class HomeController extends Controller {
         List<Map<String, String>> homeProductL = new ArrayList<>(Arrays.asList(homeProductL1, homeProductL2, homeProductL3, homeProductL4, homeProductL5, homeProductL6));
 
         List<String> hotProductL = new ArrayList<>(Arrays.asList("iphone X", "iphone 8", "小米", "华为p10", "iphone 7", "新ipad pro", "小米6"));
-        return ok(views.html.index.render(categoryL, homeProductL, hotProductL));
+        return ok(views.html.index.render(categoryL, homeProductL, hotProductL, ""));
 
     }
 

@@ -5,8 +5,8 @@
 # controllers for gui access
 GET     /                                                       controllers.gui.HomeController.index
 
-GET    /product/search                                          controllers.gui.ProductController.search
-
+GET    /product/search                                          controllers.gui.ProductController.searchGoods()
+GET    /search/:kw/:start/:rows/:sort/:fq                       controllers.gui.ProductController.generalGoods(kw: String, start: String, rows: String, sort: String, fq: String)
 GET    /product/detail                                          controllers.gui.ProductController.productDetail
 
 GET    /home/editPage/:id                                       controllers.gui.HomeController.editPage(id: Long)
@@ -22,6 +22,8 @@ GET     /manage/cate/map                                        controllers.gui.
 GET     /manage/cate/map/getleafcate/:cateRootId                controllers.gui.manage.CategoryController.getLeafCates(cateRootId: String)
 POST    /manage/cate/map/findmallcate                           controllers.gui.manage.CategoryController.getMallCates
 POST    /manage/cate/map/edit                                   controllers.gui.manage.CategoryController.edit
+
+GET     /trend/:mall/:skuid                                     controllers.gui.DailyPriceController.priceTrend(mall:String, skuid:String)
 
 # Routes For APIS
 # controllers for api access for app.
