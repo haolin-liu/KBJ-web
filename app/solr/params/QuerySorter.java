@@ -105,6 +105,7 @@ public class QuerySorter {
      */
     public static List<QuerySorter> apply(String strSoter) throws Exception {
         List<QuerySorter> sorters = new ArrayList<>();
+        String message = msg + "the request string is:\n" + strSoter;
 
         // drop the prefix "sort="
         if (strSoter.trim().startsWith(prefix)) {
@@ -116,7 +117,7 @@ public class QuerySorter {
         for (String sorts : arySort) {
             String[] aryPair = StringUtils.split(sorts);
             if (aryPair.length != 2) {
-                throw new Exception();
+                throw new Exception(message);
             } else {
                 String field = aryPair[0];
                 String order = aryPair[1];
