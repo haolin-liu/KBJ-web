@@ -9,6 +9,7 @@ import play.db.ebean.Transactional;
 
 import javax.inject.Inject;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 
 import static java.util.Objects.isNull;
@@ -136,61 +137,42 @@ public class KbjCategoryReposity {
     }
 
     /**
-     * 更新操作
-     * @author daiqingyi
-     * @date 2017-11-30
+     * 通过id检索
      * @param id
-     * @param name
-     * @param parentId
-     * @param isCrawleTarget
-     * @param user
+     * @author daiqingyi
+     * @date 2017-12-5
      */
-    @Transactional
-    public void update(long id, String name, int parentId, boolean isCrawleTarget, boolean valid, String user) {
-        KbjCategory category = ebeanServer.find(KbjCategory.class).where()
-                .eq("id", id)
-                .findUnique();
-        if(!isNull(parentId)) {
-            category.parentId = parentId;
-        }
-        if(!category.isCrawleTarget.equals(isCrawleTarget)) {
-            category.isCrawleTarget = isCrawleTarget;
-        }
-        category.valid = valid;
-        category.update();
+    public KbjCategory find(Long id) {
+        return  ebeanServer.find(KbjCategory.class, id);
     }
 
     /**
-     * 新规操作
-     * 为可比价网
-     * @author daiqingyi
-     * @date 2017-11-30
+     * 更新
      * @param category
+     * @author daiqingyi
+     * @date 2017-11-30
      */
     @Transactional
-    public void insert(KbjCategory category) {
-        category.valid = true;
-        category.isCrawleTarget = true;
-        category.parentId = 0;
-        ebeanServer.insert(category);
+    public Optional<Long> update(KbjCategory category) {
+        KbjCategory cate = ebeanServer.find(KbjCategory.class).where()
+                .eq("id", category.id)
+                .findUnique();
+        cate.parentId = category.parentId;
+        cate.isCrawleTarget = category.isCrawleTarget;
+        cate.valid = category.valid;
+        cate.update();
+        return Optional.empty();
     }
 
     /**
-     * 删除操作
-     * 更新可比价网本地分类数据的valid字段为false的方法
+     * 新规
+     * @param category
      * @author daiqingyi
-     * @date 2017-11-30
-     * @param id
-     * @param user
+     * @date 2017-12-5
      */
     @Transactional
-    public void delete(long id, String user) {
-        KbjCategory category = ebeanServer.find(KbjCategory.class).where()
-                .eq("id", id)
-                .findUnique();
-        category.valid = false;
-        category.update();
+    public Optional<Long> insert(KbjCategory category) {
+        category.insert();
+        return Optional.empty();
     }
-
-
 }

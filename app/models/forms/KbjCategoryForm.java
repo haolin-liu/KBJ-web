@@ -15,4 +15,7 @@ public class KbjCategoryForm {
     public String valid;
     public int page;
     public boolean isSearch;
+    public boolean bIsCrawleTarget;
+    public boolean bValid;
+    public long id;
 }

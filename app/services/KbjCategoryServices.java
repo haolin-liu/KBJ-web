@@ -4,10 +4,12 @@ import io.ebean.PagedList;
 import models.entities.KbjCategory;
 import models.forms.KbjCategoryForm;
 import org.jetbrains.annotations.Contract;
+import play.libs.concurrent.HttpExecutionContext;
 import repository.DatabaseExecutionContext;
 import repository.KbjCategoryReposity;
 
 import javax.inject.Inject;
+import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 
 import static java.util.concurrent.CompletableFuture.supplyAsync;
@@ -23,15 +25,17 @@ public class KbjCategoryServices {
     private final DatabaseExecutionContext executionContext;
     private final KbjCategoryReposity kbjCategoryReposity;
     private final KbjCategoryForm kbjCategoryForm;
+    private final HttpExecutionContext httpExecutionContext;
 
     @Inject
     public KbjCategoryServices(DatabaseExecutionContext executionContext,
                                KbjCategoryReposity kbjCategoryReposity,
-                               KbjCategoryForm kbjCategoryForm) {
+                               KbjCategoryForm kbjCategoryForm,
+                               HttpExecutionContext httpExecutionContext) {
         this.executionContext = executionContext;
         this.kbjCategoryReposity = kbjCategoryReposity;
         this.kbjCategoryForm = kbjCategoryForm;
-
+        this.httpExecutionContext = httpExecutionContext;
     }
 
     public CompletionStage<PagedList<KbjCategory>> findList(KbjCategoryForm  kbjCates, String sortBy, String order) {
@@ -124,5 +128,51 @@ public class KbjCategoryServices {
             isSeleced = true;
         }
         return isSeleced;
+    }
+
+    /**
+     *
+     * @param kbjCateform
+     * @author daiqingyi
+     * @date 2017-12-05
+     */
+    public CompletionStage<Optional<Long>> addKbjCate(KbjCategoryForm  kbjCateform) {
+        KbjCategory category = new KbjCategory();
+        category.name = kbjCateform.name;
+        category.parentId = Integer.valueOf(kbjCateform.parentId);
+        category.isCrawleTarget = kbjCateform.bIsCrawleTarget;
+        category.valid = kbjCateform.bValid;
+        return supplyAsync(() -> {
+            return kbjCategoryReposity.insert(category);
+        }, executionContext);
+    }
+
+    /**
+     *
+     * @param id
+     * @return
+     */
+    public CompletionStage<KbjCategory> find(Long id) {
+        return supplyAsync(() -> {
+            return kbjCategoryReposity.find(id);
+        }, executionContext);
+    }
+
+    /**
+     *
+     * @param kbjCateform
+     * @author daiqingyi
+     * @date 2017-12-05
+     */
+    public CompletionStage<Optional<Long>> updKbjCate(KbjCategoryForm  kbjCateform){
+        KbjCategory category = new KbjCategory();
+        category.id = kbjCateform.id;
+        category.name = kbjCateform.name;
+        category.parentId = Integer.valueOf(kbjCateform.parentId);
+        category.isCrawleTarget = kbjCateform.bIsCrawleTarget;
+        category.valid = kbjCateform.bValid;
+        return supplyAsync(() -> {
+            return kbjCategoryReposity.update(category);
+        }, executionContext);
     }
 }

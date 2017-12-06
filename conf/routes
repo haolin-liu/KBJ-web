@@ -25,8 +25,9 @@ POST    /manage/cate/map/edit                                   controllers.gui.
 # controllers for manage kbjCate
 GET      /manage/kbjcate/index                 controllers.gui.manage.kbjCategoryController.index()
 POST     /manage/kbjcate/find                  controllers.gui.manage.kbjCategoryController.list(s ?= "id", o ?= "asc")
-#POST     /manage/kbjcate/add                   controllers.gui.manage.kbjCategoryController.add()
-#POST     /manage/kbjcate/edit                  controllers.gui.manage.kbjCategoryController.update(id:Long)
+GET      /manage/kbjcate/add                   controllers.gui.manage.kbjCategoryController.add()
+POST     /manage/kbjcate/save                  controllers.gui.manage.kbjCategoryController.save()
+GET      /manage/kbjcate/edit/id                controllers.gui.manage.kbjCategoryController.update(id:Long)
 
 GET     /trend/:mall/:skuid                                     controllers.gui.DailyPriceController.priceTrend(mall:String, skuid:String)
 

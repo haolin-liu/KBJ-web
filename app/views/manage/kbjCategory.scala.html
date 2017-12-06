@@ -33,25 +33,29 @@
         <!--画面内容-->
         <div class="content-box-large min-height">
           <h2>可比价品类管理一覧</h2>
-          <input type="hidden" id="menu" value="11">
+          <input type="hidden" id="menu" value="31">
           <div><hr></div>
           <div class="content-box-large">
-            <div class="col-md-12 panel-info">
-
-            @b3.form(helper.CSRF(link(currentSortBy)), 'id -> "postForm") {
-                <fieldset>
-                    @helper.CSRF.formField
-                    @b3.text(kbjCateForm("id"), 'placeholder -> "ID", '_help -> "")
-                    @b3.text(kbjCateForm("name"), 'placeholder -> "品类名", '_help -> "")
-                    @b3.text(kbjCateForm("parentId"), 'placeholder -> "父分类ID", '_help -> "")
-                    @b3.select(kbjCateForm("isCrawleTarget"), options = isTrue, '_label -> "爬取对象" )
-                    @b3.select(kbjCateForm("valid"), options = isTrue, '_label -> "有效" )
-                    @b3.hidden(kbjCateForm("page"), 'id -> "page")
-                    @b3.hidden(kbjCateForm("isSearch"), 'id -> "isSearch")
-                    @b3.submit('class -> "btn btn-primary", 'id -> "Search", 'onclick -> "javascript:search()"){ 检索 }
-                </fieldset>
-            }
-            </div><!--col-md-12 panel-info -->
+            <div class="row panel-info">
+                <div class="col-md-10">
+                    @b3.form(helper.CSRF(link(currentSortBy)), 'id -> "postForm") {
+                        <fieldset>
+                            @helper.CSRF.formField
+                            @b3.hidden(kbjCateForm("id"), 'placeholder -> "ID", '_help -> "")
+                            @b3.text(kbjCateForm("name"), 'placeholder -> "品类名", '_help -> "")
+                            @b3.text(kbjCateForm("parentId"), 'placeholder -> "父分类ID", '_help -> "")
+                            @b3.select(kbjCateForm("isCrawleTarget"), options = isTrue, '_label -> "爬取对象" )
+                            @b3.select(kbjCateForm("valid"), options = isTrue, '_label -> "有效" )
+                            @b3.hidden(kbjCateForm("page"), 'id -> "page")
+                            @b3.hidden(kbjCateForm("isSearch"), 'id -> "isSearch")
+                            @b3.submit('class -> "btn btn-primary", 'id -> "Search", 'onclick -> "javascript:search()"){ 检索 }
+                        </fieldset>
+                    }
+                </div>
+                <div class="col-md-2" style="margin-top: 6px">
+                    <button type="button" class="btn btn-primary" onClick="location.href='/manage/kbjcate/add'">追加</button>
+                </div><!--col-md-2 -->
+            </div><!--row panel-info -->
               <div class="actions">
                 <table class="table zebra-striped">
                   <thead>
@@ -61,11 +65,13 @@
                       @header("parentId", "父分类ID")
                       @header("isCrawleTarget", "爬取对象")
                       @header("valid", "有效")
+                      @header("edit", "")
                     </tr>
                   </thead>
                   <tbody>
                       @if(currentPage.eq(null)) {
                           <tr>
+                              <td></td>
                               <td></td>
                               <td></td>
                               <td></td>
@@ -80,6 +86,7 @@
                               <td> @kbjCategory.parentId </td>
                               <td><input type="checkbox" aria-label="..." value="@kbjCategory.isCrawleTarget" @if(kbjCategory.isCrawleTarget) { checked }></td>
                               <td><input type="checkbox" aria-label="..." value="@kbjCategory.valid" @if(kbjCategory.valid) { checked }></td>
+                              <td><button type="button" class="btn btn-primary" onClick="location.href='@gui.manage.routes.kbjCategoryController.update(kbjCategory.id)'">编辑</button></td>
                             </tr>
                           }
                       }

@@ -1,5 +1,6 @@
 package controllers.gui.manage;
 
+import models.entities.KbjCategory;
 import models.forms.KbjCategoryForm;
 import play.data.DynamicForm;
 import play.data.Form;
@@ -59,6 +60,51 @@ public class kbjCategoryController extends Controller {
         KbjCategoryForm kbjCates = kbjCateForm.get();
         return kbjCategoryServices.findList(kbjCates, sortBy, order).thenApplyAsync(list -> {
             return ok(views.html.manage.kbjCategory.render(list, sortBy, order, kbjCateForm));
+        }, httpExecutionContext.current());
+    }
+
+    /**
+     * 可比价分类的追加页面跳转
+     * @author daiqingyi
+     * @date 2017-12-05
+     */
+    public Result add() {
+        Form<KbjCategoryForm> kbCateForm = formFactory.form(KbjCategoryForm.class).fill(new KbjCategoryForm());
+        return ok(views.html.manage.kbjCateAdd.render(kbCateForm));
+    }
+
+    /**
+     * 可比价分类的追加页面
+     * @author daiqingyi
+     * @date 2017-12-05
+     */
+    public Result save() {
+        Form<KbjCategoryForm> kbjCateForm = formFactory.form(KbjCategoryForm.class).bindFromRequest();
+        KbjCategoryForm kbjCate = kbjCateForm.get();
+        if(kbjCate.id == 0){
+            kbjCategoryServices.addKbjCate(kbjCate);
+        } else {
+            kbjCategoryServices.updKbjCate(kbjCate);
+        }
+        return index();
+    }
+
+    /**
+     * 可比价分类的更新页面跳转
+     * @param id
+     * @author daiqingyi
+     * @date 2017-12-05
+     */
+    public CompletionStage<Result> update(Long id) {
+        return kbjCategoryServices.find(id).thenApplyAsync(category -> {
+            KbjCategoryForm kbjCate = new KbjCategoryForm();
+            kbjCate.id = category.id;
+            kbjCate.name = category.name;
+            kbjCate.parentId = String.valueOf(category.parentId);
+            kbjCate.bIsCrawleTarget = category.isCrawleTarget;
+            kbjCate.bValid = category.valid;
+            Form<KbjCategoryForm> kbjCateForm = formFactory.form(KbjCategoryForm.class).fill(kbjCate);
+            return ok(views.html.manage.kbjCateAdd.render(kbjCateForm));
         }, httpExecutionContext.current());
     }
 
