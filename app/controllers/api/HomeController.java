@@ -7,6 +7,7 @@ import play.libs.F;
 import play.libs.Json;
 import play.mvc.*;
 import services.SearchService;
+import utils.PageList;
 
 import javax.inject.Inject;
 import java.util.*;
@@ -81,6 +82,21 @@ public class HomeController extends Controller {
         Logger.debug("-----------solr: " + result.getNumFound());
         for (Product product : result.getProducts()) {
             Logger.debug(product.getSkuid() + " : " + product.getName() + " : " + product.getPrice());
+        }
+
+        try {
+            int page = (int)Math.ceil((Integer.valueOf(start) + 1) / (Double.valueOf(rows)));
+            Logger.debug("page: " + page);
+            PageList<Product> data = new PageList<Product>(result.getNumFound(), page, Integer.valueOf(rows), result.getProducts());
+            Logger.debug("total record: " + data.getRecordCount());
+            Logger.debug("page count: " + data.getPageCount());
+            Logger.debug("current page index: " + data.getPageIndex());
+            Logger.debug("navigate from: " + data.getNavigationFrom());
+            Logger.debug("navigate to: " + data.getNavigationTo());
+            Logger.debug("has previous page: " + data.hasPrevPage());
+            Logger.debug("has next page: " + data.hasNextPage());
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         return ok(Json.toJson(result));
