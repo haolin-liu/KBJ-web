@@ -2,10 +2,12 @@ package controllers.api;
 
 import models.Product;
 import models.ProductsWithNum;
+import models.entities.CategoryExhibition;
 import play.Logger;
 import play.libs.F;
 import play.libs.Json;
 import play.mvc.*;
+import repository.CategoryExhibitionRepo;
 import services.SearchService;
 import utils.PageList;
 
@@ -19,9 +21,12 @@ import java.util.*;
 public class HomeController extends Controller {
 
     private static SearchService searcher;
+    private static CategoryExhibitionRepo cateExhibitRepo;
     @Inject
-    public HomeController(SearchService searcher) {
+    public HomeController(SearchService searcher,
+                          CategoryExhibitionRepo cateExhibitRepo) {
         this.searcher = searcher;
+        this.cateExhibitRepo = cateExhibitRepo;
     }
 
     /**
@@ -97,6 +102,14 @@ public class HomeController extends Controller {
             Logger.debug("has next page: " + data.hasNextPage());
         } catch (Exception e) {
             e.printStackTrace();
+        }
+
+        List<CategoryExhibition> cateExhibits = cateExhibitRepo.findFirstLevel();
+        Logger.debug("size of cate to be exhibited: " + cateExhibits.size());
+        for (CategoryExhibition cate : cateExhibits) {
+            Logger.debug("id: " + cate.id);
+            Logger.debug("priority: " + cate.priority);
+            Logger.debug("parent.id: " + cate.kbjCategory.parent.id);
         }
 
         return ok(Json.toJson(result));

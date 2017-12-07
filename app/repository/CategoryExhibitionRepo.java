@@ -17,13 +17,14 @@ public class CategoryExhibitionRepo {
         this.ebeanServer = Ebean.getServer(ebeanConfig.defaultServer());
     }
 
-
     public List<CategoryExhibition> findFirstLevel() {
         return ebeanServer.find(CategoryExhibition.class)
-                .fetch("kbj_category")
-                .fetch("kbj_category.id", "1")
+                .fetch("kbjCategory")
+                .fetch("kbjCategory", "name")
+                .fetch("kbjCategory.parent")
                 .where()
                 .eq("valid", "1")
+                .eq("kbjCategory.parent.id", "1")
                 .findList();
     }
 

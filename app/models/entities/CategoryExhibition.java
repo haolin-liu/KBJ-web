@@ -2,9 +2,8 @@ package models.entities;
 
 import play.data.validation.Constraints;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.List;
 
 /**
  *  @author jie-z
@@ -16,12 +15,13 @@ public class CategoryExhibition extends BaseModel {
     @Id
     public Long id;
 
+    @ManyToOne
     @Constraints.Required
     @Column(nullable = false, name = "kbj_category_id")
     public KbjCategory kbjCategory;
 
     @Constraints.Required
-    @Column(nullable = false, columnDefinition = "default 1")
+    @Column(nullable = false, columnDefinition = "integer default 1")
     public Integer priority;
 
     @Constraints.Required

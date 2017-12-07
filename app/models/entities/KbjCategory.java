@@ -5,6 +5,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.*;
+import java.util.List;
 
 /**
  * KeySearch entity created by Dai
@@ -31,7 +32,11 @@ public class KbjCategory extends BaseModel {
     public Boolean valid;
 
     @ManyToOne
-    @Column(name = "parent_id default 0")
+    @Column(name = "parent_id")
     public KbjCategory parent;
+
+    // not necessary for CategoryExhibition search.
+    @OneToMany(mappedBy = "kbjCategory")
+    public List<CategoryExhibition> categoryExhibition;
 
 }
