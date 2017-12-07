@@ -178,8 +178,8 @@ public class KbjCategoryReposity {
      * @date 2017-12-7
      */
     public Map<String, String> getParents() {
-        long routeId = 1;
-        List<KbjCategory> list = ebeanServer.find(KbjCategory.class).where().eq("parent_id", routeId).orderBy("name").findList();
+        long rootId = 1;
+        List<KbjCategory> list = ebeanServer.find(KbjCategory.class).where().eq("parent_id", rootId).orderBy("name").findList();
         HashMap<String, String> options = new LinkedHashMap<String, String>();
         for (KbjCategory c : list) {
             options.put(c.id.toString(), c.name);
