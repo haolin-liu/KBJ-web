@@ -6,8 +6,7 @@
 @import models.forms.KbjCategoryForm
 @import b3.inline.fieldConstructor
 @import helper._
-@(currentPage: io.ebean.PagedList[KbjCategory], currentSortBy: String, currentOrder: String,  kbjCateForm: Form[KbjCategoryForm]
-)
+@(currentPage: io.ebean.PagedList[KbjCategory], currentSortBy: String, currentOrder: String,  kbjCateForm: Form[KbjCategoryForm], parentNames: Map[String, String])
 
 @isTrue = @{ Seq("2"->"--未选择--","1"->"是","0"->"否") }
 
@@ -41,11 +40,16 @@
                     @b3.form(helper.CSRF(link(currentSortBy)), 'id -> "postForm") {
                         <fieldset>
                             @helper.CSRF.formField
-                            @b3.hidden(kbjCateForm("id"), 'placeholder -> "ID", '_help -> "")
                             @b3.text(kbjCateForm("name"), 'placeholder -> "品类名", '_help -> "")
-                            @b3.text(kbjCateForm("parentId"), 'placeholder -> "父分类ID", '_help -> "")
+                            @b3.select(
+                                kbjCateForm("parentId"),
+                                options(parentNames),
+                                '_default -> "-- 选择一个父分类 --",
+                                '_showConstraints -> false
+                            )
                             @b3.select(kbjCateForm("isCrawleTarget"), options = isTrue, '_label -> "爬取对象" )
                             @b3.select(kbjCateForm("valid"), options = isTrue, '_label -> "有效" )
+                            @b3.hidden(kbjCateForm("id"), 'placeholder -> "ID", '_help -> "")
                             @b3.hidden(kbjCateForm("page"), 'id -> "page")
                             @b3.hidden(kbjCateForm("isSearch"), 'id -> "isSearch")
                             @b3.submit('class -> "btn btn-primary", 'id -> "Search", 'onclick -> "javascript:search()"){ 检索 }
@@ -62,7 +66,7 @@
                     <tr>
                       @header("id", "ID")
                       @header("name", "分类名")
-                      @header("parentId", "父分类ID")
+                      @header("parentName", "父分类名")
                       @header("isCrawleTarget", "爬取对象")
                       @header("valid", "有效")
                       @header("edit", "")
@@ -76,14 +80,13 @@
                               <td></td>
                               <td></td>
                               <td></td>
-                              <td></td>
                           </tr>
                       } else {
                           @for(kbjCategory <- currentPage.getList.asScala) {
                             <tr>
                               <td> @kbjCategory.id</td>
                               <td> @kbjCategory.name </td>
-                              <td> @kbjCategory.parentId </td>
+                              <td> @kbjCategory.parent.name</td>
                               <td><input type="checkbox" aria-label="..." value="@kbjCategory.isCrawleTarget" @if(kbjCategory.isCrawleTarget) { checked }></td>
                               <td><input type="checkbox" aria-label="..." value="@kbjCategory.valid" @if(kbjCategory.valid) { checked }></td>
                               <td><button type="button" class="btn btn-primary" onClick="location.href='@gui.manage.routes.kbjCategoryController.update(kbjCategory.id)'">编辑</button></td>
@@ -103,7 +106,7 @@
                       </div>
                   }
 
-                  @if(!currentPage.eq(null) && currentPage.hasPrev) {
+                  @if(!currentPage.eq(null)) {
                       <div class="current col-xs-4">
                           <text>显示 @currentPage.getDisplayXtoYofZ(" 到 "," 总 ")</text>
                       </div>

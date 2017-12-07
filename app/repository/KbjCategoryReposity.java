@@ -8,12 +8,7 @@ import play.db.ebean.EbeanConfig;
 import play.db.ebean.Transactional;
 
 import javax.inject.Inject;
-import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.CompletionStage;
-
-import static java.util.Objects.isNull;
-import static java.util.concurrent.CompletableFuture.supplyAsync;
+import java.util.*;
 
 /**
  * @author daiqingyi
@@ -45,10 +40,10 @@ public class KbjCategoryReposity {
      */
 
     /*所有检索条件都填写*/
-    public PagedList<KbjCategory> find(boolean valid,int page, String sortBy, String order, String name, int parentId, boolean isCrawleTarget) {
+    public PagedList<KbjCategory> find(boolean valid,int page, String sortBy, String order, String name, long parentId, boolean isCrawleTarget) {
         return ebeanServer.find(KbjCategory.class).where()
                 .ilike("name", "%" + name + "%")
-                .eq("parentId", parentId)
+                .eq("parent_id", parentId)
                 .eq("isCrawleTarget", isCrawleTarget)
                 .eq("valid", valid)
                 .orderBy(sortBy + " " + order)
@@ -58,10 +53,10 @@ public class KbjCategoryReposity {
     }
 
     /*爬取对象 条件未填写检索*/
-    public PagedList<KbjCategory> find(boolean valid, int page, String sortBy, String order, String name, int parentId) {
+    public PagedList<KbjCategory> find(boolean valid, int page, String sortBy, String order, String name, long parentId) {
         return ebeanServer.find(KbjCategory.class).where()
                 .ilike("name", "%" + name + "%")
-                .eq("parentId", parentId)
+                .eq("parent_id", parentId)
                 .eq("valid", valid)
                 .orderBy(sortBy + " " + order)
                 .setFirstRow(page * 10)
@@ -70,10 +65,10 @@ public class KbjCategoryReposity {
     }
 
     /*有效性 条件未填写检索*/
-    public PagedList<KbjCategory> find(int page, String sortBy, String order, String name, int parentId, boolean isCrawleTarget) {
+    public PagedList<KbjCategory> find(int page, String sortBy, String order, String name, long parentId, boolean isCrawleTarget) {
         return ebeanServer.find(KbjCategory.class).where()
                 .ilike("name", "%" + name + "%")
-                .eq("parentId", parentId)
+                .eq("parent_id", parentId)
                 .eq("isCrawleTarget", isCrawleTarget)
                 .orderBy(sortBy + " " + order)
                 .setFirstRow(page * 10)
@@ -82,10 +77,10 @@ public class KbjCategoryReposity {
     }
 
     /*爬取对象、有效性 条件未填写检索*/
-    public PagedList<KbjCategory> find(int page, String sortBy, String order, String name, int parentId) {
+    public PagedList<KbjCategory> find(int page, String sortBy, String order, String name, long parentId) {
         return ebeanServer.find(KbjCategory.class).where()
                 .ilike("name", "%" + name + "%")
-                .eq("parentId", parentId)
+                .eq("parent_id", parentId)
                 .orderBy(sortBy + " " + order)
                 .setFirstRow(page * 10)
                 .setMaxRows(10)
@@ -157,7 +152,7 @@ public class KbjCategoryReposity {
         KbjCategory cate = ebeanServer.find(KbjCategory.class).where()
                 .eq("id", category.id)
                 .findUnique();
-        cate.parentId = category.parentId;
+        cate.parent.id = category.parent.id;
         cate.isCrawleTarget = category.isCrawleTarget;
         cate.valid = category.valid;
         cate.update();
@@ -174,5 +169,21 @@ public class KbjCategoryReposity {
     public Optional<Long> insert(KbjCategory category) {
         category.insert();
         return Optional.empty();
+    }
+
+    /**
+     * 取得父分类
+     * @return
+     * @author daiqingyi
+     * @date 2017-12-7
+     */
+    public Map<String, String> getParents() {
+        long routeId = 1;
+        List<KbjCategory> list = ebeanServer.find(KbjCategory.class).where().eq("parent_id", routeId).orderBy("name").findList();
+        HashMap<String, String> options = new LinkedHashMap<String, String>();
+        for (KbjCategory c : list) {
+            options.put(c.id.toString(), c.name);
+        }
+        return options;
     }
 }

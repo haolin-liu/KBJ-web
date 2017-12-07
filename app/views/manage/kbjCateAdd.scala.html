@@ -1,7 +1,11 @@
+@**********************************
+* @author daiqingyi
+* @date 2017-12-04
+***********************************@
 @import models.forms.KbjCategoryForm
 @import helper._
-@(kbjCateForm: Form[KbjCategoryForm])
-@implicitFC = @{ b3.horizontal.fieldConstructor("col-md-2", "col-md-9") }
+@(kbjCateForm: Form[KbjCategoryForm], parentNames: Map[String, String])
+@implicitFC = @{ b3.horizontal.fieldConstructor("col-md-2", "col-md-10") }
 @link() = @{
   gui.manage.routes.kbjCategoryController.save()
 }
@@ -18,7 +22,6 @@
           <input type="hidden" id="menu" value="32">
           <div><hr></div>
           <div class="content-box-large">
-            <div class="col-md-12">
               @b3.form(helper.CSRF(link()), 'id -> "postForm") {
                 <fieldset>
                   @helper.CSRF.formField
@@ -26,13 +29,17 @@
                     @b3.text(kbjCateForm("id"), 'placeholder -> "ID", '_help -> "", '_label -> "ID", 'readonly -> true)
                   }else{}
                   @b3.text(kbjCateForm("name"), 'placeholder -> "品类名", '_help -> "", '_label -> "品类名")
-                  @b3.text(kbjCateForm("parentId"), 'placeholder -> "父分类ID", '_help -> "", '_label -> "父分类ID")
+                  @b3.select(
+                    kbjCateForm("parentName"),
+                    options(parentNames),
+                    '_label -> "父分类名",
+                    '_showConstraints -> false
+                  )
                   @b3.checkbox( kbjCateForm("bIsCrawleTarget"), '_label -> "爬取对象", 'id -> "bIsCrawleTarget")
                   @b3.checkbox( kbjCateForm("bValid"), '_label -> "有效", 'id -> "bValid")
                   @b3.submit('class -> "btn btn-primary", 'id -> "Save"){ 保存 }
                 </fieldset>
               }
-            </div><!--col-md-12 panel-info -->
           </div><!--content-box-large -->
         </div><!--content-box-large-->
       </div><!--col-md-10 -->

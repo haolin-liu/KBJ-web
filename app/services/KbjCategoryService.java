@@ -9,6 +9,7 @@ import repository.DatabaseExecutionContext;
 import repository.KbjCategoryReposity;
 
 import javax.inject.Inject;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 
@@ -20,7 +21,7 @@ import static java.util.concurrent.CompletableFuture.supplyAsync;
  *  @date 2017/12/1
  */
 
-public class KbjCategoryServices {
+public class KbjCategoryService {
 
     private final DatabaseExecutionContext executionContext;
     private final KbjCategoryReposity kbjCategoryReposity;
@@ -28,17 +29,17 @@ public class KbjCategoryServices {
     private final HttpExecutionContext httpExecutionContext;
 
     @Inject
-    public KbjCategoryServices(DatabaseExecutionContext executionContext,
-                               KbjCategoryReposity kbjCategoryReposity,
-                               KbjCategoryForm kbjCategoryForm,
-                               HttpExecutionContext httpExecutionContext) {
+    public KbjCategoryService(DatabaseExecutionContext executionContext,
+                              KbjCategoryReposity kbjCategoryReposity,
+                              KbjCategoryForm kbjCategoryForm,
+                              HttpExecutionContext httpExecutionContext) {
         this.executionContext = executionContext;
         this.kbjCategoryReposity = kbjCategoryReposity;
         this.kbjCategoryForm = kbjCategoryForm;
         this.httpExecutionContext = httpExecutionContext;
     }
 
-    public CompletionStage<PagedList<KbjCategory>> findList(KbjCategoryForm  kbjCates, String sortBy, String order) {
+    public CompletionStage<PagedList<KbjCategory>> findList(KbjCategoryForm kbjCates, String sortBy, String order) {
         int page;
         if(kbjCates.isSearch) {
             page = kbjCates.page;
@@ -47,8 +48,8 @@ public class KbjCategoryServices {
         }
 
         /*判断是否输入父分类Id，输入执行if，未输入执行else */
-        if(!kbjCates.parentId.equals("")){
-            int parentId = Integer.valueOf(kbjCates.parentId);
+        if(kbjCates.parentId != null){
+            long parentId = kbjCates.parentId;
              /*判断是否选择 有效性，输入执行if，未输入执行else */
             if(kbjCates.valid.equals("0") || kbjCates.valid.equals("1")) {
                 System.out.println("services.valid.if" + kbjCates.valid);
@@ -139,10 +140,11 @@ public class KbjCategoryServices {
     public CompletionStage<Optional<Long>> addKbjCate(KbjCategoryForm  kbjCateform) {
         KbjCategory category = new KbjCategory();
         category.name = kbjCateform.name;
-        category.parentId = Integer.valueOf(kbjCateform.parentId);
         category.isCrawleTarget = kbjCateform.bIsCrawleTarget;
         category.valid = kbjCateform.bValid;
         return supplyAsync(() -> {
+            KbjCategory parentCate = kbjCategoryReposity.find(kbjCateform.parentId);
+            category.parent = parentCate;
             return kbjCategoryReposity.insert(category);
         }, executionContext);
     }
@@ -168,11 +170,36 @@ public class KbjCategoryServices {
         KbjCategory category = new KbjCategory();
         category.id = kbjCateform.id;
         category.name = kbjCateform.name;
-        category.parentId = Integer.valueOf(kbjCateform.parentId);
         category.isCrawleTarget = kbjCateform.bIsCrawleTarget;
         category.valid = kbjCateform.bValid;
         return supplyAsync(() -> {
+            KbjCategory parentCate = kbjCategoryReposity.find(kbjCateform.parentId);
+            category.parent = parentCate;
             return kbjCategoryReposity.update(category);
         }, executionContext);
+    }
+
+    /**
+     * 异步取得父分类
+     * @return
+     * @author daiqingyi
+     * @date 2017-12-07
+     */
+    public CompletionStage<Map<String, String>> getParents() {
+            Map<String, String> options = kbjCategoryReposity.getParents();
+            return supplyAsync(()-> {
+                return options;
+            }, httpExecutionContext.current());
+    }
+
+    /**
+     * 非异步取得父分类
+     * @return
+     * @author daiqingyi
+     * @date 2017-12-07
+     */
+    public Map<String, String> getParent() {
+        Map<String, String> options = kbjCategoryReposity.getParents();
+        return options;
     }
 }

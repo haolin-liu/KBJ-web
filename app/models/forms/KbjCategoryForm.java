@@ -10,7 +10,7 @@ import scala.collection.generic.BitOperations;
 
 public class KbjCategoryForm {
     public String name;
-    public String parentId;
+    public Long parentId;
     public String isCrawleTarget;
     public String valid;
     public int page;
@@ -18,4 +18,5 @@ public class KbjCategoryForm {
     public boolean bIsCrawleTarget;
     public boolean bValid;
     public long id;
+    public String parentName;
 }
