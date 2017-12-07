@@ -1,0 +1,153 @@
+@**********************************
+* @author daiqingyi
+* @date 2017-11-27
+***********************************@
+@import models.entities.KbjCategory
+@import models.forms.KbjCategoryForm
+@import b3.inline.fieldConstructor
+@import helper._
+@(currentPage: io.ebean.PagedList[KbjCategory], currentSortBy: String, currentOrder: String,  kbjCateForm: Form[KbjCategoryForm], parentNames: Map[String, String])
+
+@isTrue = @{ Seq("2"->"--未选择--","1"->"是","0"->"否") }
+
+@page = @{ if(currentPage == null) { 0 } else { currentPage.getPageIndex }}
+
+@link(sortBy:String) = @{
+    gui.manage.routes.kbjCategoryController.list(sortBy, "asc")
+}
+
+@header(key:String, title:String) = {
+  <th class="@key.replace(".","_") header @if(currentSortBy == key) { @{if(currentOrder == "asc") "headerSortDown" else "headerSortUp" } }">
+    <a href="#" >@title</a>
+  </th>
+}
+
+@manageMain() {
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-2" >
+      @views.html.manage.leftMenu.render
+      </div><!--col-md-2 -->
+      <div class="col-md-10">
+        <!--画面内容-->
+        <div class="content-box-large min-height">
+          <h2>可比价品类管理一覧</h2>
+          <input type="hidden" id="menu" value="31">
+          <div><hr></div>
+          <div class="content-box-large">
+            <div class="row panel-info">
+                <div class="col-md-10">
+                    @b3.form(helper.CSRF(link(currentSortBy)), 'id -> "postForm") {
+                        <fieldset>
+                            @helper.CSRF.formField
+                            @b3.text(kbjCateForm("name"), 'placeholder -> "品类名", '_help -> "")
+                            @b3.select(
+                                kbjCateForm("parentId"),
+                                options(parentNames),
+                                '_default -> "-- 选择一个父分类 --",
+                                '_showConstraints -> false
+                            )
+                            @b3.select(kbjCateForm("isCrawleTarget"), options = isTrue, '_label -> "爬取对象" )
+                            @b3.select(kbjCateForm("valid"), options = isTrue, '_label -> "有效" )
+                            @b3.hidden(kbjCateForm("id"), 'placeholder -> "ID", '_help -> "")
+                            @b3.hidden(kbjCateForm("page"), 'id -> "page")
+                            @b3.hidden(kbjCateForm("isSearch"), 'id -> "isSearch")
+                            @b3.submit('class -> "btn btn-primary", 'id -> "Search", 'onclick -> "javascript:search()"){ 检索 }
+                        </fieldset>
+                    }
+                </div>
+                <div class="col-md-2" style="margin-top: 6px">
+                    <button type="button" class="btn btn-primary" onClick="location.href='/manage/kbjcate/add'">追加</button>
+                </div><!--col-md-2 -->
+            </div><!--row panel-info -->
+              <div class="actions">
+                <table class="table zebra-striped">
+                  <thead>
+                    <tr>
+                      @header("id", "ID")
+                      @header("name", "分类名")
+                      @header("parentName", "父分类名")
+                      @header("isCrawleTarget", "爬取对象")
+                      @header("valid", "有效")
+                      @header("edit", "")
+                    </tr>
+                  </thead>
+                  <tbody>
+                      @if(currentPage.eq(null)) {
+                          <tr>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                              <td></td>
+                          </tr>
+                      } else {
+                          @for(kbjCategory <- currentPage.getList.asScala) {
+                            <tr>
+                              <td> @kbjCategory.id</td>
+                              <td> @kbjCategory.name </td>
+                              <td> @kbjCategory.parent.name</td>
+                              <td><input type="checkbox" aria-label="..." value="@kbjCategory.isCrawleTarget" @if(kbjCategory.isCrawleTarget) { checked }></td>
+                              <td><input type="checkbox" aria-label="..." value="@kbjCategory.valid" @if(kbjCategory.valid) { checked }></td>
+                              <td><button type="button" class="btn btn-primary" onClick="location.href='@gui.manage.routes.kbjCategoryController.update(kbjCategory.id)'">编辑</button></td>
+                            </tr>
+                          }
+                      }
+                  </tbody>
+                </table>
+                <div class="row col-md-12">
+                  @if(!currentPage.eq(null) && currentPage.hasPrev) {
+                      <div class="prev col-xs-4">
+                        <a onclick="pagePrev()" class="prev" >&larr; 上一页</a>
+                      </div>
+                  } else {
+                      <div class="prev disabled col-xs-4">
+                          <text>上一页</text>
+                      </div>
+                  }
+
+                  @if(!currentPage.eq(null)) {
+                      <div class="current col-xs-4">
+                          <text>显示 @currentPage.getDisplayXtoYofZ(" 到 "," 总 ")</text>
+                      </div>
+                  } else {
+                      <div class="current col-xs-4">
+                      </div>
+                  }
+
+                  @if(!currentPage.eq(null) && currentPage.hasNext) {
+                      <div class="next col-xs-4">
+                          <a onclick="pageNext()" class="next">下一页 &rarr;</a>
+                      </div>
+                  } else {
+                      <div class="next disabled col-xs-4">
+                          <text>下一页</text>
+                      </div>
+                  }
+                </div>
+              </div><!--actions-->
+          </div><!--content-box-large -->
+        </div><!--content-box-large-->
+      </div><!--col-md-10 -->
+    </div><!--row-->
+  </div><!--container-fluid-->
+  <script type="text/javascript">
+    function pagePrev() {
+        var page = parseInt($("#page").val());
+        $("#page").val(page - 1);
+        $("#postForm").submit();
+    }
+
+    function pageNext() {
+        var page = parseInt($("#page").val());
+        $("#isSearch").val(true);
+        $("#page").val(page + 1);
+        $("#postForm").submit();
+    }
+
+    function search() {
+        $("#page").val(0);
+        $("#isSearch").val(false);
+    }
+  </script>
+}

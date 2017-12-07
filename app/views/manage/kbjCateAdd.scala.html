@@ -1,0 +1,48 @@
+@**********************************
+* @author daiqingyi
+* @date 2017-12-04
+***********************************@
+@import models.forms.KbjCategoryForm
+@import helper._
+@(kbjCateForm: Form[KbjCategoryForm], parentNames: Map[String, String])
+@implicitFC = @{ b3.horizontal.fieldConstructor("col-md-2", "col-md-10") }
+@link() = @{
+  gui.manage.routes.kbjCategoryController.save()
+}
+@manageMain() {
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-2" >
+      @views.html.manage.leftMenu.render
+      </div><!--col-md-2 -->
+      <div class="col-md-10">
+          <!--画面内容-->
+        <div class="content-box-large min-height">
+          <h2>可比价品类追加/修改</h2>
+          <input type="hidden" id="menu" value="32">
+          <div><hr></div>
+          <div class="content-box-large">
+              @b3.form(helper.CSRF(link()), 'id -> "postForm") {
+                <fieldset>
+                  @helper.CSRF.formField
+                  @if(kbjCateForm.get().id != 0) {
+                    @b3.text(kbjCateForm("id"), 'placeholder -> "ID", '_help -> "", '_label -> "ID", 'readonly -> true)
+                  }else{}
+                  @b3.text(kbjCateForm("name"), 'placeholder -> "品类名", '_help -> "", '_label -> "品类名")
+                  @b3.select(
+                    kbjCateForm("parentName"),
+                    options(parentNames),
+                    '_label -> "父分类名",
+                    '_showConstraints -> false
+                  )
+                  @b3.checkbox( kbjCateForm("bIsCrawleTarget"), '_label -> "爬取对象", 'id -> "bIsCrawleTarget")
+                  @b3.checkbox( kbjCateForm("bValid"), '_label -> "有效", 'id -> "bValid")
+                  @b3.submit('class -> "btn btn-primary", 'id -> "Save"){ 保存 }
+                </fieldset>
+              }
+          </div><!--content-box-large -->
+        </div><!--content-box-large-->
+      </div><!--col-md-10 -->
+    </div><!--row-->
+  </div><!--container-fluid-->
+}
