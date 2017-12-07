@@ -1,5 +1,7 @@
 package controllers.auth;
 
+import controllers.Config;
+import controllers.gui.manage.routes;
 import play.mvc.Http;
 import play.mvc.Result;
 import play.mvc.Security;
@@ -16,7 +18,8 @@ public class AdminSecured extends Security.Authenticator {
     @Override
     public String getUsername(Http.Context ctx) {
         String group = ctx.session().get(Config.USER_GROUP);
-
+System.out.println("--------------------------10");
+        System.out.println(group);
         if (Config.SUPER.equals(group) || Config.ADMIN.equals(group)) {
             return ctx.session().get(Config.USERNAME);
         }
@@ -26,8 +29,9 @@ public class AdminSecured extends Security.Authenticator {
 
     @Override
     public Result onUnauthorized(Http.Context ctx) {
-        //TODO
-        return redirect("http://localhost:9000/login");
+        return redirect(
+                controllers.gui.manage.routes.LoginController.login()
+        );
     }
 
 }

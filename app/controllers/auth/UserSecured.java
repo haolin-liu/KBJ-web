@@ -1,5 +1,6 @@
 package controllers.auth;
 
+import controllers.Config;
 import play.mvc.Http;
 import play.mvc.Result;
 import play.mvc.Security;
