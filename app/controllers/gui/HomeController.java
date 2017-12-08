@@ -142,11 +142,6 @@ public class HomeController extends Controller {
 
     }
 
-    public Result login() {
-        Form<LoginForm> userForm = formFactory.form(LoginForm.class).fill(new LoginForm());
-        return ok(views.html.login.render(userForm));
-    }
-
     public CompletionStage<Result> editPage(long id) {
         Form<KeySearch> KeySearchAdd = formFactory.form(KeySearch.class);
         return keySearchRepository.getRow(id).thenApplyAsync(row -> {

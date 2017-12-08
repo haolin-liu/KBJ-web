@@ -1,17 +1,23 @@
 package controllers.gui;
 
+import play.data.Form;
+import play.mvc.Result;
+import javax.inject.Inject;
+import play.mvc.Controller;
 import models.entities.User;
 import models.form.LoginForm;
-import play.data.Form;
 import play.data.FormFactory;
+import services.UserServices;
+import models.form.RegisterForm;
 import play.data.validation.Constraints;
 import play.data.validation.ValidationError;
 import play.libs.concurrent.HttpExecutionContext;
-import play.mvc.Controller;
-import play.mvc.Result;
-import services.UserServices;
-import javax.inject.Inject;
 
+/**
+ *  前台用户管理的登录及查询
+ *  @author lv
+ *  @date 2017/12/6
+ */
 public class UserController extends Controller {
 
     private final FormFactory formFactory;
@@ -23,6 +29,15 @@ public class UserController extends Controller {
         this.formFactory = formFactory;
         this.httpExecutionContext = httpExecutionContext;
         this.userServices = userServices;
+    }
+
+    /**
+     * 跳转登录页面
+     * @return
+     */
+    public Result loginTop() {
+        Form<LoginForm> userForm = formFactory.form(LoginForm.class).fill(new LoginForm());
+        return ok(views.html.login.render(userForm));
     }
 
     /**
@@ -68,6 +83,27 @@ public class UserController extends Controller {
             } else {
                 return  badRequest(views.html.login.render(loginForm.withError((ValidationError)constraint.validate())));
             }
+        }
+    }
+
+    /**
+     * 跳转注册画面
+     * @return
+     */
+    public Result registerTop() {
+        Form<RegisterForm> userForm = formFactory.form(RegisterForm.class);
+        return ok(views.html.register.render(userForm));
+    }
+
+    /**
+     * 注册
+     */
+    public Result register() {
+        Form<RegisterForm> registerForm = formFactory.form(RegisterForm.class).bindFromRequest();
+        if (registerForm.hasErrors()) {
+            return badRequest(views.html.register.render(registerForm));
+        } else {
+            return ok(views.html.register.render(registerForm));
         }
     }
 

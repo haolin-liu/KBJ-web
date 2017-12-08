@@ -6,6 +6,10 @@ import play.data.validation.Constraints;
 import play.data.validation.ValidationError;
 import play.data.validation.Constraints.Validatable;
 
+/**
+ *  @author 吕
+ *  @date  2017/12/6
+ */
 @Constraints.Validate
 public class LoginForm implements Validatable<List<ValidationError>> {
 
