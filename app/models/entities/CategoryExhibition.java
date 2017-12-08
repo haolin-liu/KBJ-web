@@ -3,7 +3,6 @@ package models.entities;
 import play.data.validation.Constraints;
 
 import javax.persistence.*;
-import java.util.List;
 
 /**
  *  @author jie-z

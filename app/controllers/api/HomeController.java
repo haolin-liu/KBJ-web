@@ -116,13 +116,19 @@ public class HomeController extends Controller {
             e.printStackTrace();
         }
 
-        List<CategoryExhibition> cateExhibits = cateExhibitRepo.findFirstLevel();
+        List<CategoryExhibition> cateExhibits = cateExhibitRepo.findRootCates();
         Logger.debug("----------size of first class cate to be exhibited: " + cateExhibits.size());
         for (CategoryExhibition cate : cateExhibits) {
             Logger.debug("id: " + cate.kbjCategory.id + ", priority: " + cate.priority + ", parent.id: " + cate.kbjCategory.parent.id);
         }
 
-        List<CategoryExhibition> secondCateExhibits = cateExhibitRepo.findSecondLevel();
+        List<CategoryExhibition> secondCateExhibits = cateExhibitRepo.findLeafCates();
+        Logger.debug("----------size of second class cate to be exhibited: " + secondCateExhibits.size());
+        for (CategoryExhibition cate : secondCateExhibits) {
+            Logger.debug("id: " + cate.kbjCategory.id + ", priority: " + cate.priority + ", parent.id: " + cate.kbjCategory.parent.id);
+        }
+
+        secondCateExhibits = cateExhibitRepo.findLeafCates(2L);
         Logger.debug("----------size of second class cate to be exhibited: " + secondCateExhibits.size());
         for (CategoryExhibition cate : secondCateExhibits) {
             Logger.debug("id: " + cate.kbjCategory.id + ", priority: " + cate.priority + ", parent.id: " + cate.kbjCategory.parent.id);

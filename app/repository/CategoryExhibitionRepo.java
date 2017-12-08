@@ -17,7 +17,7 @@ public class CategoryExhibitionRepo {
         this.ebeanServer = Ebean.getServer(ebeanConfig.defaultServer());
     }
 
-    public List<CategoryExhibition> findFirstLevel() {
+    public List<CategoryExhibition> findRootCates() {
         return ebeanServer.find(CategoryExhibition.class)
                 .select("id, priority")
                 .fetch("kbjCategory")
@@ -36,7 +36,11 @@ public class CategoryExhibitionRepo {
                 .findList();
     }
 
-    public List<CategoryExhibition> findSecondLevel() {
+    public List<CategoryExhibition> findLeafCates() {
+        return findLeafCates(null);
+    }
+
+    public List<CategoryExhibition> findLeafCates(Long parentCateId) {
         return ebeanServer.find(CategoryExhibition.class)
                 .select("id, priority")
                 .fetch("kbjCategory")
@@ -45,12 +49,10 @@ public class CategoryExhibitionRepo {
                 .where()
                 .eq("valid", 1)
                 .ne("kbjCategory.parent.id", 1)
+                .like("kbjCategory.parent.id", parentCateId == null ? "%" : parentCateId.toString())
                 .eq("kbjCategory.valid", 1)
                 .eq("kbjCategory.isCrawlTarget", 1)
                 .orderBy("kbjCategory.parent.id asc, priority asc")
-                //.orderBy("kbjCategory.parent.parent.id asc, priority asc")
-                // asc can't use field not belong to main table.
-                //.asc("kbjCategory.parent.parent.id, priority")
                 .findList();
     }
 

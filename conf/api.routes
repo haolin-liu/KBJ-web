@@ -3,4 +3,5 @@
 
 GET     /                                                   controllers.api.HomeController.index
 GET     /search/:kw/:start/:rows/:sort/:fq                  controllers.api.HomeController.generalSearch(kw, start, rows, sort, fq)
+GET     /bargain/categories                                 controllers.api.CateController.findBargainCates
 
