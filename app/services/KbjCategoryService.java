@@ -55,8 +55,8 @@ public class KbjCategoryService {
                 System.out.println("services.valid.if" + kbjCates.valid);
                 boolean isSelectValid = isSelected(kbjCates.valid);
                  /*判断是否选择 爬取对象，输入执行if，未输入执行else */
-                if(kbjCates.isCrawleTarget.equals("0") || kbjCates.isCrawleTarget.equals("1")) {
-                    boolean isSelectCrawleTarget = isSelected(kbjCates.isCrawleTarget);
+                if(kbjCates.isCrawlTarget.equals("0") || kbjCates.isCrawlTarget.equals("1")) {
+                    boolean isSelectCrawleTarget = isSelected(kbjCates.isCrawlTarget);
                     return supplyAsync(() -> {
                         /*所有检索条件都填写*/
                         return kbjCategoryReposity.find(isSelectValid, page, sortBy, order, kbjCates.name, parentId, isSelectCrawleTarget);
@@ -68,8 +68,8 @@ public class KbjCategoryService {
                     }, executionContext);
                 }
             } else {
-                if(kbjCates.isCrawleTarget.equals("0") || kbjCates.isCrawleTarget.equals("1")) {
-                    boolean isSelectCrawleTarget = isSelected(kbjCates.isCrawleTarget);
+                if(kbjCates.isCrawlTarget.equals("0") || kbjCates.isCrawlTarget.equals("1")) {
+                    boolean isSelectCrawleTarget = isSelected(kbjCates.isCrawlTarget);
                     return supplyAsync(() -> {
                         /*有效性 条件未填写检索*/
                         return kbjCategoryReposity.find(page, sortBy, order, kbjCates.name, parentId, isSelectCrawleTarget);
@@ -86,8 +86,8 @@ public class KbjCategoryService {
             if(kbjCates.valid.equals("0") || kbjCates.valid.equals("1")) {
                 boolean isSelectValid = isSelected(kbjCates.valid);
                 /*判断是否选择 爬取对象，输入执行if，未输入执行else */
-                if(kbjCates.isCrawleTarget.equals("0") || kbjCates.isCrawleTarget.equals("1")) {
-                    boolean isSelectCrawleTarget = isSelected(kbjCates.isCrawleTarget);
+                if(kbjCates.isCrawlTarget.equals("0") || kbjCates.isCrawlTarget.equals("1")) {
+                    boolean isSelectCrawleTarget = isSelected(kbjCates.isCrawlTarget);
                     return supplyAsync(() -> {
                         /*父分类Id 条件未填写检索*/
                         return kbjCategoryReposity.find(isSelectValid, page, sortBy, order, kbjCates.name, isSelectCrawleTarget);
@@ -99,8 +99,8 @@ public class KbjCategoryService {
                     }, executionContext);
                 }
             } else {
-                if(kbjCates.isCrawleTarget.equals("0") || kbjCates.isCrawleTarget.equals("1")) {
-                    boolean isSelectCrawleTarget = isSelected(kbjCates.isCrawleTarget);
+                if(kbjCates.isCrawlTarget.equals("0") || kbjCates.isCrawlTarget.equals("1")) {
+                    boolean isSelectCrawleTarget = isSelected(kbjCates.isCrawlTarget);
                     return supplyAsync(() -> {
                         /*父分类Id、有效性 条件未填写检索*/
                         return kbjCategoryReposity.find(page, sortBy, order, kbjCates.name, isSelectCrawleTarget);
@@ -140,7 +140,7 @@ public class KbjCategoryService {
     public CompletionStage<Optional<Long>> addKbjCate(KbjCategoryForm  kbjCateform) {
         KbjCategory category = new KbjCategory();
         category.name = kbjCateform.name;
-        category.isCrawleTarget = kbjCateform.bIsCrawleTarget;
+        category.isCrawlTarget = kbjCateform.bIsCrawlTarget;
         category.valid = kbjCateform.bValid;
         return supplyAsync(() -> {
             KbjCategory parentCate = kbjCategoryReposity.find(kbjCateform.parentId);
@@ -170,7 +170,7 @@ public class KbjCategoryService {
         KbjCategory category = new KbjCategory();
         category.id = kbjCateform.id;
         category.name = kbjCateform.name;
-        category.isCrawleTarget = kbjCateform.bIsCrawleTarget;
+        category.isCrawlTarget = kbjCateform.bIsCrawlTarget;
         category.valid = kbjCateform.bValid;
         return supplyAsync(() -> {
             KbjCategory parentCate = kbjCategoryReposity.find(kbjCateform.parentId);

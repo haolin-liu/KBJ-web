@@ -102,7 +102,7 @@ public class kbjCategoryController extends Controller {
             kbjCate.id = category.id;
             kbjCate.name = category.name;
             kbjCate.parentId = category.parent.id;
-            kbjCate.bIsCrawleTarget = category.isCrawleTarget;
+            kbjCate.bIsCrawlTarget = category.isCrawlTarget;
             kbjCate.bValid = category.valid;
             kbjCate.parentName = category.parent.name;
             Form<KbjCategoryForm> kbjCateForm = formFactory.form(KbjCategoryForm.class).fill(kbjCate);

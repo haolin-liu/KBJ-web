@@ -34,14 +34,14 @@ public class CategoryMapRepo {
     public List<KbjCategory> findRootCates() {
         return ebeanServer.find(KbjCategory.class).where()
             .eq("parentId", 0)
-            .eq("isCrawleTarget", 1)
+            .eq("isCrawlTarget", 1)
             .eq("valid", 1).findList();
     }
 
     public List<KbjCategory> findLeafCates(String cateFatherId) {
         return ebeanServer.find(KbjCategory.class).where()
             .eq("parentId", cateFatherId)
-            .eq("isCrawleTarget", 1)
+            .eq("isCrawlTarget", 1)
             .eq("valid", 1).findList();
     }
 

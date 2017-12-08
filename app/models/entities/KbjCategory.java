@@ -25,7 +25,7 @@ public class KbjCategory extends BaseModel {
 
     @Constraints.Required
     @Column(columnDefinition = "boolean default true")
-    public Boolean isCrawleTarget;
+    public Boolean isCrawlTarget;
 
     @Constraints.Required
     @Column(columnDefinition = "boolean default true")

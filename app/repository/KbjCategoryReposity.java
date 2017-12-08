@@ -33,18 +33,18 @@ public class KbjCategoryReposity {
      * @param order             Sort order (either or asc or desc)
      * @param name
      * @param parentId
-     * @param isCrawleTarget
+     * @param isCrawlTarget
      * @return
      *  @author daiqingyi
      *  @date 2017/12/1
      */
 
     /*所有检索条件都填写*/
-    public PagedList<KbjCategory> find(boolean valid,int page, String sortBy, String order, String name, long parentId, boolean isCrawleTarget) {
+    public PagedList<KbjCategory> find(boolean valid,int page, String sortBy, String order, String name, long parentId, boolean isCrawlTarget) {
         return ebeanServer.find(KbjCategory.class).where()
                 .ilike("name", "%" + name + "%")
                 .eq("parent_id", parentId)
-                .eq("isCrawleTarget", isCrawleTarget)
+                .eq("isCrawlTarget", isCrawlTarget)
                 .eq("valid", valid)
                 .orderBy(sortBy + " " + order)
                 .setFirstRow(page * 10)
@@ -65,11 +65,11 @@ public class KbjCategoryReposity {
     }
 
     /*有效性 条件未填写检索*/
-    public PagedList<KbjCategory> find(int page, String sortBy, String order, String name, long parentId, boolean isCrawleTarget) {
+    public PagedList<KbjCategory> find(int page, String sortBy, String order, String name, long parentId, boolean isCrawlTarget) {
         return ebeanServer.find(KbjCategory.class).where()
                 .ilike("name", "%" + name + "%")
                 .eq("parent_id", parentId)
-                .eq("isCrawleTarget", isCrawleTarget)
+                .eq("isCrawlTarget", isCrawlTarget)
                 .orderBy(sortBy + " " + order)
                 .setFirstRow(page * 10)
                 .setMaxRows(10)
@@ -88,10 +88,10 @@ public class KbjCategoryReposity {
     }
 
     /*父分类Id 条件未填写检索*/
-    public PagedList<KbjCategory> find(boolean valid, int page, String sortBy, String order, String name,  boolean isCrawleTarget) {
+    public PagedList<KbjCategory> find(boolean valid, int page, String sortBy, String order, String name,  boolean isCrawlTarget) {
         return ebeanServer.find(KbjCategory.class).where()
                 .ilike("name", "%" + name + "%")
-                .eq("isCrawleTarget", isCrawleTarget)
+                .eq("isCrawlTarget", isCrawlTarget)
                 .eq("valid", valid)
                 .orderBy(sortBy + " " + order)
                 .setFirstRow(page * 10)
@@ -111,10 +111,10 @@ public class KbjCategoryReposity {
     }
 
     /*父分类Id、有效性 条件未填写检索*/
-    public PagedList<KbjCategory> find(int page, String sortBy, String order, String name,  boolean isCrawleTarget) {
+    public PagedList<KbjCategory> find(int page, String sortBy, String order, String name,  boolean isCrawlTarget) {
         return ebeanServer.find(KbjCategory.class).where()
                 .ilike("name", "%" + name + "%")
-                .eq("isCrawleTarget", isCrawleTarget)
+                .eq("isCrawlTarget", isCrawlTarget)
                 .orderBy(sortBy + " " + order)
                 .setFirstRow(page * 10)
                 .setMaxRows(10)
@@ -153,7 +153,7 @@ public class KbjCategoryReposity {
                 .eq("id", category.id)
                 .findUnique();
         cate.parent.id = category.parent.id;
-        cate.isCrawleTarget = category.isCrawleTarget;
+        cate.isCrawlTarget = category.isCrawlTarget;
         cate.valid = category.valid;
         cate.update();
         return Optional.empty();

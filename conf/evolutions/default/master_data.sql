@@ -4,7 +4,7 @@ drop index ix_kbj_category_parent_id on kbj_category;
 
 # insert the root category row.
 # begin
-INSERT INTO `kebja`.`kbj_category` (`id`, `create_date`, `create_user`, `update_date`, `update_user`, `name`, `is_crawle_target`, `valid`, `parent_id`) VALUES ('1', '2017-12-07 15:35:49', 'system', '2017-12-07 15:35:49', 'system', 'ROOT', '1', '1', '1');
+INSERT INTO `kebja`.`kbj_category` (`id`, `create_date`, `create_user`, `update_date`, `update_user`, `name`, `is_crawl_target`, `valid`, `parent_id`) VALUES ('1', '2017-12-07 15:35:49', 'system', '2017-12-07 15:35:49', 'system', 'ROOT', '1', '1', '1');
 # end
 # add the foreign key again.
 alter table kbj_category add constraint fk_kbj_category_parent_id foreign key (parent_id) references kbj_category (id) on delete restrict on update restrict;
@@ -12,7 +12,7 @@ create index ix_kbj_category_parent_id on kbj_category (parent_id);
 
 # master data of kbj_category
 # first class category.
-INSERT INTO `kebja`.`kbj_category` (`id`, `create_date`, `create_user`, `update_date`, `update_user`, `name`, `is_crawle_target`, `valid`, `parent_id`)
+INSERT INTO `kebja`.`kbj_category` (`id`, `create_date`, `create_user`, `update_date`, `update_user`, `name`, `is_crawl_target`, `valid`, `parent_id`)
 VALUES
   ('2', '2017-12-07 15:35:49', 'system', '2017-12-07 15:35:49', 'system', '家用电器', '1', '1', '1')
 , ('3', '2017-12-07 15:35:49', 'system', '2017-12-07 15:35:49', 'system', '电脑&配件', '1', '1', '1')
@@ -24,7 +24,7 @@ VALUES
 ;
 
 # second class category.
-INSERT INTO `kebja`.`kbj_category` (`id`, `create_date`, `create_user`, `update_date`, `update_user`, `name`, `is_crawle_target`, `valid`, `parent_id`)
+INSERT INTO `kebja`.`kbj_category` (`id`, `create_date`, `create_user`, `update_date`, `update_user`, `name`, `is_crawl_target`, `valid`, `parent_id`)
 VALUES
 # 家用电器
   ('2001', '2017-12-07 15:35:49', 'system', '2017-12-07 15:35:49', 'system', '电视机', '1', '1', '2')

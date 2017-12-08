@@ -11,11 +11,11 @@ import scala.collection.generic.BitOperations;
 public class KbjCategoryForm {
     public String name;
     public Long parentId;
-    public String isCrawleTarget;
+    public String isCrawlTarget;
     public String valid;
     public int page;
     public boolean isSearch;
-    public boolean bIsCrawleTarget;
+    public boolean bIsCrawlTarget;
     public boolean bValid;
     public long id;
     public String parentName;

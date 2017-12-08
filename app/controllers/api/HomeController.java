@@ -80,6 +80,18 @@ public class HomeController extends Controller {
         return ok(Json.toJson(result));
     }
 
+    /**
+     * test method
+     * @auther jie-z
+     * @date 2017/11/20
+     *
+     * @param keyword
+     * @param start
+     * @param rows
+     * @param sorter
+     * @param filter
+     * @return
+     */
     public Result generalSearch(String keyword, String start, String rows, String sorter, String filter) {
 
         ProductsWithNum result = searcher.query(keyword, Integer.valueOf(start),
@@ -105,11 +117,15 @@ public class HomeController extends Controller {
         }
 
         List<CategoryExhibition> cateExhibits = cateExhibitRepo.findFirstLevel();
-        Logger.debug("size of cate to be exhibited: " + cateExhibits.size());
+        Logger.debug("----------size of first class cate to be exhibited: " + cateExhibits.size());
         for (CategoryExhibition cate : cateExhibits) {
-            Logger.debug("id: " + cate.id);
-            Logger.debug("priority: " + cate.priority);
-            Logger.debug("parent.id: " + cate.kbjCategory.parent.id);
+            Logger.debug("id: " + cate.kbjCategory.id + ", priority: " + cate.priority + ", parent.id: " + cate.kbjCategory.parent.id);
+        }
+
+        List<CategoryExhibition> secondCateExhibits = cateExhibitRepo.findSecondLevel();
+        Logger.debug("----------size of second class cate to be exhibited: " + secondCateExhibits.size());
+        for (CategoryExhibition cate : secondCateExhibits) {
+            Logger.debug("id: " + cate.kbjCategory.id + ", priority: " + cate.priority + ", parent.id: " + cate.kbjCategory.parent.id);
         }
 
         return ok(Json.toJson(result));

@@ -47,7 +47,7 @@
                                 '_default -> "-- 选择一个父分类 --",
                                 '_showConstraints -> false
                             )
-                            @b3.select(kbjCateForm("isCrawleTarget"), options = isTrue, '_label -> "爬取对象" )
+                            @b3.select(kbjCateForm("isCrawlTarget"), options = isTrue, '_label -> "爬取对象" )
                             @b3.select(kbjCateForm("valid"), options = isTrue, '_label -> "有效" )
                             @b3.hidden(kbjCateForm("id"), 'placeholder -> "ID", '_help -> "")
                             @b3.hidden(kbjCateForm("page"), 'id -> "page")
@@ -67,7 +67,7 @@
                       @header("id", "ID")
                       @header("name", "分类名")
                       @header("parentName", "父分类名")
-                      @header("isCrawleTarget", "爬取对象")
+                      @header("isCrawlTarget", "爬取对象")
                       @header("valid", "有效")
                       @header("edit", "")
                     </tr>
@@ -87,7 +87,7 @@
                               <td> @kbjCategory.id</td>
                               <td> @kbjCategory.name </td>
                               <td> @kbjCategory.parent.name</td>
-                              <td><input type="checkbox" aria-label="..." value="@kbjCategory.isCrawleTarget" @if(kbjCategory.isCrawleTarget) { checked }></td>
+                              <td><input type="checkbox" aria-label="..." value="@kbjCategory.isCrawlTarget" @if(kbjCategory.isCrawlTarget) { checked }></td>
                               <td><input type="checkbox" aria-label="..." value="@kbjCategory.valid" @if(kbjCategory.valid) { checked }></td>
                               <td><button type="button" class="btn btn-primary" onClick="location.href='@gui.manage.routes.kbjCategoryController.update(kbjCategory.id)'">编辑</button></td>
                             </tr>
