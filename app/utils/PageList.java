@@ -21,6 +21,8 @@ public class PageList<T> {
     private int navigationFrom;
     private int navigationTo;
     private int navigationMiddle;
+    private int prevPageIndex;
+    private int nextPageIndex;
 
     /**
      * Wrap the data list in current page into a Class with pagination info.
@@ -115,6 +117,21 @@ public class PageList<T> {
         return this.pageIndex < this.pageCount;
     }
 
+    /**
+     * Return the previous page index of this page if it is not the first page.
+     * @return
+     */
+    public int getPrevPageIndex() {
+        return this.pageIndex > 1 ? (this.pageIndex - 1) : 1;
+    }
+
+    /**
+     * Return the next page index of this page if it is not the last page.
+     * @return
+     */
+    public int getNextPageIndex() {
+        return this.pageIndex < this.pageCount ? (this.pageIndex + 1) : this.pageCount;
+    }
 
     private void setRecordCount(long recordCount) throws Exception {
         if (recordCount >= 0) {

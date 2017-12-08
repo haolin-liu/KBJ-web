@@ -1,12 +1,14 @@
 package controllers.gui;
 
 import com.typesafe.config.Config;
+import models.Product;
 import models.ProductsWithNum;
 import models.entities.KeyWordForm;
 import play.data.Form;
 import play.data.FormFactory;
 import play.mvc.*;
 import services.SearchService;
+import utils.PageList;
 import views.html.productDetail;
 import views.html.productSearch;
 
@@ -47,6 +49,8 @@ public class ProductController extends Controller{
     }
 
     public Result searchGoods() {
+        PageList<Product> products = null;
+        List<Integer> pageIndexList = new ArrayList<Integer>();
         Form<KeyWordForm> key = formFactory.form(KeyWordForm.class).bindFromRequest();
         String keyWord = key.get().keyWord;
 
@@ -54,14 +58,24 @@ public class ProductController extends Controller{
             keyWord = "";
         }
 
-        ProductsWithNum products = searchService.query(keyWord, 0, config.getInt("rows"), "", "");
-        Double totalPage = Math.ceil(products.getNumFound() / 12.0);
-        Long countPage = new Double(totalPage).longValue();
         List<String> hotProducts = new ArrayList<>(Arrays.asList("iphone X", "iphone 8", "小米", "华为p10", "iphone 7", "新ipad pro", "小米6"));
-        return ok(productSearch.render(products, hotProducts, keyWord, "1", countPage));
+        ProductsWithNum results = searchService.query(keyWord, 0, config.getInt("rows"), "", "");
+
+        try {
+            products = new PageList<Product>(results.getNumFound(), 1, config.getInt("rows"), results.getProducts());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        for (int i = products.getNavigationFrom(); i <= products.getNavigationTo(); i++) {
+            pageIndexList.add(i);
+        }
+        return ok(productSearch.render(products, hotProducts, pageIndexList, keyWord));
     }
 
-    public Result generalGoods(String keyword, String start, String rows, String sorter, String filter) {
+    public Result generalGoods(String keyword, Integer start, Integer rows, String sorter, String filter) {
+        PageList<Product> products = null;
+        List<Integer> pageIndexList = new ArrayList<Integer>();
 
         if (keyword.equals("*")) {
             keyword = "";
@@ -73,14 +87,19 @@ public class ProductController extends Controller{
             filter = "";
         }
 
-        String star =  String.valueOf(Long.valueOf(start) / Long.valueOf(rows) + 1);
-
-        ProductsWithNum products = searchService.query(keyword, Integer.valueOf(start),
-                Integer.valueOf(rows), sorter, filter);
-
-        Double totalPage = Math.ceil(products.getNumFound()/Double.valueOf(rows));
-        Long countPage = new Double(totalPage).longValue();
+        Integer star = (start -1) * rows;
+        ProductsWithNum results = searchService.query(keyword, star, rows, sorter, filter);
         List<String> hotProducts = new ArrayList<>(Arrays.asList("iphone X", "iphone 8", "小米", "华为p10", "iphone 7", "新ipad pro", "小米6"));
-        return ok(productSearch.render(products, hotProducts, keyword, star, countPage));
+
+        try{
+            products = new PageList<Product>(results.getNumFound(), Integer.valueOf(start), rows, results.getProducts());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        for (int i = products.getNavigationFrom(); i <= products.getNavigationTo(); i++) {
+            pageIndexList.add(i);
+        }
+        return ok(productSearch.render(products, hotProducts, pageIndexList, keyword));
     }
 }

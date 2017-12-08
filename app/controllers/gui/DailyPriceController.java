@@ -32,32 +32,39 @@ public class DailyPriceController extends Controller {
     }
 
     public CompletionStage<Result> priceTrend(String mall, String skuid) {
-
-        Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.MONTH, -3);
-        Date  formNow3Month = calendar.getTime();
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        String startDate = simpleDateFormat.format(formNow3Month);
-
-        Date date = new Date();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        String endDate = sdf.format(date);
+        String startDate = getStartDate();
+        String endDate = getNow();
 
         return priceService.goodsPriceByDate("jd", skuid, startDate, endDate).thenApplyAsync(goods -> {
             ObjectNode json = Json.newObject();
             ArrayNode arrPrice = json.arrayNode();
             ArrayNode arrDate = json.arrayNode();
-
             List<DailyPrice> goodsPrice = new ArrayList<>();
+
+            if (goods.size() < 6) {
+                Calendar calendar = Calendar.getInstance();
+                calendar.add(Calendar.MONTH, -3);
+                Date start = calendar.getTime();//first
+
+                long xInterval = 15 * 24 * 60 * 60 * 1000;
+                long sta = start.getTime() - xInterval;
+
+                for (int i = 0; i < 6 - goods.size();i++) {
+                    Date point = new Date(sta);
+                    arrDate.add(transDate(point));
+                    arrPrice.add("");
+                    sta -= xInterval;
+                }
+            }
 
             for (int i = 0; i < goods.size(); i++) {
                 if (goodsPrice.size() == 0) {
                     goodsPrice.add(goods.get(0));
-                } else if (i+1 < goods.size()) {
-                    if (!(goods.get(i).price.equals(goods.get(i-1).price) && goods.get(i).price.equals(goods.get(i+1).price))) {
+                } else if (i + 1 < goods.size()) {
+                    if (!(goods.get(i).price.equals(goods.get(i - 1).price) && goods.get(i).price.equals(goods.get(i + 1).price))) {
                         goodsPrice.add(goods.get(i));
                     }
-                } else if (i == goods.size() - 1 ){
+                } else if (i == goods.size() - 1) {
                     goodsPrice.add(goods.get(i));
                 }
             }
@@ -66,8 +73,7 @@ public class DailyPriceController extends Controller {
                 json.put("results", "null");
             } else {
                 for (DailyPrice row: goodsPrice) {
-                    SimpleDateFormat simpleDate = new SimpleDateFormat("MM-dd");
-                    String priceDate = simpleDate.format(row.date);
+                    String priceDate = transDate(row.date);
                     arrDate.add(priceDate);
                     arrPrice.add(row.price);
                 }
@@ -78,5 +84,31 @@ public class DailyPriceController extends Controller {
             }
             return ok(Json.toJson(json));
         }, httpExecutionContext.current());
+    }
+
+    public String getStartDate() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.MONTH, -3);
+        Date formNow3Month = calendar.getTime();
+        String startDate = dateFormat(formNow3Month);
+        return startDate;
+    }
+
+    public String getNow() {
+        Date date = new Date();
+        String now = dateFormat(date);
+        return now;
+    }
+
+    public String dateFormat(Date date) {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String dateForm = simpleDateFormat.format(date);
+        return dateForm;
+    }
+
+    public String transDate (Date date) {
+        SimpleDateFormat simpleDate = new SimpleDateFormat("MM/dd");
+        String str = simpleDate.format(date);
+        return str;
     }
 }

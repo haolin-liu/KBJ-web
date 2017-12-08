@@ -13,7 +13,7 @@ GET    /manage/catgory/getOneEdit/:id                           controllers.gui.
 POST   /manage/catgory/updateOne/:id                            controllers.gui.manage.MallCategoryController.updateOne(id: Long)
 
 GET    /product/search                                          controllers.gui.ProductController.searchGoods()
-GET    /search/:kw/:start/:rows/:sort/:fq                       controllers.gui.ProductController.generalGoods(kw: String, start: String, rows: String, sort: String, fq: String)
+GET    /search/:kw/:start/:rows/:sort/:fq                       controllers.gui.ProductController.generalGoods(kw: String, start: Integer, rows: Integer, sort: String, fq: String)
 GET    /product/detail                                          controllers.gui.ProductController.productDetail
 
 GET    /home/editPage/:id                                       controllers.gui.HomeController.editPage(id: Long)
