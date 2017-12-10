@@ -65,9 +65,9 @@ DOWNLOADER_MIDDLEWARES = {
 
 # Configure item pipelines
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
-# ITEM_PIPELINES = {
-#    'crawler.pipelines.CategoryPipeline': 300,
-# }
+ITEM_PIPELINES = {
+   'scrapy_redis.pipelines.RedisPipeline': 100
+}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See http://doc.scrapy.org/en/latest/topics/autothrottle.html
@@ -90,6 +90,17 @@ DOWNLOADER_MIDDLEWARES = {
 #HTTPCACHE_IGNORE_HTTP_CODES = []
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
 
+# Enables scheduling storing requests queue in redis.
+SCHEDULER = "scrapy_redis.scheduler.Scheduler"
+
+# Ensure all spiders share same duplicates filter through redis.
+DUPEFILTER_CLASS = "scrapy_redis.dupefilter.RFPDupeFilter"
+
+# master
+REDIS_HOST = '192.168.0.13'
+REDIS_PORT = '7011'
+
+
 # ----------file-------------
 DATA_DIR = './data/'
 DATA_JD_DIR = DATA_DIR + 'jd/'
@@ -103,7 +114,7 @@ PROXY_FILE_NAME = CONF_DIR + 'proxies.txt'
 # ----------file-------------
 
 # ----------mysql------------
-MYSQL_HOST = '127.0.0.1'
+MYSQL_HOST = '192.168.0.13'
 MYSQL_DBNAME = 'kebja'
 MYSQL_USER = 'kebja'
 MYSQL_PASSWD = 'kebja'
