@@ -3,12 +3,16 @@ package services;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.typesafe.config.Config;
 import models.entities.CategoryExhibition;
+import models.entities.KbjCategory;
+import play.Logger;
 import play.libs.Json;
 import repository.CategoryExhibitionRepo;
+import utils.ConfigUtil;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 /**
@@ -17,52 +21,74 @@ import java.util.List;
  */
 public class CategoryService {
 
-    private static Config config;
+    private static ConfigUtil config;
     private static CategoryExhibitionRepo cateExhibitRepo;
-    private static int bargain_cate_count_main;
-    private static int bargain_cate_count_minor;
 
     @Inject
-    public CategoryService(Config config, CategoryExhibitionRepo cateExhibitRepo) {
+    public CategoryService(ConfigUtil config, CategoryExhibitionRepo cateExhibitRepo) {
         this.config = config;
         this.cateExhibitRepo = cateExhibitRepo;
+    }
 
-        this.bargain_cate_count_main = config.getInt("webapp.mainpage.bargain.cates.count.main");
-        this.bargain_cate_count_minor = config.getInt("webapp.mainpage.bargain.cates.count.minor");
+    /**
+     * Get all categories which will be shown as bargains in main page in json format.
+    */
+    public JsonNode findBargainCates() {
+
+        LinkedHashMap<KbjCategory, List<KbjCategory>> parents = findBargainCateList();
+
+        ArrayNode cates = Json.newArray();
+        parents.forEach( (k, v) -> {
+            ObjectNode jsonParent = Json.newObject();
+            jsonParent.put("id", k.id);
+            jsonParent.put("name", k.name);
+
+            ArrayNode jsonChildren = Json.newArray();
+            v.forEach( leaf -> {
+                ObjectNode child = Json.newObject();
+                child.put("id", leaf.id);
+                child.put("name", leaf.name);
+                jsonChildren.add(child);
+                jsonParent.set("children", jsonChildren);
+            });
+
+            cates.add(jsonParent);
+        });
+
+        return Json.toJson(cates);
     }
 
     /**
      * Get all categories which will be shown as bargains in main page.
     */
-    public JsonNode findBargainCates() {
+    public LinkedHashMap<KbjCategory, List<KbjCategory>> findBargainCateList() {
         List<CategoryExhibition> roots = cateExhibitRepo.findRootCates();
         List<CategoryExhibition> leafs = cateExhibitRepo.findLeafCates();
-        ArrayNode cates = Json.newArray();
+        int mainCatesCount = config.getCountOfMainCatesForBargain();
+        int minorCatesCount = config.getCountOfMinorCatesForBargain();
+
+        Logger.debug("main categories for bargain: " + mainCatesCount);
+        Logger.debug("minor categories for bargain: " + minorCatesCount);
+
+        LinkedHashMap<KbjCategory, List<KbjCategory>> cates = new LinkedHashMap<>();
         roots.forEach( root -> {
-            if (cates.size() >= this.bargain_cate_count_main) {
+            if (cates.size() >= mainCatesCount) {
                 return;
             }
 
-            ObjectNode parent = Json.newObject();
-            parent.put("id", root.kbjCategory.id);
-            parent.put("name", root.kbjCategory.name);
-            ArrayNode children = Json.newArray();
+            KbjCategory parent = root.kbjCategory;
+            List<KbjCategory> children = new ArrayList<>();
             leafs.forEach( leaf -> {
-                if (children.size() >= this.bargain_cate_count_minor) {
+                if (children.size() >= minorCatesCount) {
                     return;
                 }
                 if (leaf.kbjCategory.parent.id.equals(root.kbjCategory.id)) {
-                    ObjectNode child = Json.newObject();
-                    child.put("id", leaf.kbjCategory.id);
-                    child.put("name", leaf.kbjCategory.name);
-                    children.add(child);
-                    parent.set("children", children);
+                    children.add(leaf.kbjCategory);
                 }
             });
-
-            cates.add(parent);
+            cates.put(parent, children);
         });
 
-        return Json.toJson(cates);
+        return cates;
     }
 }

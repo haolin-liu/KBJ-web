@@ -1,18 +1,12 @@
 package controllers.api;
 
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import models.entities.CategoryExhibition;
-import play.Logger;
 import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Result;
-import repository.CategoryExhibitionRepo;
 import services.CategoryService;
 import services.SearchService;
 
 import javax.inject.Inject;
-import java.util.List;
 
 /**
  * This controller contains actions to handle HTTP requests
