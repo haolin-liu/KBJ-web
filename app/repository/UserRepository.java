@@ -9,6 +9,7 @@ import javax.inject.Inject;
 import io.ebean.Transaction;
 import models.entities.User;
 import io.ebean.EbeanServer;
+import models.form.RegisterForm;
 import play.db.ebean.EbeanConfig;
 import models.form.UserSearchForm;
 import play.libs.concurrent.HttpExecutionContext;
@@ -37,9 +38,15 @@ public class UserRepository {
 
     public User findByEmail(String email, String password) {
         return ebeanServer.find(User.class).where()
-            .ilike("email", email)
-            .ilike("password", password)
-            .findUnique();
+                .ilike("email", email)
+                .ilike("password", password)
+                .findUnique();
+    }
+
+    public User findByEmail(String email) {
+        return ebeanServer.find(User.class).where()
+                .ilike("email", email)
+                .findUnique();
     }
 
     public User findByPhone(String phone, String password) {
@@ -54,6 +61,17 @@ public class UserRepository {
             .ilike("name", name)
             .ilike("password", password)
             .findUnique();
+    }
+
+    public User findByName(String name) {
+        return ebeanServer.find(User.class).where()
+                .ilike("name", name)
+                .findUnique();
+    }
+
+    public String insert(User user) {
+        ebeanServer.insert(user);
+        return user.name;
     }
 
     public Optional<Long> update(Map<String, String[]> data) {

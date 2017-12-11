@@ -41,7 +41,7 @@ public class User extends BaseModel {
 
     @Constraints.Required
     @Constraints.MaxLength(20)
-    @Column(columnDefinition =  "varchar(20) DEFAULT 'DIRECT'")
+    @Column(nullable = false, columnDefinition =  "varchar(20) DEFAULT 'DIRECT'")
     public String signinWay;
 
     @Column(length = 30)

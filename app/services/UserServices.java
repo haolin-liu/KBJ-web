@@ -1,10 +1,13 @@
 package services;
 
+import java.util.Date;
 import java.util.Map;
 import io.ebean.PagedList;
 import javax.inject.Inject;
 import models.entities.User;
+import models.form.RegisterForm;
 import play.data.FormFactory;
+import play.mvc.Result;
 import repository.UserRepository;
 import models.form.UserSearchForm;
 import repository.DatabaseExecutionContext;
@@ -59,6 +62,19 @@ public class UserServices {
     }
 
     /**
+     * 通过关键字查找用户
+     * @param name
+     * @return
+     */
+    public User getUsers(String name, int loginMode) {
+        if (loginMode == 1) {
+            return userRepository.findByName(name);
+        } else {
+            return userRepository.findByEmail(name);
+        }
+    }
+
+    /**
      * 更新用户数据
      * @param data
      * @return
@@ -79,4 +95,24 @@ public class UserServices {
             return userRepository.find(page, 2, userSearchForm);
         });
     }
+
+    /**
+     * 插入用户数据
+     * @param registerForm
+     * @return
+     */
+  public String save(RegisterForm registerForm) {
+      User user = new User();
+
+      user.name = registerForm.name;
+      user.email = registerForm.email;
+      user.password = registerForm.password;
+      user.signinWay = "DIRECT";
+      user.createDate = new Date();
+      user.createUser = "system";
+      user.updateDate = new Date();
+      user.updateUser = "system";
+
+      return userRepository.insert(user);
+  }
 }

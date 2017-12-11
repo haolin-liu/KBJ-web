@@ -14,8 +14,8 @@
                     @CSRF.formField
                     @b3.text(userForm("name"), '_help -> "", 'placeholder -> "用户名")
                     @b3.text(userForm("email"), '_help -> "", 'placeholder -> "邮箱")
-                    @b3.text(userForm("password"), '_help -> "", 'placeholder -> "设置密码")
-                    @b3.text(userForm("confirmPassword"), '_help -> "", 'placeholder -> "确认密码")
+                    @b3.password(userForm("password"), '_help -> "", 'placeholder -> "设置密码")
+                    @b3.password(userForm("confirmPassword"), '_help -> "", 'placeholder -> "确认密码")
                     <div class="auto-register">
                         点击注册，表示您同意可比价  <a>《服务协议及隐私声明》</a>
                     </div>
