@@ -21,8 +21,6 @@ public class PageList<T> {
     private int navigationFrom;
     private int navigationTo;
     private int navigationMiddle;
-    private int prevPageIndex;
-    private int nextPageIndex;
 
     /**
      * Wrap the data list in current page into a Class with pagination info.
