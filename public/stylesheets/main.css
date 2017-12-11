@@ -5,6 +5,11 @@
   padding: 0px;
 }
 
+.row {
+  margin-left: 0px;
+  margin-right: 0px;
+}
+
 .flexslider {
   width:98%;
   height:250px
@@ -127,7 +132,7 @@
 }
 
 .nav-pills>li.active>a, .nav-pills>li.active>a:focus, .nav-pills>li.active>a:hover {
-  background-color: #f2313d;
+  background-color: #ea5252;
 }
 
 .top-nav {
@@ -210,7 +215,7 @@
 #menu > li > div {
   visibility: hidden;
   position: absolute;
-  left: 255px;
+  left: 235px;
   top: 0px;
   width: 400px;
   background-color: #ffffff;
@@ -239,7 +244,7 @@
 /*}*/
 
 .home-row3 {
-  margin: 30px 0px 0px -15px;
+  margin-right: 35px;
   padding: 0px;
 }
 
@@ -403,6 +408,82 @@
 /*login-component end*/
 
 /*product-component st*/
+.left-fixed {
+  position: fixed;
+  top:100px;
+  left: auto;
+  right: auto;
+  bottom: auto;
+  width: 36px;
+  /*height: 60px;*/
+  color: #fff;
+  padding: 5px 0 0 1px;
+  font-size: 12px;
+  background-color: #FFFFFF;
+  margin-left: 14px;
+  padding-top: 0px;
+}
+
+.left-fixed li a {
+  padding: 10px 0px 0px 5px;
+  height: 50px;
+  width: 35px;
+  color: #555555;
+}
+
+.leaf-nav li {
+  float: right;
+  width: 110px;
+  text-align: center;
+}
+
+.leaf-nav li h3 {
+  height: 42px;
+  margin-top: 10px;
+  margin-bottom: 0px;
+}
+
+.leaf-nav li a {
+  color: #555555;
+}
+
+.nav > li > a:focus, .nav > li > a:hover {
+  background-color: transparent;
+}
+
+.nav-tabs > li > a:hover {
+  border-color: transparent;
+}
+
+.nav-tabs {
+  border-bottom: 1px solid #ea5252
+}
+
+.nav-tabs>li.active>a, .nav-tabs>li.active>a:focus, .nav-tabs>li.active>a:hover {
+  border: 1px solid #ea5252;
+  border-bottom-color: transparent;
+  background-color: #f7f7f7;
+}
+
+.nav-tabs>li.active>a, .nav-tabs>li.active>a:focus, .nav-tabs>li.active>a:hover {
+  color: #ea5252;
+  font-weight: bold;
+}
+
+.nav-pills>li>a {
+  border-radius: 0px;
+}
+
+.left-fixed li {
+  height: 50px;
+  /*padding-left: 5px;*/
+  border-bottom: 2px solid #f3f2f3;
+}
+
+.product-detail {
+  padding-left: 50px;
+}
+
 .product-row21 {
   margin: 0px;
 }
