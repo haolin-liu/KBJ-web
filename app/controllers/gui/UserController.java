@@ -12,6 +12,7 @@ import models.form.RegisterForm;
 import play.data.validation.Constraints;
 import play.data.validation.ValidationError;
 import play.libs.concurrent.HttpExecutionContext;
+import utils.MD5Utils;
 
 /**
  *  前台用户管理的登录及查询
@@ -62,7 +63,7 @@ public class UserController extends Controller {
             String name = login.name;
             String password = login.password;
 
-            String message;
+            boolean isUserExist;
 
             // email验证
             String em =  "^\\w+([-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*$";
@@ -71,14 +72,14 @@ public class UserController extends Controller {
 
             // 判断登录方式
             if (name.matches(em)) {
-                message = authentication(name, password, 1);
+                isUserExist = authentication(name, password, 1);
             } else if (name.matches(ph)) {
-                message = authentication(name, password, 2);
+                isUserExist = authentication(name, password, 2);
             } else {
-                message = authentication(name, password, 3);
+                isUserExist = authentication(name, password, 3);
             }
 
-            if (("").equals(message)) {
+            if (isUserExist) {
                 return redirect(controllers.gui.routes.HomeController.index());
             } else {
                 return  badRequest(views.html.login.render(loginForm.withError((ValidationError)constraint.validate())));
@@ -97,12 +98,56 @@ public class UserController extends Controller {
 
     /**
      * 注册
+     * @return
      */
     public Result register() {
         Form<RegisterForm> registerForm = formFactory.form(RegisterForm.class).bindFromRequest();
+
         if (registerForm.hasErrors()) {
             return badRequest(views.html.register.render(registerForm));
         } else {
+
+            Constraints.Validatable constraint = new Constraints.Validatable() {
+                @Override
+                public Object validate() {
+                    return new ValidationError("name", "此用户已经存在");
+                }
+            };
+
+            Constraints.Validatable constraintEmail = new Constraints.Validatable() {
+                @Override
+                public Object validate() {
+                    return new ValidationError("email", "此邮箱已经存在");
+                }
+            };
+
+            RegisterForm register = registerForm.get();
+            String name = register.name;
+            String email = register.email;
+            String password = register.password;
+
+            boolean isNameExist = regAuthentication(name, 1);
+            boolean isEmailExist = regAuthentication(email, 2);
+
+            // 判断用户名是否存在
+            if (!isNameExist) {
+                return badRequest(views.html.register.render(registerForm.withError((ValidationError)constraint.validate())));
+            }
+
+            // 判断邮箱是否存在
+            if (!isEmailExist) {
+                return badRequest(views.html.register.render(registerForm.withError((ValidationError)constraintEmail.validate())));
+            }
+
+//            String md5PWD = "";
+//            try {
+//                MD5Utils md5Utils = new MD5Utils();
+//                md5PWD = md5Utils.encode2hex(password);
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+
+            userServices.save(register);
             return ok(views.html.register.render(registerForm));
         }
     }
@@ -114,17 +159,33 @@ public class UserController extends Controller {
      * @param loginMode
      * @return
      */
-    public String authentication(String name, String password, int loginMode) {
+    public boolean authentication(String name, String password, int loginMode) {
         User user = userServices.getUsers(name, password, loginMode);
 
         if (user == null) {
-            return "用户或密码无效";
+            return false;
         }
 
         // 存入缓存
         session().put("name", name);
         session().put("password", password);
 
-        return "";
+        return true;
+    }
+
+    /**
+     * 注册验证
+     * @param keyWord
+     * @param regMode
+     * @return
+     */
+    public boolean regAuthentication(String keyWord, int regMode) {
+        User user = userServices.getUsers(keyWord, regMode);
+
+        if (user != null) {
+            return false;
+        }
+
+        return true;
     }
 }
