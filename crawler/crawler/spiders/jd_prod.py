@@ -64,8 +64,8 @@ class JDProductSpider(RedisCrawlSpider):
         item['skuid'] = skuid
         item['name'] = response.xpath('string(//div[@class="sku-name"])').extract_first().strip()
         item['url'] = "http:" + response.meta['item_url']
-        item['kbj_cate_id'] = self.redis.hget(redis_key, 'id')
-        item['kbj_cate_name'] = self.redis.hget(redis_key, 'name')
+        item['kbj_category_id'] = self.redis.hget(redis_key, 'id')
+        item['kbj_category_name'] = self.redis.hget(redis_key, 'name')
         item['mall_cate_url'] = category_url
         item['stock_status'] = response.xpath('//div[@class="store-prompt"]/strong').extract_first()
         # imgs

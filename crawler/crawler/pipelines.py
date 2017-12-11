@@ -42,24 +42,47 @@ class CategoryPipeline(object):
             item['mall_sub'] = urlparse.parse_qs(urlparse.urlsplit(item['link']).query).get('sub')
             item['link'] = 'http://' + item['link']
 
-            query = spider.db_pool.runInteraction(self.insert, item)
+            query = spider.db_pool.runInteraction(self.opt_mall, item)
             query.addErrback(self.handle_error, item, spider)
             return item
         else:
-            # 有的父分类是空的直接删除
+            # 有的父分类link是空的直接删除
             raise DropItem("Duplicate item found: %s" % item)
 
-    def insert(self, tx, item):
-        timestamp = strftime("%Y-%m-%d %H:%M:%S")
-        sql = "insert into mall_category "
-        sql += " (name, link, mall, tag, valid, is_crawl_target,"
-        sql += " mall_cat, mall_tid, mall_sub, "
-        sql += " create_date, create_user, update_date, update_user) "
-        sql += " values(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
-        params = (item['name'], item['link'], item['mall'], item['tag'], 1, 1,
-                  item['mall_cat'], item['mall_tid'], item['mall_sub'],
-                  timestamp, 'system', timestamp, 'system')
-        tx.execute(sql, params)
+    def opt_mall(self, txn, item):
+        query_sql = " select * "
+        query_sql += " from mall_category "
+        query_sql += " where tag = %s"
+        query_params = [item['tag']]
+        txn.execute(query_sql, query_params)
+        result = txn.fetchone()
+        if result:
+            # 更新数据库表
+            timestamp = strftime("%Y-%m-%d %H:%M:%S")
+            update_sql = " update mall_category "
+            update_sql += " set name = %s, "
+            update_sql += "   link = %s, "
+            update_sql += "   mall_cat = %s, "
+            update_sql += "   mall_tid = %s, "
+            update_sql += "   mall_sub = %s, "
+            update_sql += "   update_date = %s "
+            update_sql += " where tag = %s "
+            update_sql += "   and mall = 'jd' "
+            update_params = (item['name'], item['link'], item['mall_cat'],
+                             item['mall_tid'], item['mall_sub'], timestamp, item['tag'])
+            txn.execute(update_sql, update_params)
+        else:
+            # 向表中插入新的数据
+            timestamp = strftime("%Y-%m-%d %H:%M:%S")
+            insert_sql = "insert into mall_category "
+            insert_sql += " (name, link, mall, tag, valid, is_crawl_target, "
+            insert_sql += " mall_cat, mall_tid, mall_sub, "
+            insert_sql += " create_date, create_user, update_date, update_user) "
+            insert_sql += " values(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
+            insert_params = (item['name'], item['link'], item['mall'], item['tag'], 1, 1,
+                             item['mall_cat'], item['mall_tid'], item['mall_sub'],
+                             timestamp, 'system', timestamp, 'system')
+            txn.execute(insert_sql, insert_params)
 
     def handle_error(self, failue, item, spider):
         print failue
@@ -115,10 +138,10 @@ class ProductPricePipeline(object):
 
         sql = "insert into daily_price "
         sql += " (mall, skuid, price, ref_price, discount, discount_rate, "
-        sql += " kbj_cate_id, `date`, `timestamp`, create_date, create_user, update_date, update_user) "
+        sql += " kbj_category_id, `date`, `timestamp`, create_date, create_user, update_date, update_user) "
         sql += " values(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
         params = (item['mall'], item['skuid'], item['price'], item['ref_price'], item['discount'], item['discount_rate'],
-                  item['kbj_cate_id'], date, timestamp, timestamp, 'system', timestamp, 'system',)
+                  item['kbj_category_id'], date, timestamp, timestamp, 'system', timestamp, 'system',)
         tx.execute(sql, params)
 
     def handle_error(self, failue, item, spider):

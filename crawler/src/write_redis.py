@@ -26,8 +26,8 @@ class WriteRedis(object):
     def read_from_sql(self):
         sql = "select k.id, k.name, mc.mall, mc.link, mc.mall_cat, mc.mall_sub, mc.mall_tid "
         sql += " from mall_category mc "
-        sql += "   left join category_mapping cm on mc.id=cm.mall_cate_id "
-        sql += "   left join kbj_category k on cm.kbj_cate_id=k.id "
+        sql += "   left join category_mapping cm on cm.mall_category_id = mc.id "
+        sql += "   left join kbj_category k on cm.kbj_category_id = k.id "
         sql += " where mc.valid=1"
         sql += "   and mc.is_crawl_target=1;"
         cursor = self.db.cursor()

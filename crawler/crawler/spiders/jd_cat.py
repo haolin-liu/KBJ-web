@@ -24,15 +24,16 @@ class JDCategorySpider(scrapy.Spider):
         for item in data:
             for root in item['s']:
                 arr = root['n'].split("|")
-                yield self.parse_item(arr, id)
+                root_tag = arr[1]
+                yield self.parse_item(arr, id, root_tag)
                 for parent in root['s']:
                     arr = parent['n'].split("|")
-                    p_tag = arr[1]
-                    yield self.parse_item(arr, id, p_tag)
+                    p_tag = "," + arr[1]
+                    yield self.parse_item(arr, id, root_tag + p_tag)
                     for category in parent['s']:
                         arr = category['n'].split("|")
                         tag = "," + arr[1]
-                        yield self.parse_item(arr, id, p_tag + tag)
+                        yield self.parse_item(arr, id, root_tag + p_tag + tag)
 
     @staticmethod
     def parse_item(arr, id, tag=''):
