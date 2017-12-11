@@ -69,12 +69,14 @@
                       @header("parentName", "父分类名")
                       @header("isCrawlTarget", "爬取对象")
                       @header("valid", "有效")
+                      @header("priority", "显示优先度")
                       @header("edit", "")
                     </tr>
                   </thead>
                   <tbody>
                       @if(currentPage.eq(null)) {
                           <tr>
+                              <td></td>
                               <td></td>
                               <td></td>
                               <td></td>
@@ -89,6 +91,22 @@
                               <td> @kbjCategory.parent.name</td>
                               <td><input type="checkbox" aria-label="..." value="@kbjCategory.isCrawlTarget" @if(kbjCategory.isCrawlTarget) { checked }></td>
                               <td><input type="checkbox" aria-label="..." value="@kbjCategory.valid" @if(kbjCategory.valid) { checked }></td>
+                              <td>
+                                  @if(kbjCategory.priority != 0){
+                                      <button type="button" class="btn btn-primary" onClick="location.href='@gui.manage.routes.kbjCategoryController.updPriority(false, kbjCategory.id, kbjCategory.priority, currentPage.getPageIndex)'">
+                                          <span class="glyphicon glyphicon-arrow-up"></span>
+                                      </button>
+                                      @kbjCategory.priority
+                                      <button type="button" class="btn btn-primary" onClick="location.href='@gui.manage.routes.kbjCategoryController.updPriority(true, kbjCategory.id, kbjCategory.priority, currentPage.getPageIndex)'">
+                                          <span class="glyphicon glyphicon-arrow-down"></span>
+                                      </button>
+                                  } else {
+                                      <button type="button" class="btn btn-danger">
+                                          <span class="glyphicon glyphicon-exclamation-sign"></span>
+                                          <text>根分类不可修改</text>
+                                      </button>
+                                  }
+                              </td>
                               <td><button type="button" class="btn btn-primary" onClick="location.href='@gui.manage.routes.kbjCategoryController.update(kbjCategory.id)'">编辑</button></td>
                             </tr>
                           }

@@ -139,6 +139,12 @@ public class KbjCategoryRepo {
         return  ebeanServer.find(KbjCategory.class, id);
     }
 
+    public KbjCategory find(Integer priority) {
+        return  ebeanServer.find(KbjCategory.class).where()
+                .eq("priority", priority)
+                .findUnique();
+    }
+
     /**
      * 更新
      * @param category
@@ -188,5 +194,23 @@ public class KbjCategoryRepo {
             options.put(c.id.toString(), c.name);
         }
         return options;
+    }
+
+    /**
+     * 更新优先度
+     * @param id
+     * @param priority
+     * @return
+     * @author daiqingyi
+     * @date 2017-12-11
+     */
+    @Transactional
+    public Optional<Long> updPriority(Long id, Integer priority) {
+        KbjCategory cate = ebeanServer.find(KbjCategory.class).where()
+                .eq("id", id)
+                .findUnique();
+        cate.priority = priority;
+        cate.update();
+        return Optional.empty();
     }
 }

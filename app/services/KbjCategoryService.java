@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletionStage;
 
+import static java.util.Objects.isNull;
 import static java.util.concurrent.CompletableFuture.supplyAsync;
 
 /**
@@ -52,7 +53,6 @@ public class KbjCategoryService {
             long parentId = kbjCates.parentId;
              /*判断是否选择 有效性，输入执行if，未输入执行else */
             if(kbjCates.valid.equals("0") || kbjCates.valid.equals("1")) {
-                System.out.println("services.valid.if" + kbjCates.valid);
                 boolean isSelectValid = isSelected(kbjCates.valid);
                  /*判断是否选择 爬取对象，输入执行if，未输入执行else */
                 if(kbjCates.isCrawlTarget.equals("0") || kbjCates.isCrawlTarget.equals("1")) {
@@ -82,35 +82,42 @@ public class KbjCategoryService {
                 }
             }
         } else {
-            /*判断是否输入父分类Id，输入执行if，未输入执行else */
-            if(kbjCates.valid.equals("0") || kbjCates.valid.equals("1")) {
-                boolean isSelectValid = isSelected(kbjCates.valid);
-                /*判断是否选择 爬取对象，输入执行if，未输入执行else */
-                if(kbjCates.isCrawlTarget.equals("0") || kbjCates.isCrawlTarget.equals("1")) {
-                    boolean isSelectCrawleTarget = isSelected(kbjCates.isCrawlTarget);
-                    return supplyAsync(() -> {
-                        /*父分类Id 条件未填写检索*/
-                        return kbjCategoryRepo.find(isSelectValid, page, sortBy, order, kbjCates.name, isSelectCrawleTarget);
-                    }, executionContext);
+            if (kbjCates.parentId != null) {
+                /*判断是否输入父分类Id，输入执行if，未输入执行else */
+                if (kbjCates.valid.equals("0") || kbjCates.valid.equals("1")) {
+                    boolean isSelectValid = isSelected(kbjCates.valid);
+                    /*判断是否选择 爬取对象，输入执行if，未输入执行else */
+                    if (kbjCates.isCrawlTarget.equals("0") || kbjCates.isCrawlTarget.equals("1")) {
+                        boolean isSelectCrawleTarget = isSelected(kbjCates.isCrawlTarget);
+                        return supplyAsync(() -> {
+                            /*父分类Id 条件未填写检索*/
+                            return kbjCategoryRepo.find(isSelectValid, page, sortBy, order, kbjCates.name, isSelectCrawleTarget);
+                        }, executionContext);
+                    } else {
+                        return supplyAsync(() -> {
+                            /*父分类Id、爬取对象 条件未填写检索*/
+                            return kbjCategoryRepo.find(isSelectValid, page, sortBy, order, kbjCates.name);
+                        }, executionContext);
+                    }
                 } else {
-                    return supplyAsync(() -> {
-                        /*父分类Id、爬取对象 条件未填写检索*/
-                        return kbjCategoryRepo.find(isSelectValid, page, sortBy, order, kbjCates.name);
-                    }, executionContext);
+                    if (kbjCates.isCrawlTarget.equals("0") || kbjCates.isCrawlTarget.equals("1")) {
+                        boolean isSelectCrawleTarget = isSelected(kbjCates.isCrawlTarget);
+                        return supplyAsync(() -> {
+                            /*父分类Id、有效性 条件未填写检索*/
+                            return kbjCategoryRepo.find(page, sortBy, order, kbjCates.name, isSelectCrawleTarget);
+                        }, executionContext);
+                    } else {
+                        return supplyAsync(() -> {
+                            /*父分类Id、爬取对象、有效性 条件未填写检索*/
+                            return kbjCategoryRepo.find(page, sortBy, order, kbjCates.name);
+                        }, executionContext);
+                    }
                 }
-            } else {
-                if(kbjCates.isCrawlTarget.equals("0") || kbjCates.isCrawlTarget.equals("1")) {
-                    boolean isSelectCrawleTarget = isSelected(kbjCates.isCrawlTarget);
-                    return supplyAsync(() -> {
-                        /*父分类Id、有效性 条件未填写检索*/
-                        return kbjCategoryRepo.find(page, sortBy, order, kbjCates.name, isSelectCrawleTarget);
-                    }, executionContext);
-                } else {
-                    return supplyAsync(() -> {
+            }else {
+                return supplyAsync(() -> {
                         /*父分类Id、爬取对象、有效性 条件未填写检索*/
-                        return kbjCategoryRepo.find(page, sortBy, order, kbjCates.name);
-                    }, executionContext);
-                }
+                    return kbjCategoryRepo.find(page, sortBy, order, kbjCates.name);
+                }, executionContext);
             }
         }
     }
@@ -202,5 +209,33 @@ public class KbjCategoryService {
     public Map<String, String> getParent() {
         Map<String, String> options = kbjCategoryRepo.getParents();
         return options;
+    }
+
+    /**
+     * 更新优先度
+     * @param id
+     * @param priority
+     * @return
+     * @author daiqingyi
+     * @date 2017-12-11
+     */
+    public CompletionStage<Optional<Long>> updPriority(Boolean isUpOrDown, Long id, Integer priority) {
+        return supplyAsync(()-> {
+            if (isUpOrDown){
+                KbjCategory kbjCate = kbjCategoryRepo.find(priority + 1);
+                if(!isNull(kbjCate)){
+                    kbjCategoryRepo.updPriority(id, (priority + 1));
+                    kbjCategoryRepo.updPriority(kbjCate.id, priority);
+                } else {
+
+                }
+                return Optional.empty();
+            } else {
+                KbjCategory kbjCate = kbjCategoryRepo.find(priority - 1);
+                kbjCategoryRepo.updPriority(id, (priority - 1));
+                kbjCategoryRepo.updPriority((id - 1), priority);
+                return Optional.empty();
+            }
+        }, executionContext);
     }
 }

@@ -39,6 +39,7 @@ POST    /manage/kbjcate/find                                    controllers.gui.
 GET     /manage/kbjcate/add                                     controllers.gui.manage.kbjCategoryController.add()
 POST    /manage/kbjcate/save                                    controllers.gui.manage.kbjCategoryController.save()
 GET     /manage/kbjcate/edit/id                                 controllers.gui.manage.kbjCategoryController.update(id:Long)
+GET     /manage/kbjcate/upd/priority                            controllers.gui.manage.kbjCategoryController.updPriority(isUpOrDown:Boolean, id:Long, priority:Integer, page:Int)
 
 GET     /trend/:mall/:skuid                                     controllers.gui.DailyPriceController.priceTrend(mall:String, skuid:String)
 
