@@ -96,34 +96,15 @@
                   </tbody>
                 </table>
                 <div class="row col-md-12">
-                  @if(!currentPage.eq(null) && currentPage.hasPrev) {
-                      <div class="prev col-xs-4">
-                        <a onclick="pagePrev()" class="prev" >&larr; 上一页</a>
-                      </div>
-                  } else {
-                      <div class="prev disabled col-xs-4">
-                          <text>上一页</text>
-                      </div>
-                  }
-
-                  @if(!currentPage.eq(null)) {
-                      <div class="current col-xs-4">
-                          <text>显示 @currentPage.getDisplayXtoYofZ(" 到 "," 总 ")</text>
-                      </div>
-                  } else {
-                      <div class="current col-xs-4">
-                      </div>
-                  }
-
-                  @if(!currentPage.eq(null) && currentPage.hasNext) {
-                      <div class="next col-xs-4">
-                          <a onclick="pageNext()" class="next">下一页 &rarr;</a>
-                      </div>
-                  } else {
-                      <div class="next disabled col-xs-4">
-                          <text>下一页</text>
-                      </div>
-                  }
+                  <div class="prev col-xs-4">
+                    @if(!currentPage.eq(null) && currentPage.hasPrev) { <a onclick="pagePrev()" class="prev" >&larr; 上一页</a> } else { <text>上一页</text> }
+                  </div>
+                  <div class="current col-xs-4">
+                    @if(!currentPage.eq(null)) { <text>显示 @currentPage.getDisplayXtoYofZ(" 到 "," 总 ")</text> } else { }
+                  </div>
+                  <div class="next col-xs-4">
+                    @if(!currentPage.eq(null) && currentPage.hasNext) { <a onclick="pageNext()" class="next">下一页 &rarr;</a> } else { <text>下一页</text> }
+                  </div>
                 </div>
               </div><!--actions-->
           </div><!--content-box-large -->

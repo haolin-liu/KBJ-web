@@ -6,7 +6,7 @@ import models.forms.KbjCategoryForm;
 import org.jetbrains.annotations.Contract;
 import play.libs.concurrent.HttpExecutionContext;
 import repository.DatabaseExecutionContext;
-import repository.KbjCategoryReposity;
+import repository.KbjCategoryRepo;
 
 import javax.inject.Inject;
 import java.util.Map;
@@ -24,17 +24,17 @@ import static java.util.concurrent.CompletableFuture.supplyAsync;
 public class KbjCategoryService {
 
     private final DatabaseExecutionContext executionContext;
-    private final KbjCategoryReposity kbjCategoryReposity;
+    private final KbjCategoryRepo kbjCategoryRepo;
     private final KbjCategoryForm kbjCategoryForm;
     private final HttpExecutionContext httpExecutionContext;
 
     @Inject
     public KbjCategoryService(DatabaseExecutionContext executionContext,
-                              KbjCategoryReposity kbjCategoryReposity,
+                              KbjCategoryRepo kbjCategoryRepo,
                               KbjCategoryForm kbjCategoryForm,
                               HttpExecutionContext httpExecutionContext) {
         this.executionContext = executionContext;
-        this.kbjCategoryReposity = kbjCategoryReposity;
+        this.kbjCategoryRepo = kbjCategoryRepo;
         this.kbjCategoryForm = kbjCategoryForm;
         this.httpExecutionContext = httpExecutionContext;
     }
@@ -59,12 +59,12 @@ public class KbjCategoryService {
                     boolean isSelectCrawleTarget = isSelected(kbjCates.isCrawlTarget);
                     return supplyAsync(() -> {
                         /*所有检索条件都填写*/
-                        return kbjCategoryReposity.find(isSelectValid, page, sortBy, order, kbjCates.name, parentId, isSelectCrawleTarget);
+                        return kbjCategoryRepo.find(isSelectValid, page, sortBy, order, kbjCates.name, parentId, isSelectCrawleTarget);
                     }, executionContext);
                 } else {
                     return supplyAsync(() -> {
                         /*爬取对象 条件未填写检索*/
-                        return kbjCategoryReposity.find(isSelectValid, page, sortBy, order, kbjCates.name, parentId);
+                        return kbjCategoryRepo.find(isSelectValid, page, sortBy, order, kbjCates.name, parentId);
                     }, executionContext);
                 }
             } else {
@@ -72,12 +72,12 @@ public class KbjCategoryService {
                     boolean isSelectCrawleTarget = isSelected(kbjCates.isCrawlTarget);
                     return supplyAsync(() -> {
                         /*有效性 条件未填写检索*/
-                        return kbjCategoryReposity.find(page, sortBy, order, kbjCates.name, parentId, isSelectCrawleTarget);
+                        return kbjCategoryRepo.find(page, sortBy, order, kbjCates.name, parentId, isSelectCrawleTarget);
                     }, executionContext);
                 } else {
                     return supplyAsync(() -> {
                         /*爬取对象、有效性 条件未填写检索*/
-                        return kbjCategoryReposity.find(page, sortBy, order, kbjCates.name, parentId);
+                        return kbjCategoryRepo.find(page, sortBy, order, kbjCates.name, parentId);
                     }, executionContext);
                 }
             }
@@ -90,12 +90,12 @@ public class KbjCategoryService {
                     boolean isSelectCrawleTarget = isSelected(kbjCates.isCrawlTarget);
                     return supplyAsync(() -> {
                         /*父分类Id 条件未填写检索*/
-                        return kbjCategoryReposity.find(isSelectValid, page, sortBy, order, kbjCates.name, isSelectCrawleTarget);
+                        return kbjCategoryRepo.find(isSelectValid, page, sortBy, order, kbjCates.name, isSelectCrawleTarget);
                     }, executionContext);
                 } else {
                     return supplyAsync(() -> {
                         /*父分类Id、爬取对象 条件未填写检索*/
-                        return kbjCategoryReposity.find(isSelectValid, page, sortBy, order, kbjCates.name);
+                        return kbjCategoryRepo.find(isSelectValid, page, sortBy, order, kbjCates.name);
                     }, executionContext);
                 }
             } else {
@@ -103,12 +103,12 @@ public class KbjCategoryService {
                     boolean isSelectCrawleTarget = isSelected(kbjCates.isCrawlTarget);
                     return supplyAsync(() -> {
                         /*父分类Id、有效性 条件未填写检索*/
-                        return kbjCategoryReposity.find(page, sortBy, order, kbjCates.name, isSelectCrawleTarget);
+                        return kbjCategoryRepo.find(page, sortBy, order, kbjCates.name, isSelectCrawleTarget);
                     }, executionContext);
                 } else {
                     return supplyAsync(() -> {
                         /*父分类Id、爬取对象、有效性 条件未填写检索*/
-                        return kbjCategoryReposity.find(page, sortBy, order, kbjCates.name);
+                        return kbjCategoryRepo.find(page, sortBy, order, kbjCates.name);
                     }, executionContext);
                 }
             }
@@ -142,10 +142,11 @@ public class KbjCategoryService {
         category.name = kbjCateform.name;
         category.isCrawlTarget = kbjCateform.bIsCrawlTarget;
         category.valid = kbjCateform.bValid;
+        category.priority = 99;
         return supplyAsync(() -> {
-            KbjCategory parentCate = kbjCategoryReposity.find(kbjCateform.parentId);
+            KbjCategory parentCate = kbjCategoryRepo.find(kbjCateform.parentId);
             category.parent = parentCate;
-            return kbjCategoryReposity.insert(category);
+            return kbjCategoryRepo.insert(category);
         }, executionContext);
     }
 
@@ -156,7 +157,7 @@ public class KbjCategoryService {
      */
     public CompletionStage<KbjCategory> find(Long id) {
         return supplyAsync(() -> {
-            return kbjCategoryReposity.find(id);
+            return kbjCategoryRepo.find(id);
         }, executionContext);
     }
 
@@ -173,9 +174,9 @@ public class KbjCategoryService {
         category.isCrawlTarget = kbjCateform.bIsCrawlTarget;
         category.valid = kbjCateform.bValid;
         return supplyAsync(() -> {
-            KbjCategory parentCate = kbjCategoryReposity.find(kbjCateform.parentId);
+            KbjCategory parentCate = kbjCategoryRepo.find(kbjCateform.parentId);
             category.parent = parentCate;
-            return kbjCategoryReposity.update(category);
+            return kbjCategoryRepo.update(category);
         }, executionContext);
     }
 
@@ -186,7 +187,7 @@ public class KbjCategoryService {
      * @date 2017-12-07
      */
     public CompletionStage<Map<String, String>> getParents() {
-            Map<String, String> options = kbjCategoryReposity.getParents();
+            Map<String, String> options = kbjCategoryRepo.getParents();
             return supplyAsync(()-> {
                 return options;
             }, httpExecutionContext.current());
@@ -199,7 +200,7 @@ public class KbjCategoryService {
      * @date 2017-12-07
      */
     public Map<String, String> getParent() {
-        Map<String, String> options = kbjCategoryReposity.getParents();
+        Map<String, String> options = kbjCategoryRepo.getParents();
         return options;
     }
 }
