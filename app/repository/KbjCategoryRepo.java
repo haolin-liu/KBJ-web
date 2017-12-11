@@ -16,12 +16,10 @@ import java.util.*;
  */
 public class KbjCategoryRepo {
     private final EbeanServer ebeanServer;
-    private final DatabaseExecutionContext executionContext;
 
     @Inject
-    public KbjCategoryRepo(EbeanConfig ebeanConfig, DatabaseExecutionContext executionContext) {
+    public KbjCategoryRepo(EbeanConfig ebeanConfig) {
         this.ebeanServer = Ebean.getServer(ebeanConfig.defaultServer());
-        this.executionContext = executionContext;
     }
 
     /**
@@ -167,7 +165,6 @@ public class KbjCategoryRepo {
      */
     @Transactional
     public Optional<Long> insert(KbjCategory category) {
-        System.out.println("services:category.valid  " + category.valid );
         category.insert();
         return Optional.empty();
     }

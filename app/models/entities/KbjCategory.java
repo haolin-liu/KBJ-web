@@ -31,7 +31,6 @@ public class KbjCategory extends BaseModel {
     @Column(nullable = false, columnDefinition = "integer default 1")
     public Integer priority;
 
-
     @Constraints.Required
     @Column(columnDefinition = "boolean default true")
     public Boolean valid;
