@@ -771,15 +771,18 @@
 }
 
 .price a:hover .chart-div {
-  /*visibility: visible;*/
   display: block;
   text-decoration:none;
 }
 
+.skip-text {
+  max-width: 40px;
+  min-height: 32px;
+  margin-left: 20px;
+}
+
 .pagination>li>a, .pagination>li>span {
-  color: black;
-  background-color: #f7f7f7;
-  border: 0px;
+  margin-bottom: 4px;
 }
 
 .pagination {
@@ -791,11 +794,6 @@
   float: left;
   margin-top: 6.5px;
   margin-right: 10px;
-}
-
-.skip-text {
-  max-width: 35px;
-  min-height: 23px;
 }
 
 /*product-search end*/

@@ -21,12 +21,19 @@ public class DailyPrice extends BaseModel {
     public String skuid;
 
     @Constraints.Required
-    @Column(name = "price", columnDefinition="decimal(15,2)")
+    @Column(columnDefinition="decimal(15,2)")
     public Float price;
 
-    @Constraints.Required
-    @Column(name = "refPrice", columnDefinition="decimal(15,2)")
+    @Column(columnDefinition="decimal(15,2)")
     public Float refPrice;
+
+    @Column(columnDefinition="decimal(15,2)")
+    public Float discount;
+
+    @Column(columnDefinition="decimal(15,2)")
+    public Float discountRate;
+
+    public Long kbjCateId;
 
     @Constraints.Required
     @Temporal(TemporalType.DATE)

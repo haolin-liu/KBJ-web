@@ -1,4 +1,4 @@
-@(productsWithNum:ProductsWithNum, hotProducts: List[String], keyWord :String, page :String, countPage: Long)
+@(products: utils.PageList[Product], hotProducts: List[String], pageIndexList: List[Integer], keyWord :String)
 
 @main() {
   @header.render(hotProducts, keyWord)
@@ -78,8 +78,8 @@
         <div class="productList">
           <div class="container">
             <div class="row" style="z-index: -1">
-            @if(productsWithNum != null && productsWithNum.getProducts.size >0) {
-                @for((product, index) <- productsWithNum.getProducts.zipWithIndex){
+            @if(products != null && products.getList.size() >0) {
+                @for((product, index) <- products.getList.zipWithIndex){
 
                   <input type="hidden" id="id@index" value="@product.getSkuid" data-mall="@product.getMall"/>
 
@@ -116,7 +116,8 @@
                             @if(product.isSelfSupport){自营} else {非自营}</div>
                         </div>
                         <div class="goodsExist">库存
-                            <span id="store@product.getSkuid" class="glyphicon glyphicon-heart-empty store-icon" onclick="storeUp(@product.getSkuid)"></span>
+                            <span id="store@product.getSkuid" class="glyphicon glyphicon-heart-empty store-icon"
+                            onclick="storeUp(@product.getSkuid)"></span>
                         </div>
                       </div>
                     </div>
@@ -136,24 +137,33 @@
         <nav aria-label="Page navigation" class="">
           <ul class="pagination">
             <li class="tip">
-                共有<font color="black">@productsWithNum.getNumFound</font>条记录  当前为<font color="red" id="currentPage">@page</font>/
-                    <font id="countPage">@countPage</font>页&nbsp;
+                共有<font color="black">@products.getRecordCount</font>条记录  当前为<font color="red"
+                id="currentPage">@products.getPageIndex</font>/
+                    <font id="countPage">@products.getPageCount</font>页&nbsp;
             </li>
-              <li>
-                  <a href="#" id="firstPage" onclick="firstPage('@keyWord')">首页</a>&nbsp;
-              </li>
-              <li>
-                  <a href="#" id="prePage" onclick="prePage('@keyWord', @page)">上一页</a>&nbsp;
-              </li>
-              <li>
-                  <a href="#" id="nextPage" onclick="nextPage('@keyWord', @page)">下一页</a>&nbsp;
-              </li>
-              <li>
-                  <a href="#" onclick="finalPage('@keyWord',@countPage)">末页</a>&nbsp;
-              </li>
             <li>
-              <input type="text" class="skip-text" id="jumpPage" value="@page">
-              <button onclick="">跳转</button>
+                <a href="#" id="prePage" onclick="pageJump('@keyWord', @products.getPrevPageIndex)"
+                @if(!products.hasPrevPage){hidden}>
+                    <span aria-hidden="true">&laquo;</span>上一页
+                </a>
+            </li>
+            <li>
+                @for((page, index) <- pageIndexList.zipWithIndex){
+                    <a href="#" onclick="pageJump('@keyWord', @products.getNavigationFrom + @index)"
+                        @if(products.getPageIndex == page){style="background-color: #ddd"}>
+                        <span data-value="@products.getNavigationFrom" data-index="@index">@page</span>
+                    </a>
+                }
+            </li>
+            <li>
+                <a href="#" id="nextPage" onclick="pageJump('@keyWord', @products.getNextPageIndex)"
+                @if(!products.hasNextPage){hidden}>
+                    <span aria-hidden="true">&raquo;</span>下一页
+                </a>
+            </li>
+            <li style="margin-left: 20px;margin-top: 5px">
+              <input type="text" class="skip-text" id="jumpPage" value="@products.getPageIndex">
+              <button onclick="pageJump('@keyWord', 0)">跳转</button>
             </li>
           </ul>
         </nav>
@@ -166,11 +176,6 @@
 
   <script>
     $(document).ready(function() {
-
-        if(@page.equals("1")) {
-            $("#prePage").hide();
-            $("#firstPage").hide();
-        }
 
         var id ="";
         var mall ="";
@@ -191,7 +196,8 @@
                       },
                       // 标题
                       title: {
-                          text: data.results == "null" ? '暂无数据': ""
+                          text: data.results == "null" ? '暂无数据': "",
+                          verticalAlign: 'middle'
                       },
                       //副标题
                       subtitle: {
@@ -212,15 +218,23 @@
                       //去掉图标上的官网地址
                       credits: {
                           text: ''
+                      },
+                      plotOptions: {
+                          series: {
+                              marker: {
+                                  radius: 3,  //曲线点半径，默认是4
+                                  symbol: 'diamond' //曲线点类型："circle", "square", "diamond", "triangle","triangle-down"，默认是"circle"
+                              }
+                          }
                       }
                   });
               },
               error: function () {
-                  consolg.log("falid");
+                  consolg.log("no data");
               }
           })
       })
-    });
+    })
 
     function storeUp(id) {
       if($("#store" + id).hasClass("glyphicon-heart-empty")) {
@@ -239,60 +253,20 @@
         return val;
     }
 
-    function firstPage(kw) {
+    function pageJump(kw, val) {
         var sorter = "";
         var filter = "";
 
-        $("#jumpPage").val(1);
-        $("#currentPage").text(1);
-
-        kw = nullChange(kw);
-        sorter = nullChange(sorter);
-        filter = nullChange(filter);
-        window.location.href = '/search/'+ kw + '/0/12/' + sorter + '/' + filter;
-    }
-
-    function prePage(kw, val) {
-        var page = val - 2;
-        var sorter = "";
-        var filter = "";
-        var start = page * 12;
-
-        $("#jumpPage").val(page);
-        $("#currentPage").text(page);
-
-        kw = nullChange(kw);
-        sorter = nullChange(sorter);
-        filter = nullChange(filter);
-        window.location.href = '/search/'+ kw + '/' + start + '/12/' + sorter + '/' + filter;
-    }
-
-    function nextPage(kw, val) {
-        var sorter = "";
-        var filter = "";
-        var start = val * 12;
+        if (val == 0) {
+            val = $("#jumpPage").val();
+        }
 
         $("#jumpPage").val(val);
         $("#currentPage").text(val);
 
-
         kw = nullChange(kw);
         sorter = nullChange(sorter);
         filter = nullChange(filter);
-        window.location.href = '/search/'+ kw + '/' + start + '/12/' + sorter + '/' + filter;
-    }
-
-    function finalPage(kw, val) {
-        var sorter = "";
-        var filter = "";
-        var start = (parseInt(val) -1) * 12;
-
-        $("#jumpPage").val(val);
-        $("#currentPage").text(val)
-
-        kw = nullChange(kw);
-        sorter = nullChange(sorter);
-        filter = nullChange(filter);
-        window.location.href = '/search/'+ kw + '/' + start + '/12/' + sorter + '/' + filter;
+        window.location.href = '/search/'+ kw + '/' + val + '/12/' + sorter + '/' + filter;
     }
   </script>
