@@ -48,6 +48,11 @@ GET     /manage/user/show                                       controllers.gui.
 POST    /manage/user/find                                       controllers.gui.manage.UserController.find()
 POST    /manage/user/update                                     controllers.gui.manage.UserController.update()
 
+# Authentication
+GET     /manage/login                                           controllers.gui.manage.LoginController.index()
+POST    /manage/login                                           controllers.gui.manage.LoginController.login()
+GET     /manage/logout                                          controllers.gui.manage.LoginController.logout()
+
 # Routes For APIS
 # controllers for api access for app.
 # ~~~~
