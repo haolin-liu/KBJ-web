@@ -51,7 +51,7 @@ public class KeywordHelper {
                 int j = 0;
                 for (String kw : kws) {
                     escaped = escapeSpecialChars(kw.trim());
-                    sb.append(fl + ":*" + escaped + "*");
+                    sb.append(fl + ":" + escaped);
                     if ( j != kws.length - 1) {
                         sb.append(" " + connector + " ");
                     }

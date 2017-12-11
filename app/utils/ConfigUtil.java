@@ -79,4 +79,16 @@ public class ConfigUtil {
         return getVal(key, defVal, Integer.class);
     }
 
+    public Integer getOffsetMonthOfPriceHis() {
+        final String key = "webapp.pricehis.offset.month";
+        final int defVal = 15;
+        return getVal(key, defVal, Integer.class);
+    }
+
+    public Integer getPointsOfXaxisOfPriceHis() {
+        final String key = "webapp.pricehis.plot.x.axis.points";
+        final int defVal = 6;
+        return getVal(key, defVal, Integer.class);
+    }
+
 }
