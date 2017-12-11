@@ -21,6 +21,10 @@ POST   /home/edit/:id                                           controllers.gui.
 POST   /home/delete/:id                                         controllers.gui.HomeController.delete(id: Long)
 POST   /home/add                                                controllers.gui.HomeController.add()
 
+GET    /login                                                   controllers.gui.UserController.loginTop()
+POST   /login                                                   controllers.gui.UserController.login()
+GET    /register                                                controllers.gui.UserController.registerTop()
+POST   /register                                                controllers.gui.UserController.register()
 
 # manage
 GET     /manage                                                 controllers.gui.manage.IndexController.index
@@ -37,6 +41,10 @@ POST    /manage/kbjcate/save                                    controllers.gui.
 GET     /manage/kbjcate/edit/id                                 controllers.gui.manage.kbjCategoryController.update(id:Long)
 
 GET     /trend/:mall/:skuid                                     controllers.gui.DailyPriceController.priceTrend(mall:String, skuid:String)
+
+GET     /manage/user/show                                       controllers.gui.manage.UserController.show()
+POST    /manage/user/find                                       controllers.gui.manage.UserController.find()
+POST    /manage/user/update                                     controllers.gui.manage.UserController.update()
 
 # Routes For APIS
 # controllers for api access for app.

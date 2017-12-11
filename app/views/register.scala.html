@@ -1,0 +1,28 @@
+@import models.form.RegisterForm
+@(userForm: Form[RegisterForm])
+@implicitFieldConstructor = @{ b3.horizontal.fieldConstructor("col-md-0", "col-md-12") }
+
+@import helper._
+
+@main() {
+    @loginHeader.render()
+    <div class="container register-container">
+        <div class="row col-md-4 col-md-offset-4">
+            <h4 class="r-title">可比价注册</h4>
+            <div class="row">
+                @b3.form(gui.routes.UserController.register(), 'id -> "registerForm") {
+                    @CSRF.formField
+                    @b3.text(userForm("name"), '_help -> "", 'placeholder -> "用户名")
+                    @b3.text(userForm("email"), '_help -> "", 'placeholder -> "邮箱")
+                    @b3.text(userForm("password"), '_help -> "", 'placeholder -> "设置密码")
+                    @b3.text(userForm("confirmPassword"), '_help -> "", 'placeholder -> "确认密码")
+                    <div class="auto-register">
+                        点击注册，表示您同意可比价  <a>《服务协议及隐私声明》</a>
+                    </div>
+                    @b3.submit('class -> "btn btn-lg btn-danger btn-block"){同意协议并注册}
+                }
+            </div>
+        </div>
+    </div>
+    @loginFooter.render()
+}

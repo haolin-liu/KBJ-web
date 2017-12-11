@@ -1,0 +1,33 @@
+@import models.form.LoginForm
+@(userForm: Form[LoginForm])
+@implicitFieldConstructor = @{ b3.horizontal.fieldConstructor("col-md-0", "col-md-12") }
+
+@import helper._
+
+@main() {
+  @loginHeader.render()
+  <div class="container login-container">
+    <div class="content-wrap">
+      <div class="col-md-5 login-div">
+        <div class="row">
+          <h3 class="pull-left">可比价用户登录</h3>
+        </div>
+        <div class="row login-form">
+          <div class="form-item-wrap">
+            @b3.form(gui.routes.UserController.login(), 'id -> "loginForm") {
+              @CSRF.formField
+              @b3.text(userForm("name"), '_help -> "", 'placeholder -> "用户名/邮箱/手机号")
+              @b3.text(userForm("password"), '_help -> "", 'placeholder -> "密码")
+              <div class="auto-login">
+                <a class="pull-left" href="@controllers.gui.routes.UserController.registerTop()">免费注册</a>
+                <a class="pull-right">忘记密码</a>
+              </div>
+              @b3.submit('class -> "btn btn-lg btn-danger btn-block"){登录}
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  @loginFooter.render()
+}

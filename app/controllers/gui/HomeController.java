@@ -1,6 +1,8 @@
 package controllers.gui;
 
 import models.entities.KeySearch;
+import models.entities.User;
+import models.form.LoginForm;
 import play.data.Form;
 import play.data.FormFactory;
 import play.libs.concurrent.HttpExecutionContext;
