@@ -1,0 +1,88 @@
+@import models.entities.MallCategory
+@(id: Long, mallCategoryForm: Form[MallCategory], dateType: Int, valid: Map[String, String])
+
+@import helper._
+@implicitFieldConstructor = @{b3.horizontal.fieldConstructor("col-md-2", "col-md-5") }
+
+@link() = @{
+    if(dateType == 0 || dateType == 2) {
+        gui.manage.routes.MallCategoryController.save();
+    } else {
+        gui.manage.routes.MallCategoryController.updateOne(id);
+    }
+}
+
+@manageMain() {
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-2" >
+            @views.html.manage.leftMenu.render
+            </div><!--col-md-2 -->
+            <div class="col-md-10">
+                <div class="content-box-large min-height">
+                @b3.form(link()) {
+                    @if(dateType == 0 || dateType == 2) {
+                        <h3>商城品类追加</h3>
+                    } else {
+                        <h3>商城品类更新</h3>
+                    }
+                    <fieldset>
+                        @CSRF.formField
+                        @if(dateType == 1 || dateType == 3) {
+                            @b3.text(mallCategoryForm("id"), '_label -> "ID", '_help -> "", 'disabled -> "disabled", 'value -> id)
+                        }
+                        @if(dateType == 2) {
+                            @b3.text(mallCategoryForm("id"), '_label -> "ID", '_help -> "", 'disabled -> "disabled", 'value -> id)
+                        }
+                        @b3.text(mallCategoryForm("name"), '_label -> "分类名", '_help -> "",'placeholder -> "分类名")
+                        @b3.text(mallCategoryForm("link"), '_label -> "分类url", '_help -> "",'placeholder -> "分类url")
+                        @b3.text(mallCategoryForm("mall"), '_label -> "商城名", '_help -> "",'placeholder -> "商城名")
+                        @b3.text(mallCategoryForm("tag"), '_label -> "TAG", '_help -> "",'placeholder -> "TAG")
+                        @b3.select(
+                            mallCategoryForm("valid"),
+                            options(valid),
+                            '_label -> "数据有效",
+                            '_showConstraints -> false,
+                            'onchange -> "validFlgChange('validId','isCrawlTargetId')",
+                            'id -> "validId"
+                        )
+                        @b3.select(
+                            mallCategoryForm("isCrawlTarget"),
+                            options(valid),
+                            '_label -> "爬虫对象",
+                            '_showConstraints -> false,
+                            'id -> "isCrawlTargetId"
+                        )
+                        @if(dateType == 0 || dateType == 2) {
+                            @b3.submit('class -> "btn btn-primary") {新规}
+                        } else {
+                            @b3.submit('class -> "btn btn-primary") {更新}
+                        }
+                        @if(dateType == 2) {
+                            <div class="col-md-2 col-md-offset-2" style="padding-left: 0px">
+                                <text class="alert-success">数据插入成功</text>
+                            </div>
+                        }
+                        @if(dateType == 3) {
+                            <div class="col-md-2 col-md-offset-2" style="padding-left: 0px">
+                                <text class="alert-success">数据更新成功</text>
+                            </div>
+                        }
+                    </fieldset>
+                }
+
+                </div><!--content-box-large-->
+            </div><!--col-md-10 -->
+        </div><!--row-->
+    </div><!--container-fluid-->
+
+<script type="text/javascript">
+    function validFlgChange(validId, isCrawlTargetId) {
+        if($("#" + validId).val() == "false") {
+            $("#" + isCrawlTargetId).val("false");
+        }
+    }
+</script>
+
+}
+

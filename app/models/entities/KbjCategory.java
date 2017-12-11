@@ -39,4 +39,7 @@ public class KbjCategory extends BaseModel {
     @OneToMany(mappedBy = "kbjCategory")
     public List<CategoryExhibition> categoryExhibition;
 
+    @OneToMany(mappedBy = "kbjCategory")
+    public List<CategoryMapping> categoryMappings;
+
 }

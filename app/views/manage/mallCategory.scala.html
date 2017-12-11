@@ -1,0 +1,384 @@
+@import models.entities.MallCategory
+@(list: io.ebean.PagedList[MallCategory], id: String, name: String, mall: String, isCrawlTarget: Int, page: Int, isSearch: Boolean, valid: Int, updFlg: Int, bind: Int)
+
+@link() = @{
+    gui.manage.routes.MallCategoryController.search();
+}
+
+@import helper._
+@manageMain() {
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-2" >
+            @views.html.manage.leftMenu.render
+        </div><!--col-md-2 -->
+        <div class="col-md-10">
+            @*<div class="row">*@
+        <div class="content-box-large min-height">
+            <div class="row">
+                <h3>商城品类</h3>
+                @if(updFlg == 1) {
+                    <div style="text-align: center">
+                        <text class="alert-success">数据更新成功</text><br/><br/>
+                    </div>
+                }
+                <div class="form-inline">
+                    @form(link(),'id -> "mallForm"){
+                        <div class="col-sm-12">
+                                @CSRF.formField
+                            <div class="col-sm-2 form-group">
+                                <input class="form-control" name="showSrcId" id="showSrcId" placeholder="ID" value="@id"/>
+                            </div>
+                            <div class="col-sm-2 form-group">
+                                <input class="form-control" name="showSrcName" id="showSrcName" placeholder="分类名" value="@name"/>
+                            </div>
+                            <div class="col-sm-2 form-group">
+                                <input class="form-control" name="showSrcMall" id="showSrcMall" placeholder="商城名" value="@mall"/>
+                            </div>
+                            <div class="col-sm-1 form-group">
+                                <select class="form-control" id="validFlg" onchange="valChange('validFlg','srcValidFlg')">
+                                    <option value="1" @if(valid == 1){selected}>有效</option>
+                                    <option value="2" @if(valid == 2){selected}>是</option>
+                                    <option value="3" @if(valid == 3){selected}>否</option>
+                                </select>
+                            </div>
+                            <div class="col-sm-1 form-group">
+                                <select class="form-control" id="selectFlg" onchange="valChange('selectFlg','srcIsCrawlTarget')">
+                                    <option value="1" @if(isCrawlTarget == 1){selected}>爬虫对象</option>
+                                    <option value="2" @if(isCrawlTarget == 2){selected}>是</option>
+                                    <option value="3" @if(isCrawlTarget == 3){selected}>否</option>
+                                </select>
+                            </div>
+                            <div class="col-sm-1 form-group">
+                                <select class="form-control" id="selectbind" onchange="valChange('selectbind','srcIsCrawlTarget')">
+                                    <option value="1" @if(bind == 1){selected}>绑定</option>
+                                    <option value="2" @if(bind == 2){selected}>是</option>
+                                    <option value="3" @if(bind == 3){selected}>否</option>
+                                </select>
+                            </div>
+                            <input type="hidden" name="srcValidFlg" id="srcValidFlg" value="@valid"/>
+                            <input type="hidden" name="srcbind" id="srcbind" value="@bind"/>
+                            <input type="hidden" name="srcIsCrawlTarget" id="srcIsCrawlTarget" value="@isCrawlTarget"/>
+                            <input name="page" id="page" value="@page" type="hidden"/>
+                            <input name="isSearch" id="isSearch" value="@isSearch" type="hidden"/>
+                            <div class="col-sm-1 form-group">
+                                <button class="btn btn-primary" type="button" onclick="find()">查询</button>
+                            </div>
+                            <div class="col-sm-2 text-right form-group">
+                                <button class="btn btn-primary" type="button" onclick="location.href='@gui.manage.routes.MallCategoryController.create()'">新规</button>
+                            </div>
+                    </div>
+                    }
+                </div><br/><br/><br/>
+                <div class="col-sm-12">
+                    @form(gui.manage.routes.MallCategoryController.update(),'id -> "bodyForm") {
+                        @CSRF.formField
+                        <input type="hidden" id="postid" name="postid" value="@id"/>
+                        <input type="hidden" id="postbind" name="postbind" value="@bind"/>
+                        <input type="hidden" id="postpage" name="postpage" value="@page"/>
+                        <input type="hidden" id="postname" name="postname" value="@name"/>
+                        <input type="hidden" id="postmall" name="postmall" value="@mall"/>
+                        <input type="hidden" id="postvalid" name="postvalid" value="@valid"/>
+                        <input type="hidden" id="postflg" name="postflg" value="@isCrawlTarget"/>
+                        <input type="hidden" id="prompt" value="0"/>
+                        <input type="hidden" id="isprompt" value="0"/>
+                            <table id="mallTable" class="table table-striped table-hover">
+                                <tr>
+                                    <th class="col-sm-1 text-primary">ID</th>
+                                    <th class="col-sm-1 text-primary">分类名</th>
+                                    <th class="col-sm-1 text-primary">分类url</th>
+                                    <th class="col-sm-1 text-primary">商城名</th>
+                                    <th class="col-sm-1 text-primary">TAG</th>
+                                    <th class="col-sm-1 text-primary">有效</th>
+                                    <th class="col-sm-1 text-primary">爬虫对象</th>
+                                    <th class="col-sm-1 text-primary">绑定</th>
+                                    <th class="col-sm-1 text-primary text-right">更新</th>
+                                </tr>
+                                @if(list == null) {
+                                } else {
+                                    @for(data <- list.getList.asScala) {
+                                        <tr>
+                                            <input type="hidden" name="hidid" value="@data.id"/>
+                                            <input type="hidden" id="hidvalid@data.id" name="hidvalid" value="@data.valid"/>
+                                            <input type="hidden" id="hidisCrawlTarget@data.id" name="hidisCrawlTarget"value="@data.isCrawlTarget"/>
+                                            <input type="hidden" id="validChange@data.id" value="@data.valid"/>
+                                            <input type="hidden" id="isCrawlTargetChange@data.id" value="@data.isCrawlTarget"/>
+                                            <td class="col-sm-1" title="@data.id">@data.id</td>
+                                            <td class="col-sm-1" title="@data.name">@if(data.name.length > 8){@data.name.substring(0,8)...} else{@data.name}</td>
+                                            <td class="col-sm-1" title="@data.link"><p data-toggle="modal" data-target="#myModal@data.id">@if(data.link.length > 15){@data.link.substring(0,15)...} else{@data.link}</p></td>
+                                            <td class="col-sm-1" title="@data.mall">@if(data.mall.length > 8){@data.mall.substring(0,8)...} else{@data.mall}</td>
+                                            <td class="col-sm-1" title="@data.tag">@if(data.tag.length > 8){@data.tag.substring(0,8)...} else{@data.tag}</td>
+                                            <td class="col-sm-1">
+                                                <input type="checkbox" id="valid@data.id" value="@data.valid"  onchange="boxChange('valid@data.id','hidvalid@data.id','validChange@data.id','isCrawlTarget@data.id','hidisCrawlTarget@data.id','isCrawlTargetChange@data.id')"
+                                                    @if(data.valid){checked="checked"}/>
+                                            </td>
+                                            <td class="col-sm-1">
+                                                <input type="checkbox" id="isCrawlTarget@data.id"  value="@data.isCrawlTarget" onchange="isboxChange('isCrawlTarget@data.id','hidisCrawlTarget@data.id','isCrawlTargetChange@data.id')"
+                                                    @if(data.isCrawlTarget){checked="checked"}/>
+                                            </td>
+                                            <td class="col-sm-1"><input type="checkbox" @if(data.categoryMapping != null){checked="checked" value="true" } else {value="false" disabled} />
+                                                @if(data.categoryMapping == null){} else{@data.categoryMapping.kbjCategory.name}</td>
+                                            <td class="col-sm-1 text-right"><button class="btn btn-primary" type="button" onclick="location.href='@gui.manage.routes.MallCategoryController.getOneEdit(data.id)'">编辑</button></td>
+                                            <div class="modal fade" id="myModal@data.id" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                                                        &times;
+                                                            </button>
+                                                            <h5 class="modal-title" id="myModalLabel">
+					                                            分类URL
+                                                            </h5>
+                                                        </div>
+                                                        <div class="modal-body" style="word-wrap:break-word">
+                                                            @data.link
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-default" data-dismiss="modal">关闭
+                                                            </button>
+                                                        </div>
+                                                    </div><!-- /.modal-content -->
+                                                </div><!-- /.modal -->
+                                            </div>
+                                        </tr>
+                                    }
+                                }
+                            </table>
+                        }
+                            @if(list != null) {
+                                @if(list.getTotalCount != 0) {
+                                    <div class="row" style="text-align: center">
+                                        <button class="btn btn-primary btn-lg" onclick="altChange()" type="button">&nbsp&nbsp保存&nbsp&nbsp</button>
+                                    </div><br/>
+                                }
+                            }
+                </div>
+            </div>
+                <div id="pagination" class="row" style="text-align: center">
+                    @if(list == null) {
+                        <div class="row">
+                            <div>
+                                <p>Please retrieve the display data!</p>
+                            </div>
+                        </div>
+                    } else {
+                        @if(list.getTotalCount == 0) {
+                            <div class="row">
+                                <div>
+                                    <p>Nothing to show!</p>
+                                </div>
+                            </div>
+                        } else {
+                            <ul class="list-inline page">
+                                <li>
+                                    <p><button onclick="fistPage(0)"><<</button></p>
+                                </li>
+                                @if(list.hasPrev) {
+                                    <li class="prev">
+                                        <button onclick="previous()"><</button>
+                                    </li>
+                                }
+                                    <button class="btn btn-primary">@(list.getPageIndex + 1)</button>
+                                @for( a <- 1 to 5) {
+                                    @if(list.getPageIndex + 1 + a <= list.getTotalPageCount) {
+                                        <li>
+                                            <button onclick="oneByOne(@((list.getPageIndex + a)))">@(list.getPageIndex + 1 + a)</button>
+                                        </li>
+                                    }
+                                }
+                                @if(list.hasNext) {
+                                    <li class="next">
+                                        <button onclick="nextPage()">></button>
+                                    </li>
+                                }
+                                <li>
+                                    <button onclick="lastPage(@list.getTotalPageCount)">>></button>
+                                </li>
+                                <li>
+                                    <input style="max-width: 40px;" id="jump" value="" />
+                                    <button onclick="jump()">跳转</button>
+                                </li>
+                            </ul>
+                        }
+                    }
+                </div>
+            </div><!--content-box-large-->
+        </div><!--col-md-10 -->
+    </div><!--row-->
+</div><!--container-fluid-->
+
+    <script type="text/javascript">
+
+    /**
+     * 页面跳转
+     */
+    function jump() {
+        var x = $("#jump").val();
+        if($("#prompt").val() == 1 || $("#isprompt").val() == 1) {
+            alert("有数据变更，请先提交更新！")
+        } else {
+            $("#page").val(x - 1);
+            $("#isSearch").val(false);
+            $("#mallForm").submit();
+        }
+    }
+
+    /**
+     * 详细页数实现跳转
+     * param page
+     */
+        function oneByOne(page) {
+            if($("#prompt").val() == 1 || $("#isprompt").val() == 1) {
+                alert("有数据变更，请先提交更新！")
+            } else {
+                $("#page").val(page);
+                $("#isSearch").val(false);
+                $("#mallForm").submit();
+            }
+        }
+
+    /**
+     * 跳转到第一页
+     * param page
+     */
+    function fistPage(page) {
+        if($("#prompt").val() == 1 || $("#isprompt").val() == 1) {
+            alert("有数据变更，请先提交更新！")
+        } else {
+            $("#page").val(page);
+            $("#isSearch").val(false);
+            $("#mallForm").submit();
+            }
+    }
+
+    /**
+     * 跳转到最后一页
+     * param page
+     */
+    function lastPage(page) {
+        if($("#prompt").val() == 1 || $("#isprompt").val() == 1) {
+            alert("有数据变更，请先提交更新！")
+        } else {
+            $("#page").val(page - 1);
+            $("#isSearch").val(false);
+            $("#mallForm").submit();
+        }
+    }
+
+    /**
+     * 下一页
+     */
+    function nextPage () {
+        if($("#prompt").val() == 1 || $("#isprompt").val() == 1) {
+            alert("有数据变更，请先提交更新！")
+        } else {
+            $("#page").val(@page + 1);
+            $("#isSearch").val(false);
+            $("#mallForm").submit();
+        }
+    }
+
+    /**
+     * 上一页
+     */
+    function previous() {
+        if($("#prompt").val() == 1 || $("#isprompt").val() == 1) {
+            alert("有数据变更，请先提交更新！")
+        } else {
+            $("#page").val(@page -1);
+            $("#isSearch").val(false);
+            $("#mallForm").submit();
+        }
+    }
+
+    /**
+     * 查询页数初始化
+     */
+    function find () {
+            $("#isSearch").val(true);
+            $("#mallForm").submit();
+    }
+
+    /**
+     *检索表单赋值
+     */
+    function valChange(showId, formId) {
+        $("#"+ formId).val($("#"+ showId).val());
+    }
+
+    /**
+     * 控制画面checkbox状态
+     * 判断画面上的值有没有变化
+     * param showId
+     * param formId
+     * param contId
+     * param showIsCrawlTargetId
+     * param hidIsCrawlTargetId
+     * param chkIsCrawlTargetId
+     */
+    function boxChange(showId, formId, contId, showIsCrawlTargetId, hidIsCrawlTargetId,chkIsCrawlTargetId) {
+         var a = $("#" + showId).is(":checked");
+
+        if(a) {
+            $("#" + showId).val(true);
+        } else {
+            $("#" + showId).val(false);
+            $("#" + showIsCrawlTargetId).val(false);
+            $("#" + hidIsCrawlTargetId).val(false);
+            $("#" + showIsCrawlTargetId).removeAttr("checked");
+        }
+        $("#" + formId).val($("#" + showId).val());
+
+        if($("#" + formId).val() == $("#" + contId).val()) {
+            $("#prompt").val(0);
+        } else {
+            $("#prompt").val(1);
+        }
+
+        if($("#" + showIsCrawlTargetId).val() == $("#" + chkIsCrawlTargetId).val()) {
+            $("#isprompt").val(0);
+        } else {
+            $("#isprompt").val(1);
+        }
+    }
+
+    /**
+     *判断画面值有没有变更
+     * param showId
+     * param formId
+     * param contId
+     */
+     function isboxChange(showId, formId, contId) {
+         var a = $("#" + showId).is(":checked");
+         if(a) {
+             $("#" + showId).val(true);
+             $("#" + showId).attr("checked", "checked");
+         } else {
+             $("#" + showId).val(false);
+             $("#" + showId).removeAttr("checked");
+         }
+         $("#" + formId).val($("#" + showId).val());
+
+         if($("#" + formId).val() == $("#" + contId).val()) {
+             $("#isprompt").val(0);
+         } else {
+             $("#isprompt").val(1);
+         }
+     }
+
+    /**
+     * 提交表单
+     */
+    function altChange() {
+        $("#postbind").val($("#srcbind").val());
+        $("#postid").val($("#showSrcId").val());
+        $("#postflg").val($("#srcIsCrawlTarget").val());
+        $("#postvalid").val($("#srcValidFlg").val());
+        if($("#prompt").val() == 0 && $("#isprompt").val() ==0) {
+            alert("没有值变更，不需要更新")
+        } else {
+            $("#bodyForm").submit();
+        }
+    }
+    </script>
+}

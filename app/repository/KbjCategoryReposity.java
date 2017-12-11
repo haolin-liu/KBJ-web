@@ -16,12 +16,10 @@ import java.util.*;
  */
 public class KbjCategoryReposity {
     private final EbeanServer ebeanServer;
-    private final DatabaseExecutionContext executionContext;
 
     @Inject
-    public KbjCategoryReposity(EbeanConfig ebeanConfig, DatabaseExecutionContext executionContext) {
+    public KbjCategoryReposity(EbeanConfig ebeanConfig) {
         this.ebeanServer = Ebean.getServer(ebeanConfig.defaultServer());
-        this.executionContext = executionContext;
     }
 
     /**

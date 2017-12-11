@@ -12,7 +12,6 @@ import play.db.ebean.EbeanConfig;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -23,12 +22,14 @@ import java.util.Optional;
 public class CategoryMapRepo {
 
     private final EbeanServer ebeanServer;
-    private final DatabaseExecutionContext executionContext;
+    private final MallCategoryRepo mallCategoryRepo;
+    private final KbjCategoryReposity kbjCategoryRepo;
 
     @Inject
-    public CategoryMapRepo(EbeanConfig ebeanConfig, DatabaseExecutionContext executionContext) {
+    public CategoryMapRepo(EbeanConfig ebeanConfig, MallCategoryRepo mallCategoryRepo, KbjCategoryReposity kbjCategoryRepo) {
         this.ebeanServer = Ebean.getServer(ebeanConfig.defaultServer());
-        this.executionContext = executionContext;
+        this.mallCategoryRepo = mallCategoryRepo;
+        this.kbjCategoryRepo = kbjCategoryRepo;
     }
 
     public List<KbjCategory> findRootCates() {
@@ -123,7 +124,7 @@ public class CategoryMapRepo {
         for (CategoryMapping cateMap: cateMaps) {
             BindCategory bindCate = new BindCategory();
             bindCate.mapId = cateMap.id;
-            MallCategory mallCate = findMallCate(cateMap.mallCateId, bindCategory.mall);
+            MallCategory mallCate = findMallCate(cateMap.mallCategory.id, bindCategory.mall);
             if (mallCate != null) {
                 bindCate.isBind = "1";
                 bindCate.mallCateId = mallCate.id;
@@ -150,8 +151,8 @@ public class CategoryMapRepo {
 
     public Optional<Long> insert(Long kbjId, Long mallId) {
         CategoryMapping cateMap = new CategoryMapping();
-        cateMap.kbjCateId = kbjId;
-        cateMap.mallCateId = mallId;
+        cateMap.kbjCategory = kbjCategoryRepo.find(kbjId);
+        cateMap.mallCategory = mallCategoryRepo.find(mallId);
         cateMap.insert();
         return Optional.empty();
     }
