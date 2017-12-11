@@ -30,6 +30,18 @@ public class MallCategory extends BaseModel {
     @Column(length=500)
     public String tag;
 
+    @Constraints.MaxLength(500)
+    @Column(length=500)
+    public String  mallCat;
+
+    @Constraints.MaxLength(500)
+    @Column(length=500)
+    public String mallSub;
+
+    @Constraints.MaxLength(500)
+    @Column(length=500)
+    public String mallTid;
+
     @Constraints.Required
     @Column(columnDefinition = "boolean default true")
     public Boolean valid;
