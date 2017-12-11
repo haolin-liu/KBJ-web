@@ -573,7 +573,13 @@
 
 .buttonGroup {
   float:left;
-  margin-top: 11px;
+  margin-top: 5px;
+}
+
+.btn:focus,.btn:active {
+  outline: none !important;
+  box-shadow: none;
+  color: #ea5252;
 }
 
 .buttonGroup :hover {
@@ -583,6 +589,10 @@
 .defaultSort {
   background-color:#5A5A5A;
   color:#fff
+}
+
+.btn-group-xs>.btn, .btn-xs {
+  padding: 6px 12px;
 }
 
 .searchProductPlace {
@@ -621,23 +631,24 @@
 
 .priceRange {
   float: left;
-  margin-top: 11px;
+  margin-top: 8px;
 }
 
-.rangeFrom {
+.rangeFromTo {
   max-width: 42px;
-  max-height: 20px;
-}
-
-.rangeTo {
-  max-width: 42px;
-  max-height: 20px;
+  max-height: 30px;
 }
 
 .priceConfirm {
-  max-height: 20px;
-  font-size: small;
-  padding-top: 0px;
+  margin-right: 10px;
+  border: 1px solid #ccc;
+  border-radius: 2px;
+  cursor: pointer;
+  color: #6c6c6c;
+  background: #ffffff;
+  height: 28px;
+  margin-left: 8px;
+  outline:none;
 }
 
 .priceRange {
@@ -743,6 +754,40 @@
   margin: 8px 10px 12px 10px;
 }
 
+.flip {
+  float: right;
+  margin-top: 11px;
+}
+
+.span-page {
+  margin-right: 5px
+}
+
+.p-pre {
+  width: 40px;
+  height: 23px;
+  border: 1px solid #ddd;
+  background: #FFF;
+  line-height: 23px;
+  text-align: center;
+  color: #AAA;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.p-next {
+  float: right;
+}
+
+a:hover {
+  text-decoration: none;
+  color: #AAA;
+}
+
+.disabled-a {
+  background: #ddd;
+}
+
 .collection {
   float: right;
 }
@@ -778,7 +823,7 @@
 .skip-text {
   max-width: 40px;
   min-height: 32px;
-  margin-left: 20px;
+  text-align: center;
 }
 
 .pagination>li>a, .pagination>li>span {
