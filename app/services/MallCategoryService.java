@@ -47,115 +47,35 @@ public class MallCategoryService {
     public CompletionStage<PagedList<MallCategory>> getMallCategorySearch(String id, String name, String mall, int chose, int page, int valid, int bind) {
         String flg;
         String validFlg;
-        String bindFlg;
-        if (id.length() != 0) {
-            if (chose == 1 && valid == 1) {
-                return supplyAsync(() -> {
-                    return mallCategoryRepo.findId(id, name, mall, page, 10);
-                }, executionContext);
-            } else if (chose == 1 && valid == 2) {
-                flg = "";
-                validFlg = "1";
-                return supplyAsync(() -> {
-                    return mallCategoryRepo.find(id, name, mall, flg, page, 10, validFlg);
-                }, executionContext);
-            } else if (chose == 1 && valid == 3) {
-                flg = "";
-                validFlg = "0";
-                return supplyAsync(() -> {
-                    return mallCategoryRepo.find(id, name, mall, flg, page, 10, validFlg);
-                }, executionContext);
-            } else if (chose == 2 && valid == 1) {
-                flg = "1";
-                validFlg = "";
-                return supplyAsync(() -> {
-                    return mallCategoryRepo.find(id, name, mall, flg, page, 10, validFlg);
-                }, executionContext);
-            } else if (chose == 2 && valid == 2) {
-                flg = "1";
-                validFlg = "1";
-                return supplyAsync(() -> {
-                    return mallCategoryRepo.find(id, name, mall, flg, page, 10, validFlg);
-                }, executionContext);
-            } else if (chose == 2 && valid == 3) {
-                flg = "1";
-                validFlg = "0";
-                return supplyAsync(() -> {
-                    return mallCategoryRepo.find(id, name, mall, flg, page, 10, validFlg);
-                }, executionContext);
-            } else if (chose == 3 && valid == 1) {
-                flg = "0";
-                validFlg = "";
-                return supplyAsync(() -> {
-                    return mallCategoryRepo.find(id, name, mall, flg, page, 10, validFlg);
-                }, executionContext);
-            } else if (chose == 3 && valid == 2) {
-                flg = "0";
-                validFlg = "1";
-                return supplyAsync(() -> {
-                    return mallCategoryRepo.find(id, name, mall, flg, page, 10, validFlg);
-                }, executionContext);
-            } else {
-                flg = "0";
-                validFlg = "0";
-                return supplyAsync(() -> {
-                    return mallCategoryRepo.find(id, name, mall, flg, page, 10, validFlg);
-                }, executionContext);
-            }
+
+        if(chose == 1)  {
+            flg = "";
+        } else if (chose == 2) {
+            flg = "1";
         } else {
-            if (chose == 1 && valid == 1) {
-                return supplyAsync(() -> {
-                    return mallCategoryRepo.findAll(name, mall, page, 10);
-                }, executionContext);
-            } else if (chose == 1 && valid == 2) {
-                flg = "";
-                validFlg = "1";
-                return supplyAsync(() -> {
-                    return mallCategoryRepo.find(name, mall, flg, page, 10, validFlg);
-                }, executionContext);
-            } else if (chose == 1 && valid == 3) {
-                flg = "";
-                validFlg = "0";
-                return supplyAsync(() -> {
-                    return mallCategoryRepo.find(name, mall, flg, page, 10, validFlg);
-                }, executionContext);
-            } else if (chose == 2 && valid == 1) {
-                flg = "1";
-                validFlg = "";
-                return supplyAsync(() -> {
-                    return mallCategoryRepo.find(name, mall, flg, page, 10, validFlg);
-                }, executionContext);
-            } else if (chose == 2 && valid == 2) {
-                flg = "1";
-                validFlg = "1";
-                return supplyAsync(() -> {
-                    return mallCategoryRepo.find(name, mall, flg, page, 10, validFlg);
-                }, executionContext);
-            } else if (chose == 2 && valid == 3) {
-                flg = "1";
-                validFlg = "0";
-                return supplyAsync(() -> {
-                    return mallCategoryRepo.find(name, mall, flg, page, 10, validFlg);
-                }, executionContext);
-            } else if (chose == 3 && valid == 1) {
-                flg = "0";
-                validFlg = "";
-                return supplyAsync(() -> {
-                    return mallCategoryRepo.find(name, mall, flg, page, 10, validFlg);
-                }, executionContext);
-            } else if (chose == 3 && valid == 2) {
-                flg = "0";
-                validFlg = "1";
-                return supplyAsync(() -> {
-                    return mallCategoryRepo.find(name, mall, flg, page, 10, validFlg);
-                }, executionContext);
-            } else {
-                flg = "0";
-                validFlg = "0";
-                return supplyAsync(() -> {
-                    return mallCategoryRepo.find(name, mall, flg, page, 10, validFlg);
-                }, executionContext);
-            }
+            flg = "0";
+        }
+
+        if(valid == 1)  {
+            validFlg = "";
+        } else if (valid == 2) {
+            validFlg = "1";
+        } else {
+            validFlg = "0";
+        }
+
+        if (bind == 1) {
+            return supplyAsync(() -> {
+                return mallCategoryRepo.find(id, name, mall, page, 10, flg, validFlg);
+            }, executionContext);
+        } else if (bind == 2){
+            return supplyAsync(() -> {
+                return mallCategoryRepo.findBind(id, name, mall, page, 10, flg, validFlg);
+            }, executionContext);
+        } else {
+            return supplyAsync(() -> {
+                return mallCategoryRepo.findNoBind(id, name, mall, page, 10, flg, validFlg);
+            }, executionContext);
         }
     }
 
@@ -170,85 +90,36 @@ public class MallCategoryService {
      */
     public CompletionStage<PagedList<MallCategory>> getMallCategoryUpdate(Map<String, String[]> data,
                                                                           String id, String name, String mall,
-                                                                          int chose, int page, int valid) {
+                                                                          int chose, int page, int valid, int bind) {
         return supplyAsync(() -> {
             return mallCategoryRepo.update(data);
         }, executionContext).thenApplyAsync((v) -> {
             String flg;
             String validFlg;
-            if (id.length() != 0) {
-                if (chose == 1 && valid == 1) {
-                        return mallCategoryRepo.findId(id, name, mall, page, 10);
-                } else if (chose == 1 && valid == 2) {
-                    flg = "";
-                    validFlg = "1";
-                        return mallCategoryRepo.find(id, name, mall, flg, page, 10, validFlg);
-                } else if (chose == 1 && valid == 3) {
-                    flg = "";
-                    validFlg = "0";
-                        return mallCategoryRepo.find(id, name, mall, flg, page, 10, validFlg);
-                } else if (chose == 2 && valid == 1) {
-                    flg = "1";
-                    validFlg = "";
-                        return mallCategoryRepo.find(id, name, mall, flg, page, 10, validFlg);
-                } else if (chose == 2 && valid == 2) {
-                    flg = "1";
-                    validFlg = "1";
-                        return mallCategoryRepo.find(id, name, mall, flg, page, 10, validFlg);
-                } else if (chose == 2 && valid == 3) {
-                    flg = "1";
-                    validFlg = "0";
-                        return mallCategoryRepo.find(id, name, mall, flg, page, 10, validFlg);
-                } else if (chose == 3 && valid == 1) {
-                    flg = "0";
-                    validFlg = "";
-                        return mallCategoryRepo.find(id, name, mall, flg, page, 10, validFlg);
-                } else if (chose == 3 && valid == 2) {
-                    flg = "0";
-                    validFlg = "1";
-                        return mallCategoryRepo.find(id, name, mall, flg, page, 10, validFlg);
-                } else {
-                    flg = "0";
-                    validFlg = "0";
-                        return mallCategoryRepo.find(id, name, mall, flg, page, 10, validFlg);
-                }
+
+            if(chose == 1)  {
+                flg = "";
+            } else if (chose == 2) {
+                flg = "1";
             } else {
-                if (chose == 1 && valid == 1) {
-                    return mallCategoryRepo.findAll(name, mall, page, 10);
-                } else if (chose == 1 && valid == 2) {
-                    flg = "";
-                    validFlg = "1";
-                    return mallCategoryRepo.find(name, mall, flg, page, 10, validFlg);
-                } else if (chose == 1 && valid == 3) {
-                    flg = "";
-                    validFlg = "0";
-                    return mallCategoryRepo.find(name, mall, flg, page, 10, validFlg);
-                } else if (chose == 2 && valid == 1) {
-                    flg = "1";
-                    validFlg = "";
-                    return mallCategoryRepo.find(name, mall, flg, page, 10, validFlg);
-                } else if (chose == 2 && valid == 2) {
-                    flg = "1";
-                    validFlg = "1";
-                    return mallCategoryRepo.find(name, mall, flg, page, 10, validFlg);
-                } else if (chose == 2 && valid == 3) {
-                    flg = "1";
-                    validFlg = "0";
-                    return mallCategoryRepo.find(name, mall, flg, page, 10, validFlg);
-                } else if (chose == 3 && valid == 1) {
-                    flg = "0";
-                    validFlg = "";
-                    return mallCategoryRepo.find(name, mall, flg, page, 10, validFlg);
-                } else if (chose == 3 && valid == 2) {
-                    flg = "0";
-                    validFlg = "1";
-                    return mallCategoryRepo.find(name, mall, flg, page, 10, validFlg);
-                } else {
-                    flg = "0";
-                    validFlg = "0";
-                    return mallCategoryRepo.find(name, mall, flg, page, 10, validFlg);
-                }
+                flg = "0";
             }
+
+            if(valid == 1)  {
+                validFlg = "";
+            } else if (valid == 2) {
+                validFlg = "1";
+            } else {
+                validFlg = "0";
+            }
+            if (bind == 1) {
+                return mallCategoryRepo.find(id, name, mall, page, 10, flg, validFlg);
+            } else  if (bind == 2) {
+                return mallCategoryRepo.findBind(id, name, mall, page, 10, flg, validFlg);
+            } else {
+                return mallCategoryRepo.findNoBind(id, name, mall, page, 10, flg, validFlg);
+            }
+
         }, httpExecutionContext.current());
     }
 

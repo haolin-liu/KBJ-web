@@ -120,7 +120,7 @@ public class MallCategoryController extends Controller{
         int validFlg = Integer.parseInt(data.get("postvalid")[0]);
         int bind = Integer.parseInt(data.get("postbind")[0]);
 
-        return mallCategoryService.getMallCategoryUpdate(data, srcid, srcName, srcMall, flg, page, validFlg).thenApplyAsync(list -> {
+        return mallCategoryService.getMallCategoryUpdate(data, srcid, srcName, srcMall, flg, page, validFlg, bind).thenApplyAsync(list -> {
             return ok(views.html.manage.mallCategory.render(list, srcid, srcName, srcMall ,1, page, false, validFlg, 1, bind));
         }, httpExecutionContext.current());
     }

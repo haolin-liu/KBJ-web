@@ -50,7 +50,7 @@
                                 </select>
                             </div>
                             <div class="col-sm-1 form-group">
-                                <select class="form-control" id="selectbind" onchange="valChange('selectbind','srcIsCrawlTarget')">
+                                <select class="form-control" id="selectbind" onchange="valChange('selectbind','srcbind')">
                                     <option value="1" @if(bind == 1){selected}>绑定</option>
                                     <option value="2" @if(bind == 2){selected}>是</option>
                                     <option value="3" @if(bind == 3){selected}>否</option>
@@ -82,6 +82,7 @@
                         <input type="hidden" id="postflg" name="postflg" value="@isCrawlTarget"/>
                         <input type="hidden" id="prompt" value="0"/>
                         <input type="hidden" id="isprompt" value="0"/>
+                        <input type="hidden" id="bindprompt" value="0"/>
                             <table id="mallTable" class="table table-striped table-hover">
                                 <tr>
                                     <th class="col-sm-1 text-primary">ID</th>
@@ -99,24 +100,29 @@
                                     @for(data <- list.getList.asScala) {
                                         <tr>
                                             <input type="hidden" name="hidid" value="@data.id"/>
+                                            <input type="hidden" name="chgFlgValid" id="chgFlgValid@data.id" value="0"/>
+                                            <input type="hidden" name="chgFlgIsCrawlTarget" id="chgFlgIsCrawlTarget@data.id" value="0"/>
+                                            <input type="hidden" name="chgFlgBind" id="chgFlgBind@data.id" value="0"/>
                                             <input type="hidden" id="hidvalid@data.id" name="hidvalid" value="@data.valid"/>
                                             <input type="hidden" id="hidisCrawlTarget@data.id" name="hidisCrawlTarget"value="@data.isCrawlTarget"/>
                                             <input type="hidden" id="validChange@data.id" value="@data.valid"/>
                                             <input type="hidden" id="isCrawlTargetChange@data.id" value="@data.isCrawlTarget"/>
+                                            <input type="hidden" id="hidbind@data.id" name="hidbind" @if(data.categoryMapping != null){value="true" } else{value="false"}/>
+                                            <input type="hidden" id="contbind@data.id" @if(data.categoryMapping != null){value="true" } else{value="false"}/>
                                             <td class="col-sm-1" title="@data.id">@data.id</td>
                                             <td class="col-sm-1" title="@data.name">@if(data.name.length > 8){@data.name.substring(0,8)...} else{@data.name}</td>
                                             <td class="col-sm-1" title="@data.link"><p data-toggle="modal" data-target="#myModal@data.id">@if(data.link.length > 15){@data.link.substring(0,15)...} else{@data.link}</p></td>
                                             <td class="col-sm-1" title="@data.mall">@if(data.mall.length > 8){@data.mall.substring(0,8)...} else{@data.mall}</td>
                                             <td class="col-sm-1" title="@data.tag">@if(data.tag.length > 8){@data.tag.substring(0,8)...} else{@data.tag}</td>
                                             <td class="col-sm-1">
-                                                <input type="checkbox" id="valid@data.id" value="@data.valid"  onchange="boxChange('valid@data.id','hidvalid@data.id','validChange@data.id','isCrawlTarget@data.id','hidisCrawlTarget@data.id','isCrawlTargetChange@data.id')"
+                                                <input type="checkbox" id="valid@data.id" value="@data.valid"  onchange="boxChange('valid@data.id','hidvalid@data.id','validChange@data.id','isCrawlTarget@data.id','hidisCrawlTarget@data.id','isCrawlTargetChange@data.id','chgFlgValid@data.id')"
                                                     @if(data.valid){checked="checked"}/>
                                             </td>
                                             <td class="col-sm-1">
-                                                <input type="checkbox" id="isCrawlTarget@data.id"  value="@data.isCrawlTarget" onchange="isboxChange('isCrawlTarget@data.id','hidisCrawlTarget@data.id','isCrawlTargetChange@data.id')"
+                                                <input type="checkbox" id="isCrawlTarget@data.id"  value="@data.isCrawlTarget" onchange="isboxChange('isCrawlTarget@data.id','hidisCrawlTarget@data.id','isCrawlTargetChange@data.id','chgFlgIsCrawlTarget@data.id')"
                                                     @if(data.isCrawlTarget){checked="checked"}/>
                                             </td>
-                                            <td class="col-sm-1"><input type="checkbox" @if(data.categoryMapping != null){checked="checked" value="true" } else {value="false" disabled} />
+                                            <td class="col-sm-1"><input type="checkbox" id="bind@data.id" onchange="bindChange('bind@data.id','hidbind@data.id', 'contbind@data.id','chgFlgBind@data.id')" @if(data.categoryMapping != null){checked="checked" value="true" } else {value="false" disabled} />
                                                 @if(data.categoryMapping == null){} else{@data.categoryMapping.kbjCategory.name}</td>
                                             <td class="col-sm-1 text-right"><button class="btn btn-primary" type="button" onclick="location.href='@gui.manage.routes.MallCategoryController.getOneEdit(data.id)'">编辑</button></td>
                                             <div class="modal fade" id="myModal@data.id" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -214,7 +220,7 @@
      */
     function jump() {
         var x = $("#jump").val();
-        if($("#prompt").val() == 1 || $("#isprompt").val() == 1) {
+        if($("#prompt").val() == 1 || $("#isprompt").val() == 1 || $("#bindprompt").val() == 1) {
             alert("有数据变更，请先提交更新！")
         } else {
             $("#page").val(x - 1);
@@ -228,7 +234,7 @@
      * param page
      */
         function oneByOne(page) {
-            if($("#prompt").val() == 1 || $("#isprompt").val() == 1) {
+            if($("#prompt").val() == 1 || $("#isprompt").val() == 1 || $("#bindprompt").val() == 1) {
                 alert("有数据变更，请先提交更新！")
             } else {
                 $("#page").val(page);
@@ -242,7 +248,7 @@
      * param page
      */
     function fistPage(page) {
-        if($("#prompt").val() == 1 || $("#isprompt").val() == 1) {
+        if($("#prompt").val() == 1 || $("#isprompt").val() == 1 || $("#bindprompt").val() == 1) {
             alert("有数据变更，请先提交更新！")
         } else {
             $("#page").val(page);
@@ -256,7 +262,7 @@
      * param page
      */
     function lastPage(page) {
-        if($("#prompt").val() == 1 || $("#isprompt").val() == 1) {
+        if($("#prompt").val() == 1 || $("#isprompt").val() == 1 || $("#bindprompt").val() == 1) {
             alert("有数据变更，请先提交更新！")
         } else {
             $("#page").val(page - 1);
@@ -269,7 +275,7 @@
      * 下一页
      */
     function nextPage () {
-        if($("#prompt").val() == 1 || $("#isprompt").val() == 1) {
+        if($("#prompt").val() == 1 || $("#isprompt").val() == 1 || $("#bindprompt").val() == 1) {
             alert("有数据变更，请先提交更新！")
         } else {
             $("#page").val(@page + 1);
@@ -282,7 +288,7 @@
      * 上一页
      */
     function previous() {
-        if($("#prompt").val() == 1 || $("#isprompt").val() == 1) {
+        if($("#prompt").val() == 1 || $("#isprompt").val() == 1 || $("#bindprompt").val() == 1) {
             alert("有数据变更，请先提交更新！")
         } else {
             $("#page").val(@page -1);
@@ -316,9 +322,8 @@
      * param hidIsCrawlTargetId
      * param chkIsCrawlTargetId
      */
-    function boxChange(showId, formId, contId, showIsCrawlTargetId, hidIsCrawlTargetId,chkIsCrawlTargetId) {
+    function boxChange(showId, formId, contId, showIsCrawlTargetId, hidIsCrawlTargetId, chkIsCrawlTargetId, chgFlg) {
          var a = $("#" + showId).is(":checked");
-
         if(a) {
             $("#" + showId).val(true);
         } else {
@@ -331,8 +336,10 @@
 
         if($("#" + formId).val() == $("#" + contId).val()) {
             $("#prompt").val(0);
+            $("#" + chgFlg).val(0);
         } else {
             $("#prompt").val(1);
+            $("#" + chgFlg).val(1);
         }
 
         if($("#" + showIsCrawlTargetId).val() == $("#" + chkIsCrawlTargetId).val()) {
@@ -348,21 +355,42 @@
      * param formId
      * param contId
      */
-     function isboxChange(showId, formId, contId) {
+     function isboxChange(showId, formId, contId, chgFlg) {
          var a = $("#" + showId).is(":checked");
          if(a) {
              $("#" + showId).val(true);
              $("#" + showId).attr("checked", "checked");
          } else {
              $("#" + showId).val(false);
-             $("#" + showId).removeAttr("checked");
          }
          $("#" + formId).val($("#" + showId).val());
 
          if($("#" + formId).val() == $("#" + contId).val()) {
              $("#isprompt").val(0);
+             $("#" + chgFlg).val(0);
          } else {
              $("#isprompt").val(1);
+             $("#" + chgFlg).val(1);
+         }
+     }
+     /**
+      *
+      */
+     function bindChange(showId, formId, contId, chgFlg) {
+         var a = $("#" + showId).is(":checked");
+         if(a) {
+             $("#" + showId).val(true);
+         } else {
+             $("#" + showId).val(false);
+         }
+         $("#" + formId).val($("#" + showId).val());
+
+         if($("#" + formId).val() == $("#" + contId).val()) {
+             $("#bindprompt").val(0);
+             $("#" + chgFlg).val(0);
+         } else {
+             $("#bindprompt").val(1);
+             $("#" + chgFlg).val(1);
          }
      }
 
@@ -374,7 +402,7 @@
         $("#postid").val($("#showSrcId").val());
         $("#postflg").val($("#srcIsCrawlTarget").val());
         $("#postvalid").val($("#srcValidFlg").val());
-        if($("#prompt").val() == 0 && $("#isprompt").val() ==0) {
+        if($("#prompt").val() == 0 && $("#isprompt").val() ==0 && $("#bindprompt").val() == 0) {
             alert("没有值变更，不需要更新")
         } else {
             $("#bodyForm").submit();
