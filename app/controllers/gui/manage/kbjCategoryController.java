@@ -104,7 +104,6 @@ public class kbjCategoryController extends Controller {
             kbjCate.parentId = category.parent.id;
             kbjCate.bIsCrawlTarget = category.isCrawlTarget;
             kbjCate.bValid = category.valid;
-            kbjCate.parentName = category.parent.name;
             Form<KbjCategoryForm> kbjCateForm = formFactory.form(KbjCategoryForm.class).fill(kbjCate);
             Map<String,String> parentNames = kbjCategoryService.getParent();
             return ok(views.html.manage.kbjCateAdd.render(kbjCateForm, parentNames));

@@ -18,5 +18,4 @@ public class KbjCategoryForm {
     public boolean bIsCrawlTarget;
     public boolean bValid;
     public long id;
-    public String parentName;
 }

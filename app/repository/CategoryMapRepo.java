@@ -23,10 +23,10 @@ public class CategoryMapRepo {
 
     private final EbeanServer ebeanServer;
     private final MallCategoryRepo mallCategoryRepo;
-    private final KbjCategoryReposity kbjCategoryRepo;
+    private final KbjCategoryRepo kbjCategoryRepo;
 
     @Inject
-    public CategoryMapRepo(EbeanConfig ebeanConfig, MallCategoryRepo mallCategoryRepo, KbjCategoryReposity kbjCategoryRepo) {
+    public CategoryMapRepo(EbeanConfig ebeanConfig, MallCategoryRepo mallCategoryRepo, KbjCategoryRepo kbjCategoryRepo) {
         this.ebeanServer = Ebean.getServer(ebeanConfig.defaultServer());
         this.mallCategoryRepo = mallCategoryRepo;
         this.kbjCategoryRepo = kbjCategoryRepo;

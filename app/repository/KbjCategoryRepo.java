@@ -14,11 +14,11 @@ import java.util.*;
  * @author daiqingyi
  * @date 2017-11-27
  */
-public class KbjCategoryReposity {
+public class KbjCategoryRepo {
     private final EbeanServer ebeanServer;
 
     @Inject
-    public KbjCategoryReposity(EbeanConfig ebeanConfig) {
+    public KbjCategoryRepo(EbeanConfig ebeanConfig) {
         this.ebeanServer = Ebean.getServer(ebeanConfig.defaultServer());
     }
 
@@ -177,7 +177,12 @@ public class KbjCategoryReposity {
      */
     public Map<String, String> getParents() {
         long rootId = 1;
-        List<KbjCategory> list = ebeanServer.find(KbjCategory.class).where().eq("parent_id", rootId).orderBy("name").findList();
+        List<KbjCategory> list = ebeanServer.find(KbjCategory.class)
+                .fetch("parent")
+                .where()
+                .eq("parent.id", rootId)
+                .orderBy("id")
+                .findList();
         HashMap<String, String> options = new LinkedHashMap<String, String>();
         for (KbjCategory c : list) {
             options.put(c.id.toString(), c.name);

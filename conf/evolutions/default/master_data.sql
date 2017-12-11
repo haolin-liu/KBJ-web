@@ -4,7 +4,7 @@ drop index ix_kbj_category_parent_id on kbj_category;
 
 # insert the root category row.
 # begin
-INSERT INTO `kebja`.`kbj_category` (`id`, `create_date`, `create_user`, `update_date`, `update_user`, `name`, `is_crawl_target`, `valid`, `parent_id`) VALUES ('1', '2017-12-07 15:35:49', 'system', '2017-12-07 15:35:49', 'system', 'ROOT', '1', '1', '1');
+INSERT INTO `kebja`.`kbj_category` (`id`, `create_date`, `create_user`, `update_date`, `update_user`, `name`, `is_crawl_target`, `priority`, `valid`, `parent_id`) VALUES ('1', '2017-12-07 15:35:49', 'system', '2017-12-07 15:35:49', 'system', 'ROOT', '1', '0', '1', '1');
 # end
 # add the foreign key again.
 alter table kbj_category add constraint fk_kbj_category_parent_id foreign key (parent_id) references kbj_category (id) on delete restrict on update restrict;
@@ -12,15 +12,30 @@ create index ix_kbj_category_parent_id on kbj_category (parent_id);
 
 # master data of kbj_category
 # first class category.
-INSERT INTO `kebja`.`kbj_category` (`id`, `create_date`, `create_user`, `update_date`, `update_user`, `name`, `is_crawl_target`, `valid`, `parent_id`)
+INSERT INTO `kebja`.`kbj_category` (`id`, `create_date`, `create_user`, `update_date`, `update_user`, `name`, `is_crawl_target`, `priority`, `valid`, `parent_id`)
 VALUES
-  ('2', '2017-12-07 15:35:49', 'system', '2017-12-07 15:35:49', 'system', '家用电器', '1', '1', '1')
-, ('3', '2017-12-07 15:35:49', 'system', '2017-12-07 15:35:49', 'system', '电脑&配件', '1', '1', '1')
-, ('4', '2017-12-07 15:35:49', 'system', '2017-12-07 15:35:49', 'system', '手机数码', '1', '1', '1')
-, ('5', '2017-12-07 15:35:49', 'system', '2017-12-07 15:35:49', 'system', '食品', '1', '1', '1')
-, ('6', '2017-12-07 15:35:49', 'system', '2017-12-07 15:35:49', 'system', '图书', '1', '1', '1')
-, ('7', '2017-12-07 15:35:49', 'system', '2017-12-07 15:35:49', 'system', '衣服', '1', '1', '1')
-, ('8', '2017-12-07 15:35:49', 'system', '2017-12-07 15:35:49', 'system', '鞋袜', '1', '1', '1')
+  ('2', '2017-12-07 15:35:49', 'system', '2017-12-07 15:35:49', 'system', '家用电器', '1', '1', '1', '1')
+, ('3', '2017-12-07 15:35:49', 'system', '2017-12-07 15:35:49', 'system', '电脑&配件', '1', '2', '1', '1')
+, ('4', '2017-12-07 15:35:49', 'system', '2017-12-07 15:35:49', 'system', '手机数码', '1', '3', '1', '1')
+, ('5', '2017-12-07 15:35:49', 'system', '2017-12-07 15:35:49', 'system', '食品', '1', '4', '1', '1')
+, ('6', '2017-12-07 15:35:49', 'system', '2017-12-07 15:35:49', 'system', '图书', '1', '5', '1', '1')
+, ('7', '2017-12-07 15:35:49', 'system', '2017-12-07 15:35:49', 'system', '衣服', '1', '6', '1', '1')
+, ('8', '2017-12-07 15:35:49', 'system', '2017-12-07 15:35:49', 'system', '鞋袜', '1', '7', '1', '1')
+#  ('2', '2017-12-07 15:35:49', 'system', '2017-12-07 15:35:49', 'system', '手机数码', '1', '1', '1', '1')
+#  , ('3', '2017-12-07 15:35:49', 'system', '2017-12-07 15:35:49', 'system', '电脑配件', '1', '2', '1', '1')
+#  , ('4', '2017-12-07 15:35:49', 'system', '2017-12-07 15:35:49', 'system', '厨卫家电', '1', '3', '1', '1')
+#  , ('5', '2017-12-07 15:35:49', 'system', '2017-12-07 15:35:49', 'system', '服装配饰', '1', '4', '1', '1')
+#  , ('6', '2017-12-07 15:35:49', 'system', '2017-12-07 15:35:49', 'system', '美妆个护', '1', '5', '1', '1')
+#  , ('7', '2017-12-07 15:35:49', 'system', '2017-12-07 15:35:49', 'system', '箱包鞋靴', '1', '6', '1', '1')
+#  , ('8', '2017-12-07 15:35:49', 'system', '2017-12-07 15:35:49', 'system', '图书音像', '1', '7', '1', '1')
+#  , ('9', '2017-12-07 15:35:49', 'system', '2017-12-07 15:35:49', 'system', '食品饮料', '1', '8', '1', '1')
+#  , ('10', '2017-12-07 15:35:49', 'system', '2017-12-07 15:35:49', 'system', '生鲜水果', '1', '9', '1', '1')
+#  , ('11', '2017-12-07 15:35:49', 'system', '2017-12-07 15:35:49', 'system', '运动户外', '1', '10', '1', '1')
+#  , ('12', '2017-12-07 15:35:49', 'system', '2017-12-07 15:35:49', 'system', '母婴玩具', '1', '11', '1', '1')
+#  , ('13', '2017-12-07 15:35:49', 'system', '2017-12-07 15:35:49', 'system', '汽车用品', '1', '12', '1', '1')
+#  , ('14', '2017-12-07 15:35:49', 'system', '2017-12-07 15:35:49', 'system', '家具建材', '1', '13', '1', '1')
+#  , ('15', '2017-12-07 15:35:49', 'system', '2017-12-07 15:35:49', 'system', '医药保健', '1', '14', '1', '1')
+#  , ('16', '2017-12-07 15:35:49', 'system', '2017-12-07 15:35:49', 'system', '礼品花植', '1', '15', '1', '1')
 ;
 
 # second class category.
