@@ -15,13 +15,11 @@ public class CategoryMapping extends BaseModel {
     public Long id;
 
     @ManyToOne
-    @Column(name = "kbj_cate_id")
     @Constraints.Required
     public KbjCategory kbjCategory;
 
     @OneToOne
     @Constraints.Required
-    @Column(name = "mall_cate_id")
     public MallCategory mallCategory;
 
 }

@@ -1,4 +1,4 @@
-package models.form;
+package models.forms;
 
 import io.ebean.Model;
 
