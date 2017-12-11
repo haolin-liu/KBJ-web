@@ -1,5 +1,5 @@
 @import models.entities.MallCategory
-@(list: io.ebean.PagedList[MallCategory], name: String, mall: String, isCrawlTarget: Int, page: Int, isSearch: Boolean, valid: Int, updFlg: Int)
+@(list: io.ebean.PagedList[MallCategory], id: String, name: String, mall: String, isCrawlTarget: Int, page: Int, isSearch: Boolean, valid: Int, updFlg: Int, bind: Int)
 
 @link() = @{
     gui.manage.routes.MallCategoryController.search();
@@ -27,14 +27,17 @@
                         <div class="col-sm-12">
                                 @CSRF.formField
                             <div class="col-sm-2 form-group">
-                                <input class="form-control" name="showSrcName" id="showSrcName" placeholder="分类名" value="@name" onchange="valChange('showSrcName','srcName')"/>
+                                <input class="form-control" name="showSrcId" id="showSrcId" placeholder="ID" value="@id"/>
                             </div>
                             <div class="col-sm-2 form-group">
-                                <input class="form-control" name="showSrcMall" id="showSrcMall" placeholder="商城名" value="@mall" onchange="valChange('showSrcMall','srcMall')"/>
+                                <input class="form-control" name="showSrcName" id="showSrcName" placeholder="分类名" value="@name"/>
+                            </div>
+                            <div class="col-sm-2 form-group">
+                                <input class="form-control" name="showSrcMall" id="showSrcMall" placeholder="商城名" value="@mall"/>
                             </div>
                             <div class="col-sm-1 form-group">
                                 <select class="form-control" id="validFlg" onchange="valChange('validFlg','srcValidFlg')">
-                                    <option value="1" @if(valid == 1){selected}>数据有效</option>
+                                    <option value="1" @if(valid == 1){selected}>有效</option>
                                     <option value="2" @if(valid == 2){selected}>是</option>
                                     <option value="3" @if(valid == 3){selected}>否</option>
                                 </select>
@@ -46,14 +49,22 @@
                                     <option value="3" @if(isCrawlTarget == 3){selected}>否</option>
                                 </select>
                             </div>
+                            <div class="col-sm-1 form-group">
+                                <select class="form-control" id="selectbind" onchange="valChange('selectbind','srcIsCrawlTarget')">
+                                    <option value="1" @if(bind == 1){selected}>绑定</option>
+                                    <option value="2" @if(bind == 2){selected}>是</option>
+                                    <option value="3" @if(bind == 3){selected}>否</option>
+                                </select>
+                            </div>
                             <input type="hidden" name="srcValidFlg" id="srcValidFlg" value="@valid"/>
+                            <input type="hidden" name="srcbind" id="srcbind" value="@bind"/>
                             <input type="hidden" name="srcIsCrawlTarget" id="srcIsCrawlTarget" value="@isCrawlTarget"/>
                             <input name="page" id="page" value="@page" type="hidden"/>
                             <input name="isSearch" id="isSearch" value="@isSearch" type="hidden"/>
-                            <div class="col-sm-2 form-group">
+                            <div class="col-sm-1 form-group">
                                 <button class="btn btn-primary" type="button" onclick="find()">查询</button>
                             </div>
-                            <div class="col-sm-4 text-right form-group">
+                            <div class="col-sm-2 text-right form-group">
                                 <button class="btn btn-primary" type="button" onclick="location.href='@gui.manage.routes.MallCategoryController.create()'">新规</button>
                             </div>
                     </div>
@@ -62,6 +73,8 @@
                 <div class="col-sm-12">
                     @form(gui.manage.routes.MallCategoryController.update(),'id -> "bodyForm") {
                         @CSRF.formField
+                        <input type="hidden" id="postid" name="postid" value="@id"/>
+                        <input type="hidden" id="postbind" name="postbind" value="@bind"/>
                         <input type="hidden" id="postpage" name="postpage" value="@page"/>
                         <input type="hidden" id="postname" name="postname" value="@name"/>
                         <input type="hidden" id="postmall" name="postmall" value="@mall"/>
@@ -78,6 +91,7 @@
                                     <th class="col-sm-1 text-primary">TAG</th>
                                     <th class="col-sm-1 text-primary">有效</th>
                                     <th class="col-sm-1 text-primary">爬虫对象</th>
+                                    <th class="col-sm-1 text-primary">绑定</th>
                                     <th class="col-sm-1 text-primary text-right">更新</th>
                                 </tr>
                                 @if(list == null) {
@@ -102,6 +116,8 @@
                                                 <input type="checkbox" id="isCrawlTarget@data.id"  value="@data.isCrawlTarget" onchange="isboxChange('isCrawlTarget@data.id','hidisCrawlTarget@data.id','isCrawlTargetChange@data.id')"
                                                     @if(data.isCrawlTarget){checked="checked"}/>
                                             </td>
+                                            <td class="col-sm-1"><input type="checkbox" @if(data.categoryMapping != null){checked="checked" value="true" } else {value="false" disabled} />
+                                                @if(data.categoryMapping == null){} else{@data.categoryMapping.kbjCategory.name}</td>
                                             <td class="col-sm-1 text-right"><button class="btn btn-primary" type="button" onclick="location.href='@gui.manage.routes.MallCategoryController.getOneEdit(data.id)'">编辑</button></td>
                                             <div class="modal fade" id="myModal@data.id" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                                                 <div class="modal-dialog">
@@ -178,11 +194,11 @@
                                 <li>
                                     <button onclick="lastPage(@list.getTotalPageCount)">>></button>
                                 </li>
+                                <li>
+                                    <input style="max-width: 40px;" id="jump" value="" />
+                                    <button onclick="jump()">跳转</button>
+                                </li>
                             </ul>
-                            <div style="text-align: center">
-                                <input style="width: 4%" id="jump" value="" />
-                                <button onclick="jump()">跳转</button>
-                            </div>
                         }
                     }
                 </div>
@@ -354,6 +370,8 @@
      * 提交表单
      */
     function altChange() {
+        $("#postbind").val($("#srcbind").val());
+        $("#postid").val($("#showSrcId").val());
         $("#postflg").val($("#srcIsCrawlTarget").val());
         $("#postvalid").val($("#srcValidFlg").val());
         if($("#prompt").val() == 0 && $("#isprompt").val() ==0) {

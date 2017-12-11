@@ -2,9 +2,7 @@ package models.entities;
 
 import play.data.validation.Constraints;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity
 public class MallCategory extends BaseModel {
@@ -39,5 +37,8 @@ public class MallCategory extends BaseModel {
     @Constraints.Required
     @Column(columnDefinition = "boolean default true")
     public Boolean isCrawlTarget;
+
+    @OneToOne(mappedBy = "mallCategory")
+    public CategoryMapping categoryMapping;
 
 }

@@ -41,7 +41,7 @@ public class MallCategoryController extends Controller{
      */
     public Result catgory() {
         PagedList<MallCategory> list = null;
-        return ok(views.html.manage.mallCategory.render(list, "", "" ,1, 0, false, 1, 0));
+        return ok(views.html.manage.mallCategory.render(list, "", "", "" ,1, 0, false, 1, 0, 1));
     }
 
     /**
@@ -54,8 +54,11 @@ public class MallCategoryController extends Controller{
 
         String name = data.get("showSrcName")[0];
         String mall = data.get("showSrcMall")[0];
+        String id = data.get("showSrcId")[0];
+        System.out.println("id-----------------" + id);
         int flg = Integer.parseInt(data.get("srcIsCrawlTarget")[0]);
         int validFlg = Integer.parseInt(data.get("srcValidFlg")[0]);
+        int bind = Integer.parseInt(data.get("srcbind")[0]);
         int page;
         Boolean srcflg = Boolean.valueOf(data.get("isSearch")[0]);
         if(srcflg) {
@@ -63,8 +66,8 @@ public class MallCategoryController extends Controller{
         } else {
             page = Integer.parseInt(data.get("page")[0]);
         }
-        return mallCategoryService.getMallCategorySearch(name, mall, flg, page, validFlg).thenApplyAsync(list -> {
-            return ok(views.html.manage.mallCategory.render(list, name, mall ,flg, page, srcflg, validFlg, 0));
+        return mallCategoryService.getMallCategorySearch(id, name, mall, flg, page, validFlg, bind).thenApplyAsync(list -> {
+            return ok(views.html.manage.mallCategory.render(list, id, name, mall ,flg, page, srcflg, validFlg, 0, bind));
         }, httpExecutionContext.current());
     }
 
@@ -111,12 +114,14 @@ public class MallCategoryController extends Controller{
 
         String srcName = data.get("postname")[0];
         String srcMall = data.get("postmall")[0];
+        String srcid = data.get("postid")[0];
         int flg = Integer.parseInt(data.get("postflg")[0]);
         int page = Integer.parseInt(data.get("postpage")[0]);
         int validFlg = Integer.parseInt(data.get("postvalid")[0]);
+        int bind = Integer.parseInt(data.get("postbind")[0]);
 
-        return mallCategoryService.getMallCategoryUpdate(data, srcName, srcMall, flg, page, validFlg).thenApplyAsync(list -> {
-            return ok(views.html.manage.mallCategory.render(list, srcName, srcMall ,1, page, false, validFlg, 1));
+        return mallCategoryService.getMallCategoryUpdate(data, srcid, srcName, srcMall, flg, page, validFlg).thenApplyAsync(list -> {
+            return ok(views.html.manage.mallCategory.render(list, srcid, srcName, srcMall ,1, page, false, validFlg, 1, bind));
         }, httpExecutionContext.current());
     }
 
