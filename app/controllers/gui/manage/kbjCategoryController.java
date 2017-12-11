@@ -42,9 +42,9 @@ public class kbjCategoryController extends Controller {
      */
 
     public Result index() {
-        Form<KbjCategoryForm> kbCateForm = formFactory.form(KbjCategoryForm.class).fill(new KbjCategoryForm());
+        Form<KbjCategoryForm> kbjCateForm = formFactory.form(KbjCategoryForm.class).fill(new KbjCategoryForm());
         Map<String, String> options = kbjCategoryService.getParent();
-        return ok(views.html.manage.kbjCategory.render(null, "id", "asc", kbCateForm, options));
+        return ok(views.html.manage.kbjCategory.render(null, "priority", "asc", kbjCateForm, options));
     }
 
     /**
@@ -107,6 +107,18 @@ public class kbjCategoryController extends Controller {
             Form<KbjCategoryForm> kbjCateForm = formFactory.form(KbjCategoryForm.class).fill(kbjCate);
             Map<String,String> parentNames = kbjCategoryService.getParent();
             return ok(views.html.manage.kbjCateAdd.render(kbjCateForm, parentNames));
+        }, httpExecutionContext.current());
+    }
+
+    public CompletionStage<Result> updPriority(Boolean isUpOrDown, Long id, Integer priority, int page) {
+        Form<KbjCategoryForm> kbjCateForm = formFactory.form(KbjCategoryForm.class).fill(new KbjCategoryForm());
+        KbjCategoryForm kbjCates = kbjCateForm.get();
+        kbjCates.isSearch = true;
+        kbjCates.page = page;
+        kbjCategoryService.updPriority(isUpOrDown, id, priority);
+        return kbjCategoryService.findList(kbjCates, "priority", "asc").thenApplyAsync(list -> {
+            Map<String, String> options = kbjCategoryService.getParent();
+            return ok(views.html.manage.kbjCategory.render(list, "priority", "asc", kbjCateForm, options));
         }, httpExecutionContext.current());
     }
 
