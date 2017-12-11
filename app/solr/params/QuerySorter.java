@@ -22,7 +22,7 @@ public class QuerySorter {
             "must be the format like:\n" + "" +
             "    field1 asc or field2 desc.\n" +
             "or the union of this two with the connector ','.\n" +
-            "both the field and the order [asc/desc] should not be omitted.";
+            "both the field and the order [asc/desc] should not be omitted.\n";
 
 
     public enum ORDER { asc, desc;

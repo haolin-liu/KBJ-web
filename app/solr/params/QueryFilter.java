@@ -28,7 +28,7 @@ public class QueryFilter {
             "must be the format like:\n" +
             "    (fq=)(+)field1:[value1 TO value2] or (fq=)-field2:value1.\n" +
             "or the union of this two with the connector ','.\n" +
-            "the prefix 'fq=' or '+' symbol of field can be omitted.";
+            "the prefix 'fq=' or '+' symbol of field can be omitted.\n";
 
     public enum DIRECTION { in, ex;
         public DIRECTION reverse() {
