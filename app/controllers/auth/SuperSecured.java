@@ -16,7 +16,7 @@ public class SuperSecured extends Security.Authenticator {
 
     @Override
     public String getUsername(Http.Context ctx) {
-        if (Config.SUPER.equals(ctx.session().get(Config.USER_GROUP))) {
+        if (Config.SUPER.equals(ctx.session().get(Config.GROUP_ID))) {
             return ctx.session().get(Config.USERNAME);
         }
 

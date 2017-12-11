@@ -2,25 +2,33 @@ package models.entities;
 
 import play.data.validation.Constraints;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Constraints.Validate
 @Entity
 public class Admin extends BaseModel implements Constraints.Validatable<String> {
 
     @Id
-    public Long id;
+    public long userId;
 
-    @Column(nullable = false, length = 30)
+    @Column(nullable = false, length = 20)
     public String username;
 
-    @Column(nullable = false, length = 100)
+    @Column(nullable = false, length = 20)
     public String password;
 
-    @Column(nullable = false, length = 15)
-    public String userGroupId;
+    @Column(nullable = false, length = 50)
+    public String email;
+
+    @Column(nullable = false, length = 11)
+    public String phone;
+
+    @ManyToOne
+    @JoinColumn(name = "group_id", nullable = false, columnDefinition = "varchar(30)")
+    public AdminGroup adminGroup;
+
+    @Column(columnDefinition = "boolean default true")
+    public boolean vaild = true;
 
     @Override
     public String validate() {

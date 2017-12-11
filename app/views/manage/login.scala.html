@@ -33,7 +33,7 @@
     }
 
     <p>
-      <input type="text" id="username" name="username" placeholder="用户名" value="@form("username").value()">
+      <input type="text" id="username" name="username" placeholder="用户名" value="@form("username").getValue().orElse(null)">
     </p>
     <p>
       <input type="password" id="password" name="password" placeholder="密码">

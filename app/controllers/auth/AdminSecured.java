@@ -17,9 +17,8 @@ public class AdminSecured extends Security.Authenticator {
 
     @Override
     public String getUsername(Http.Context ctx) {
-        String group = ctx.session().get(Config.USER_GROUP);
-System.out.println("--------------------------10");
-        System.out.println(group);
+        String group = ctx.session().get(Config.GROUP_ID);
+
         if (Config.SUPER.equals(group) || Config.ADMIN.equals(group)) {
             return ctx.session().get(Config.USERNAME);
         }
