@@ -2,6 +2,7 @@ package repository;
 
 import io.ebean.Ebean;
 import io.ebean.EbeanServer;
+import io.ebean.ExpressionList;
 import io.ebean.PagedList;
 import models.entities.KbjCategory;
 import play.db.ebean.EbeanConfig;
@@ -24,109 +25,36 @@ public class KbjCategoryRepo {
 
     /**
      * Return a paged list of KbjCategory
-     *
-     * @param valid
-     * @param page              Page to display
-     * @param sortBy            KbjCategory property used for sorting
-     * @param order             Sort order (either or asc or desc)
+     * @param page
+     * @param sortBy
+     * @param order
      * @param name
      * @param parentId
      * @param isCrawlTarget
+     * @param valid
      * @return
-     *  @author daiqingyi
-     *  @date 2017/12/1
+     * @author daiqingyi
+     * @date 2017/12/12
      */
+    public PagedList<KbjCategory> find(int page, String sortBy, String order, String name, Long parentId, Boolean isCrawlTarget, Boolean valid) {
 
-    /*所有检索条件都填写*/
-    public PagedList<KbjCategory> find(boolean valid,int page, String sortBy, String order, String name, long parentId, boolean isCrawlTarget) {
-        return ebeanServer.find(KbjCategory.class).where()
-                .ilike("name", "%" + name + "%")
-                .eq("parent_id", parentId)
-                .eq("isCrawlTarget", isCrawlTarget)
-                .eq("valid", valid)
-                .orderBy(sortBy + " " + order)
-                .setFirstRow(page * 10)
-                .setMaxRows(10)
-                .findPagedList();
-    }
+        if (name == null) {
+            name = "";
+        }
+        ExpressionList<KbjCategory> express = ebeanServer.find(KbjCategory.class)
+                .fetch("parent", "id, name").where()
+                .ilike("name", "%" + name + "%");
 
-    /*爬取对象 条件未填写检索*/
-    public PagedList<KbjCategory> find(boolean valid, int page, String sortBy, String order, String name, long parentId) {
-        return ebeanServer.find(KbjCategory.class).where()
-                .ilike("name", "%" + name + "%")
-                .eq("parent_id", parentId)
-                .eq("valid", valid)
-                .orderBy(sortBy + " " + order)
-                .setFirstRow(page * 10)
-                .setMaxRows(10)
-                .findPagedList();
-    }
-
-    /*有效性 条件未填写检索*/
-    public PagedList<KbjCategory> find(int page, String sortBy, String order, String name, long parentId, boolean isCrawlTarget) {
-        return ebeanServer.find(KbjCategory.class).where()
-                .ilike("name", "%" + name + "%")
-                .eq("parent_id", parentId)
-                .eq("isCrawlTarget", isCrawlTarget)
-                .orderBy(sortBy + " " + order)
-                .setFirstRow(page * 10)
-                .setMaxRows(10)
-                .findPagedList();
-    }
-
-    /*爬取对象、有效性 条件未填写检索*/
-    public PagedList<KbjCategory> find(int page, String sortBy, String order, String name, long parentId) {
-        return ebeanServer.find(KbjCategory.class).where()
-                .ilike("name", "%" + name + "%")
-                .eq("parent_id", parentId)
-                .orderBy(sortBy + " " + order)
-                .setFirstRow(page * 10)
-                .setMaxRows(10)
-                .findPagedList();
-    }
-
-    /*父分类Id 条件未填写检索*/
-    public PagedList<KbjCategory> find(boolean valid, int page, String sortBy, String order, String name,  boolean isCrawlTarget) {
-        return ebeanServer.find(KbjCategory.class).where()
-                .ilike("name", "%" + name + "%")
-                .eq("isCrawlTarget", isCrawlTarget)
-                .eq("valid", valid)
-                .orderBy(sortBy + " " + order)
-                .setFirstRow(page * 10)
-                .setMaxRows(10)
-                .findPagedList();
-    }
-
-    /*父分类Id、爬取对象 条件未填写检索*/
-    public PagedList<KbjCategory> find(boolean valid, int page, String sortBy, String order, String name) {
-        return ebeanServer.find(KbjCategory.class).where()
-                .ilike("name", "%" + name + "%")
-                .eq("valid", valid)
-                .orderBy(sortBy + " " + order)
-                .setFirstRow(page * 10)
-                .setMaxRows(10)
-                .findPagedList();
-    }
-
-    /*父分类Id、有效性 条件未填写检索*/
-    public PagedList<KbjCategory> find(int page, String sortBy, String order, String name,  boolean isCrawlTarget) {
-        return ebeanServer.find(KbjCategory.class).where()
-                .ilike("name", "%" + name + "%")
-                .eq("isCrawlTarget", isCrawlTarget)
-                .orderBy(sortBy + " " + order)
-                .setFirstRow(page * 10)
-                .setMaxRows(10)
-                .findPagedList();
-    }
-
-    /*父分类Id、爬取对象、有效性 条件未填写检索*/
-    public PagedList<KbjCategory> find(int page, String sortBy, String order, String name) {
-        return ebeanServer.find(KbjCategory.class).where()
-                .ilike("name", "%" + name + "%")
-                .orderBy(sortBy + " " + order)
-                .setFirstRow(page * 10)
-                .setMaxRows(10)
-                .findPagedList();
+        if (parentId != null) {
+            express = express.eq("parent.id", parentId);
+        }
+        if (isCrawlTarget != null) {
+            express = express.eq("isCrawlTarget", isCrawlTarget);
+        }
+        if (valid != null) {
+            express = express.eq("valid", valid);
+        }
+        return express.orderBy(sortBy + " " + order).setFirstRow(page * 10).setMaxRows(10).findPagedList();
     }
 
     /**

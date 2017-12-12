@@ -111,12 +111,13 @@ public class kbjCategoryController extends Controller {
     }
 
     public CompletionStage<Result> updPriority(Boolean isUpOrDown, Long id, Integer priority, int page) {
+
         Form<KbjCategoryForm> kbjCateForm = formFactory.form(KbjCategoryForm.class).fill(new KbjCategoryForm());
         KbjCategoryForm kbjCates = kbjCateForm.get();
         kbjCates.isSearch = true;
         kbjCates.page = page;
-        kbjCategoryService.updPriority(isUpOrDown, id, priority);
-        return kbjCategoryService.findList(kbjCates, "priority", "asc").thenApplyAsync(list -> {
+        return kbjCategoryService.updPriority(isUpOrDown, id, priority, kbjCates, "priority", "asc").thenApplyAsync(list -> {
+            kbjCateForm.fill(kbjCates);
             Map<String, String> options = kbjCategoryService.getParent();
             return ok(views.html.manage.kbjCategory.render(list, "priority", "asc", kbjCateForm, options));
         }, httpExecutionContext.current());
