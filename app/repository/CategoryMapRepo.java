@@ -176,7 +176,7 @@ public class CategoryMapRepo {
      */
     public CategoryMapping findMap(Long id) {
         return ebeanServer.find(CategoryMapping.class).where()
-                .eq("mall_cate_id", id)
+                .eq("mallCategory.id", id)
                 .findUnique();
     }
 
@@ -207,7 +207,7 @@ public class CategoryMapRepo {
      */
     public List<CategoryMapping> findList(Long id) {
         return ebeanServer.find(CategoryMapping.class).where()
-                .eq("kbj_cate_id", id)
+                .eq("kbjCategory.id", id)
                 .findList();
     }
 
