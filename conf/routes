@@ -36,13 +36,13 @@ POST    /manage/kbjcate/save                                    controllers.gui.
 GET     /manage/kbjcate/edit/id                                 controllers.gui.manage.kbjCategoryController.update(id:Long)
 GET     /manage/kbjcate/upd/priority                            controllers.gui.manage.kbjCategoryController.updPriority(isUpOrDown:Boolean, id:Long, priority:Integer, page:Int)
 # controllers for manage mallCate
-GET     /manage/show                                             controllers.gui.manage.MallCategoryController.catgory()
-POST    /manage/catgory/search                                   controllers.gui.manage.MallCategoryController.search()
-GET     /manage/catgory/create                                   controllers.gui.manage.MallCategoryController.create()
-POST    /manage/catgory/save                                     controllers.gui.manage.MallCategoryController.save()
-POST    /manage/catgory/update                                   controllers.gui.manage.MallCategoryController.update()
-GET     /manage/catgory/getOneEdit/:id                           controllers.gui.manage.MallCategoryController.getOneEdit(id: Long)
-POST    /manage/catgory/updateOne/:id                            controllers.gui.manage.MallCategoryController.updateOne(id: Long)
+GET     /manage/show                                            controllers.gui.manage.MallCategoryController.catgory()
+POST    /manage/catgory/search                                  controllers.gui.manage.MallCategoryController.search()
+GET     /manage/catgory/create                                  controllers.gui.manage.MallCategoryController.create()
+POST    /manage/catgory/save                                    controllers.gui.manage.MallCategoryController.save()
+POST    /manage/catgory/update                                  controllers.gui.manage.MallCategoryController.update()
+GET     /manage/catgory/getOneEdit/:id                          controllers.gui.manage.MallCategoryController.getOneEdit(id: Long)
+POST    /manage/catgory/updateOne/:id                           controllers.gui.manage.MallCategoryController.updateOne(id: Long)
 
 GET     /trend/:mall/:skuid                                     controllers.gui.DailyPriceController.priceTrend(mall:String, skuid:String)
 
