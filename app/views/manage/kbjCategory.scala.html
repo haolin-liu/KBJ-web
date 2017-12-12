@@ -13,7 +13,7 @@
 @page = @{ if(currentPage == null) { 0 } else { currentPage.getPageIndex }}
 
 @link(sortBy:String) = @{
-    gui.manage.routes.kbjCategoryController.list(sortBy, "asc")
+    gui.manage.routes.KbjCategoryController.list(sortBy, "asc")
 }
 
 @header(key:String, title:String) = {
@@ -93,11 +93,11 @@
                               <td><input type="checkbox" aria-label="..." value="@kbjCategory.valid" @if(kbjCategory.valid) { checked }></td>
                               <td>
                                   @if(kbjCategory.priority != 0){
-                                      <button type="button" class="btn btn-primary" onClick="location.href='@gui.manage.routes.kbjCategoryController.updPriority(false, kbjCategory.id, kbjCategory.priority, currentPage.getPageIndex)'">
+                                      <button type="button" class="btn btn-primary" onClick="location.href='@gui.manage.routes.KbjCategoryController.updPriority(false, kbjCategory.id, kbjCategory.priority, currentPage.getPageIndex)'">
                                           <span class="glyphicon glyphicon-arrow-up"></span>
                                       </button>
                                       @kbjCategory.priority
-                                      <button type="button" class="btn btn-primary" onClick="location.href='@gui.manage.routes.kbjCategoryController.updPriority(true, kbjCategory.id, kbjCategory.priority, currentPage.getPageIndex)'">
+                                      <button type="button" class="btn btn-primary" onClick="location.href='@gui.manage.routes.KbjCategoryController.updPriority(true, kbjCategory.id, kbjCategory.priority, currentPage.getPageIndex)'">
                                           <span class="glyphicon glyphicon-arrow-down"></span>
                                       </button>
                                   } else {
@@ -107,7 +107,7 @@
                                       </button>
                                   }
                               </td>
-                              <td><button type="button" class="btn btn-primary" onClick="location.href='@gui.manage.routes.kbjCategoryController.update(kbjCategory.id)'">编辑</button></td>
+                              <td><button type="button" class="btn btn-primary" onClick="location.href='@gui.manage.routes.KbjCategoryController.update(kbjCategory.id)'">编辑</button></td>
                             </tr>
                           }
                       }

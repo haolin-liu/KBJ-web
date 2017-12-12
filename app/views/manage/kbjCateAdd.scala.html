@@ -7,7 +7,7 @@
 @(kbjCateForm: Form[KbjCategoryForm], parentNames: Map[String, String])
 @implicitFC = @{ b3.horizontal.fieldConstructor("col-md-2", "col-md-10") }
 @link() = @{
-  gui.manage.routes.kbjCategoryController.save()
+  gui.manage.routes.KbjCategoryController.save()
 }
 @manageMain() {
   <div class="container-fluid">
