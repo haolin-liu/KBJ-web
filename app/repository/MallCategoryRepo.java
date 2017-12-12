@@ -24,140 +24,46 @@ public class MallCategoryRepo {
         this.ebeanServer = Ebean.getServer(ebeanConfig.defaultServer());
     }
 
-    /**
-     * 有效Id检索
-     * @param id
-     * @return
-     */
     public MallCategory find(Long id) {
-        return ebeanServer.find(MallCategory.class)
-            .where()
-            .eq("id", id)
-            .eq("valid", 1)
-            .findUnique();
+        return ebeanServer.find(MallCategory.class).where().eq("id", id).findUnique();
     }
 
-    public List<MallCategory> find() {
-        return ebeanServer.find(MallCategory.class)
-            .fetch("categoryMapping", "mall_category_id")
-            .fetch("categoryMapping.kbjCategory", "name, is_crawl_target")
-            .findList();
-    }
-
-    /**
-     * 画面检索
-     * @param id
-     * @param name
-     * @param mall
-     * @param page
-     * @param pageSize
-     * @param flg
-     * @param validFlg
-     * @return
-     */
-    public PagedList<MallCategory> find(String id, String name, String mall, int page, int pageSize, String flg, String validFlg) {
-        ExpressionList<MallCategory> categoryExpressionList = ebeanServer.find(MallCategory.class)
-            .fetch("categoryMapping", "mall_category_id")
-            .fetch("categoryMapping.kbjCategory", "name, is_crawl_target")
-            .where();
-        if (id.length() != 0) {
-            return categoryExpressionList.eq("id", id)
+    public PagedList<MallCategory> find(String id, String name, String mall, Boolean isBound,
+                                        Boolean isCrawlTarget, Boolean isValid, int page, int pageSize) {
+        ExpressionList<MallCategory> express = ebeanServer.find(MallCategory.class)
+                .fetch("categoryMapping", "mall_category_id")
+                .fetch("categoryMapping.kbjCategory", "name, is_crawl_target")
+                .where()
                 .ilike("name", "%" + name + "%")
-                .ilike("mall", "%" + mall + "%")
-                .ilike("isCrawlTarget", "%" + flg + "%")
-                .ilike("valid", "%" + validFlg + "%")
-                .setFirstRow(page * pageSize)
-                .setMaxRows(pageSize)
-                .findPagedList();
-        } else {
-            return categoryExpressionList.ilike("name", "%" + name + "%")
-                .ilike("mall", "%" + mall + "%")
-                .ilike("isCrawlTarget", "%" + flg + "%")
-                .ilike("valid", "%" + validFlg + "%")
-                .setFirstRow(page * pageSize)
-                .setMaxRows(pageSize)
-                .findPagedList();
+                .ilike("mall", "%" + mall + "%");
+        System.out.println("是否爬虫对象: " + isCrawlTarget);
+
+        if (id.length() > 0) {
+            express = express.eq("id", id);
         }
+        if (isBound != null) {
+            if (isBound) {
+                express = express.isNotNull("categoryMapping");
+            } else {
+                express = express.isNull("categoryMapping");
+            }
+        }
+        if (isCrawlTarget != null) {
+            express = express.eq("isCrawlTarget", isCrawlTarget);
+        }
+        if (isValid != null) {
+            express = express.eq("valid", isValid);
+        }
+
+        return express.setFirstRow(page * pageSize).setMaxRows(pageSize).findPagedList();
     }
 
-    /**
-     * 检索绑定数据
-     * @param id
-     * @param name
-     * @param mall
-     * @param page
-     * @param pageSize
-     * @param flg
-     * @param validFlg
-     * @return
-     */
-    public PagedList<MallCategory> findBind(String id, String name, String mall, int page, int pageSize, String flg, String validFlg) {
-        ExpressionList<MallCategory> categoryExpressionList = ebeanServer.find(MallCategory.class)
-                .fetch("categoryMapping", "mall_category_id")
-                .fetch("categoryMapping.kbjCategory", "name, is_crawl_target")
-                .where();
-        if (id.length() != 0) {
-            return categoryExpressionList
-                    .isNotNull("categoryMapping")
-                    .eq("id", id)
-                    .ilike("name", "%" + name + "%")
-                    .ilike("mall", "%" + mall + "%")
-                    .ilike("isCrawlTarget", "%" + flg + "%")
-                    .ilike("valid", "%" + validFlg + "%")
-                    .setFirstRow(page * pageSize)
-                    .setMaxRows(pageSize)
-                    .findPagedList();
-        } else {
-            return categoryExpressionList
-                    .isNotNull("categoryMapping")
-                    .ilike("name", "%" + name + "%")
-                    .ilike("mall", "%" + mall + "%")
-                    .ilike("isCrawlTarget", "%" + flg + "%")
-                    .ilike("valid", "%" + validFlg + "%")
-                    .setFirstRow(page * pageSize)
-                    .setMaxRows(pageSize)
-                    .findPagedList();
-        }
+    public void update(List<MallCategory> categories) {
+
     }
 
-    /**
-     * 检索未绑定数据
-     * @param id
-     * @param name
-     * @param mall
-     * @param page
-     * @param pageSize
-     * @param flg
-     * @param validFlg
-     * @return
-     */
-    public PagedList<MallCategory> findNoBind(String id, String name, String mall, int page, int pageSize, String flg, String validFlg) {
-        ExpressionList<MallCategory> categoryExpressionList = ebeanServer.find(MallCategory.class)
-                .fetch("categoryMapping", "mall_category_id")
-                .fetch("categoryMapping.kbjCategory", "name, is_crawl_target")
-                .where();
-        if (id.length() != 0) {
-            return categoryExpressionList
-                    .isNull("categoryMapping")
-                    .eq("id", id)
-                    .ilike("name", "%" + name + "%")
-                    .ilike("mall", "%" + mall + "%")
-                    .ilike("isCrawlTarget", "%" + flg + "%")
-                    .ilike("valid", "%" + validFlg + "%")
-                    .setFirstRow(page * pageSize)
-                    .setMaxRows(pageSize)
-                    .findPagedList();
-        } else {
-            return categoryExpressionList
-                    .isNull("categoryMapping")
-                    .ilike("name", "%" + name + "%")
-                    .ilike("mall", "%" + mall + "%")
-                    .ilike("isCrawlTarget", "%" + flg + "%")
-                    .ilike("valid", "%" + validFlg + "%")
-                    .setFirstRow(page * pageSize)
-                    .setMaxRows(pageSize)
-                    .findPagedList();
-        }
+    public Optional<Long> update(MallCategory category) {
+        return Optional.empty();
     }
 
     /**
@@ -236,31 +142,13 @@ public class MallCategoryRepo {
         return value;
     }
 
-    /**
-     *
-     * @param mallCategory
-     * @return
-     */
     public Long insert(MallCategory mallCategory) {
         mallCategory.insert();
         return mallCategory.id;
     }
 
-    /**
-     *
-     * @return
-     */
     public Optional<Long> empty() {
         return  Optional.empty();
     }
 
-    /**
-     * 更新用单条检索
-     * @param id
-     * @return
-     */
-    public MallCategory searchOne(Long id) {
-        MallCategory mallCategory = ebeanServer.find(MallCategory.class).setId(id).findUnique();
-        return  mallCategory;
-    }
 }

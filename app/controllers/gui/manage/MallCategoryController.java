@@ -55,8 +55,7 @@ public class MallCategoryController extends Controller{
         String name = data.get("showSrcName")[0];
         String mall = data.get("showSrcMall")[0];
         String id = data.get("showSrcId")[0];
-        System.out.println("id-----------------" + id);
-        int flg = Integer.parseInt(data.get("srcIsCrawlTarget")[0]);
+        int isCrawlTarget = Integer.parseInt(data.get("srcIsCrawlTarget")[0]);
         int validFlg = Integer.parseInt(data.get("srcValidFlg")[0]);
         int bind = Integer.parseInt(data.get("srcbind")[0]);
         int page;
@@ -66,8 +65,8 @@ public class MallCategoryController extends Controller{
         } else {
             page = Integer.parseInt(data.get("page")[0]);
         }
-        return mallCategoryService.getMallCategorySearch(id, name, mall, flg, page, validFlg, bind).thenApplyAsync(list -> {
-            return ok(views.html.manage.mallCategory.render(list, id, name, mall ,flg, page, srcflg, validFlg, 0, bind));
+        return mallCategoryService.getMallCategorySearch(id, name, mall, page, isCrawlTarget, validFlg, bind).thenApplyAsync(list -> {
+            return ok(views.html.manage.mallCategory.render(list, id, name, mall ,isCrawlTarget, page, srcflg, validFlg, 0, bind));
         }, httpExecutionContext.current());
     }
 

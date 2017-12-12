@@ -44,39 +44,38 @@ public class MallCategoryService {
      * @param page
      * @return
      */
-    public CompletionStage<PagedList<MallCategory>> getMallCategorySearch(String id, String name, String mall, int chose, int page, int valid, int bind) {
-        String flg;
-        String validFlg;
+    public CompletionStage<PagedList<MallCategory>> getMallCategorySearch(String id, String name, String mall, int page, int chose, int valid, int bind) {
+        Boolean isCrawlTarget;
+        Boolean validFlg;
+        Boolean isBound;
 
         if(chose == 1)  {
-            flg = "";
+            isCrawlTarget = null;
         } else if (chose == 2) {
-            flg = "1";
+            isCrawlTarget = true;
         } else {
-            flg = "0";
+            isCrawlTarget = false;
         }
 
         if(valid == 1)  {
-            validFlg = "";
+            validFlg = null;
         } else if (valid == 2) {
-            validFlg = "1";
+            validFlg = true;
         } else {
-            validFlg = "0";
+            validFlg = false;
         }
 
-        if (bind == 1) {
-            return supplyAsync(() -> {
-                return mallCategoryRepo.find(id, name, mall, page, 10, flg, validFlg);
-            }, executionContext);
-        } else if (bind == 2){
-            return supplyAsync(() -> {
-                return mallCategoryRepo.findBind(id, name, mall, page, 10, flg, validFlg);
-            }, executionContext);
+        if(bind == 1)  {
+            isBound = null;
+        } else if (bind == 2) {
+            isBound = true;
         } else {
-            return supplyAsync(() -> {
-                return mallCategoryRepo.findNoBind(id, name, mall, page, 10, flg, validFlg);
-            }, executionContext);
+            isBound = false;
         }
+
+        return supplyAsync(() -> {
+            return mallCategoryRepo.find(id, name, mall, isBound, isCrawlTarget, validFlg, page, 10);
+        }, executionContext);
     }
 
     /**
@@ -94,31 +93,35 @@ public class MallCategoryService {
         return supplyAsync(() -> {
             return mallCategoryRepo.update(data);
         }, executionContext).thenApplyAsync((v) -> {
-            String flg;
-            String validFlg;
+            Boolean isCrawlTarget;
+            Boolean validFlg;
+            Boolean isBound;
 
             if(chose == 1)  {
-                flg = "";
+                isCrawlTarget = null;
             } else if (chose == 2) {
-                flg = "1";
+                isCrawlTarget = true;
             } else {
-                flg = "0";
+                isCrawlTarget = false;
             }
 
             if(valid == 1)  {
-                validFlg = "";
+                validFlg = null;
             } else if (valid == 2) {
-                validFlg = "1";
+                validFlg = true;
             } else {
-                validFlg = "0";
+                validFlg = false;
             }
-            if (bind == 1) {
-                return mallCategoryRepo.find(id, name, mall, page, 10, flg, validFlg);
-            } else  if (bind == 2) {
-                return mallCategoryRepo.findBind(id, name, mall, page, 10, flg, validFlg);
+
+            if(bind == 1)  {
+                isBound = null;
+            } else if (bind == 2) {
+                isBound = true;
             } else {
-                return mallCategoryRepo.findNoBind(id, name, mall, page, 10, flg, validFlg);
+                isBound = false;
             }
+
+            return mallCategoryRepo.find(id, name, mall, isBound, isCrawlTarget, validFlg, page, 10);
 
         }, httpExecutionContext.current());
     }
@@ -151,7 +154,7 @@ public class MallCategoryService {
      */
     public CompletionStage<MallCategory> getMallCategoryEditOne(Long id) {
         return supplyAsync(() -> {
-            return mallCategoryRepo.searchOne(id);
+            return mallCategoryRepo.find(id);
         }, executionContext);
     }
 
