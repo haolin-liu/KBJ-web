@@ -135,7 +135,7 @@
                     <th class="col-sm-1">@mallCate.mall</th>
                     <th class="col-sm-2">@mallCate.name</th>
                     <th class="col-sm-3" title="@mallCate.tag">@mallCate.tag</th>
-                    <th class="col-sm-3" title="@mallCate.link">@if(mallCate.link.length>20) {@mallCate.link.substring(0,20)...} @if(mallCate.link.length<=20) {@mallCate.link.substring(0,20)...}</th>
+                    <th class="col-sm-3" title="@mallCate.link">@if(mallCate.link.length>20) {@mallCate.link.substring(0,20)...} @if(mallCate.link.length<=20) {@mallCate.link}</th>
                   </tr>
                   }
                 </tbody>
@@ -273,6 +273,7 @@
      * 确定重选可比价分类
      */
     function confirmSelect() {
+      $("#keyword").val("");
       $("#hidType").val(0);
       $("#searchTbody").html("");
       $("#bindConfirm").hide();
