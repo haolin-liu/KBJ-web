@@ -85,7 +85,7 @@ public class CategoryMapService {
         ArrayList<String> keyWord = editKeyWord(keyWordForm);
 
         return supplyAsync(() -> {
-//            List<MallCategory> mallCates = categoryMapRepo.find(mall, keyWord);
+//            List<MallCategory> mallCates = categoryMapRepo.find(mall, kw);
 //            for(MallCategory mallCate: mallCates) {
 //                System.out.println(mallCate.tag);
 //            }

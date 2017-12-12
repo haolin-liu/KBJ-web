@@ -1,9 +1,8 @@
 package controllers.gui;
 
-import com.typesafe.config.Config;
 import models.Product;
 import models.ProductsWithNum;
-import models.entities.KeyWordForm;
+import models.forms.KeywordForm;
 import play.data.Form;
 import play.data.FormFactory;
 import play.libs.Json;
@@ -62,8 +61,8 @@ public class ProductController extends Controller{
     public Result searchGoods() {
         PageList<Product> products = null;
         List<Integer> pageIndexList = new ArrayList<Integer>();
-        Form<KeyWordForm> key = formFactory.form(KeyWordForm.class).bindFromRequest();
-        String keyWord = key.get().keyWord;
+        Form<KeywordForm> key = formFactory.form(KeywordForm.class).bindFromRequest();
+        String keyWord = key.get().kw;
 
         if (keyWord == null) {
             keyWord = "";

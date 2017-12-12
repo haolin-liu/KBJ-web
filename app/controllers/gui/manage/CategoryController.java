@@ -74,7 +74,7 @@ public class CategoryController extends Controller {
         Long rootCate = Long.valueOf(data.get("rootCate")[0]);
         Long leafCate = Long.valueOf(data.get("leafCate")[0]);
         String mall = data.get("mall")[0];
-        String keyWord = data.get("keyWord")[0];
+        String keyWord = data.get("kw")[0];
         String isBind = data.get("isBind")[0];
 
         //用于检索条件显示

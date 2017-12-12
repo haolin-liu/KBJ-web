@@ -23,7 +23,7 @@
       <fieldset>
         @CSRF.formField
         @b3.text(keySearchForm("id"), '_label -> "id", '_help -> "", 'disabled -> "disabled")
-        @b3.text(keySearchForm("keyWord"), '_label -> "关键字", '_help -> "")
+        @b3.text(keySearchForm("kw"), '_label -> "关键字", '_help -> "")
         @b3.text(keySearchForm("searchCounts"), '_label -> "搜索次数", '_help -> "")
         @b3.submit('class -> "btn btn-default") {更新}
       </fieldset>
@@ -37,7 +37,7 @@
     @b3.form(gui.routes.HomeController.add()) {
       <fieldset>
         @CSRF.formField
-        @b3.text(KeySearchAdd("keyWord"), '_label -> "关键字", 'placeholder -> "输入关键字")
+        @b3.text(KeySearchAdd("kw"), '_label -> "关键字", 'placeholder -> "输入关键字")
         @b3.text(KeySearchAdd("searchCounts"), '_label -> "搜索次数", 'placeholder -> "输入检索次数")
         @b3.submit('class -> "btn btn-primary") {插入}
       </fieldset>

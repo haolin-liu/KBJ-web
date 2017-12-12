@@ -35,7 +35,6 @@ public class PriceService {
         return supplyAsync(() -> {
 
             ObjectNode json = Json.newObject();
-            ArrayNode xAxis = Json.newArray();
             ArrayNode arrPrice = Json.newArray();
             ArrayNode arrDate = Json.newArray();
 
@@ -85,9 +84,13 @@ public class PriceService {
             */
             // ----------------------
 
+            float minprice = 0;
             for (DailyPrice row : prices) {
+                if (prices.indexOf(row) == 0 || row.price < minprice) {
+                    minprice = row.price;
+                }
                 arrPrice.add(row.price);
-                arrDate.add(getStrFromDate(row.date));
+                arrDate.add(row.date.getTime());
             }
 
             if (prices.size() == 0) {
@@ -97,8 +100,8 @@ public class PriceService {
                 json.put("skuid", skuid);
                 json.set("price", arrPrice);
                 json.set("date", arrDate);
-                // json.set("xAxis", xAxis);
                 json.put("step", step);
+                json.put("minprice", minprice);
             }
 
             return Json.toJson(json);
@@ -109,11 +112,6 @@ public class PriceService {
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.MONTH, -config.getOffsetMonthOfPriceHis());
         return cal.getTime();
-    }
-
-    private String getStrFromDate(Date date) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        return sdf.format(date);
     }
 
 }
