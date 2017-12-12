@@ -141,7 +141,7 @@ class ProductPricePipeline(object):
         sql += " kbj_category_id, `date`, `timestamp`, create_date, create_user, update_date, update_user) "
         sql += " values(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)"
         params = (item['mall'], item['skuid'], item['price'], item['ref_price'], item['discount'], item['discount_rate'],
-                  item['kbj_category_id'], date, timestamp, timestamp, 'system', timestamp, 'system',)
+                  item['kbj_cate_id'], date, timestamp, timestamp, 'system', timestamp, 'system',)
         tx.execute(sql, params)
 
     def handle_error(self, failue, item, spider):
