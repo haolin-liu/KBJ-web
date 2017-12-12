@@ -4,9 +4,18 @@ import play.data.validation.Constraints;
 
 import javax.persistence.*;
 
+/**
+ * 管理者表
+ *
+ * @author lichen
+ * @date 2017.12.7
+ */
 @Constraints.Validate
 @Entity
 public class Admin extends BaseModel implements Constraints.Validatable<String> {
+
+    private final static String ERROR_EMPTY = "用户名或密码不能为空！";
+    private final static String ERROR_LOGIN = "用户名或密码不匹配！";
 
     @Id
     public long userId;
@@ -33,7 +42,11 @@ public class Admin extends BaseModel implements Constraints.Validatable<String> 
     @Override
     public String validate() {
         if (username.isEmpty() || password.isEmpty()) {
-            return "用户名或密码不能为空！";
+            return ERROR_EMPTY;
+        }
+
+        if (username.length() < 6 || password.length() < 6) {
+            return ERROR_LOGIN;
         }
 
         return null;

@@ -9,7 +9,7 @@
 </head>
 <body>
   <header>
-    可
+    <a href="" id="logo"><span>可比价</span>kebja</a>
   </header>
 
   @helper.form(action = gui.manage.routes.LoginController.login()) {
@@ -18,12 +18,9 @@
     <h1>管理员登录</h1>
 
     @if(form.hasGlobalErrors) {
-      @*<p class="error">*@
-@*//      @form.globalError.message*@
-        @for(error <- form.globalErrors) {
-          <p class="error">@error.format(messages())</p>
-        }
-      @*</p>*@
+      @for(error <- form.globalErrors) {
+        <p class="error">@error.format(messages())</p>
+      }
     }
 
     @if(flash.contains("success")) {

@@ -1,6 +1,6 @@
 package controllers;
 
-/*
+/**
  * 权限配置文件
  *
  * @author lichen

@@ -1,23 +1,24 @@
 package controllers.gui.manage;
 
 import controllers.Config;
-import controllers.auth.AdminSecured;
 import models.entities.Admin;
 import models.entities.LoginAttempt;
 import org.jetbrains.annotations.Nullable;
 import play.data.Form;
 import play.data.FormFactory;
-import play.data.validation.Constraints;
-import play.data.validation.ValidationError;
 import play.mvc.Controller;
 import play.mvc.Result;
-import play.mvc.Security;
 import services.manage.LoginService;
 
 import javax.inject.Inject;
-import java.sql.Timestamp;
 import java.util.Date;
 
+/**
+ * 登录
+ *
+ * @author lichen
+ * @date 2017.12.7
+ */
 public class LoginController extends Controller {
 
     private final static String ERROR_LOGIN = "警告： 帐号或密码不匹配！";
@@ -29,7 +30,6 @@ public class LoginController extends Controller {
 
     private final Form<Admin> form;
     private final LoginService loginService;
-//    private ValidationError error;
 
     @Inject
     public LoginController(FormFactory formFactory, LoginService loginService) {
@@ -52,19 +52,17 @@ public class LoginController extends Controller {
     public Result login() {
         Form<Admin> loginForm = this.form.bindFromRequest();
 
-//        Constraints.Validatable constraint = new Constraints.Validatable() {
-//            @Override
-//            public Object validate() {
-//                return new ValidationError("username", "12345");
-//            }
-//        };
-//        System.out.println("----------------------------------2");
-//        loginForm = loginForm.withError((ValidationError)constraint.validate());
-//        System.out.println(loginForm);
-
         if (loginForm.hasErrors()) {
             return badRequest(views.html.manage.login.render(loginForm));
         }
+
+//        Constraints.Validatable constraint = new Constraints.Validatable() {
+//            @Override
+//            public String validate() {
+//                return "";
+//            }
+//        };
+//        loginForm = loginForm.withError((ValidationError)constraint.validate());
 
         String invalid = this.authenticate(loginForm.get().username, loginForm.get().password);
 
@@ -91,13 +89,13 @@ public class LoginController extends Controller {
     @Nullable
     private String authenticate(final String account, final String password) {
 
-        if (this.valiAttemptIp()) {
+        if (this.isAttemptIp()) {
             return ERROR_ATTEMPT_IP;
         }
 
         LoginAttempt attemptAccount = loginService.getLoginAttempt(account, request().remoteAddress());
 
-        if (attemptAccount != null && this.valiAttemptAccount(attemptAccount)) {
+        if (attemptAccount != null && this.isAttemptAccount(attemptAccount)) {
             return ERROR_ATTEMPT_ACCOUNT;
         }
 
@@ -121,7 +119,7 @@ public class LoginController extends Controller {
      * IP攻击
      * @return
      */
-    private boolean valiAttemptIp() {
+    private boolean isAttemptIp() {
         int totals = 0;
         long time = 0;
 
@@ -143,7 +141,7 @@ public class LoginController extends Controller {
      * Account攻击
      * @return
      */
-    private boolean valiAttemptAccount(LoginAttempt loginAttempt) {
+    private boolean isAttemptAccount(LoginAttempt loginAttempt) {
         if (loginAttempt.total >= LOGIN_ATTEMPT_ACCOUNT
                 && this.compareNow(loginAttempt.updateDate.getTime(), 1)) {
             return true;
