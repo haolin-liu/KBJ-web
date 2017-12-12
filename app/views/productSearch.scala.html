@@ -66,8 +66,8 @@
             <span class="span-page">
                <font color="red" id="currentPage">@products.getPageIndex</font>/<font id="countPage">@products.getPageCount</font>
             </span>
-            <a class="p-pre" id="a-prev" onclick="pageJump('@keyWord', @products.getPrevPageIndex)"> < </a>
-            <a class="p-pre p-next" id="a-next" onclick="pageJump('@keyWord', @products.getNextPageIndex)"> > </a>
+            <a class="p-pre" id="a-prev" onclick="jumpToPage('@keyWord', @products.getPrevPageIndex)"> < </a>
+            <a class="p-pre p-next" id="a-next" onclick="jumpToPage('@keyWord', @products.getNextPageIndex)"> > </a>
         </div>
       </div>
           <div class="searchProductPlace col-sm-10 col-sm-offset-1">
@@ -75,7 +75,7 @@
               <div class="container">
                 <div class="row" style="z-index: -1">
 
-                @if(products != null && products.getList.size() >0) {
+                @if(products != null && products.getList.size() > 0) {
                     @for((product, index) <- products.getList.zipWithIndex) {
 
                   <input type="hidden" id="id@index" value="@product.getSkuid" data-mall="@product.getMall"/>
@@ -97,7 +97,7 @@
                           <em>¥</em>@product.getPrice
                             <a class="price-a" style="text-decoration:none;">
                                 <span id="trend@product.getSkuid" class="icon-bar-chart"></span>
-                                <div class="chart@product.getSkuid chart-div" id="pop@product.getSkuid"></div>
+                                <div class="chart@index chart-div" id="pop@product.getSkuid"></div>
                             </a>
 
                           <div class="shopName" style="float:right; margin-top: -3px;">
@@ -138,28 +138,28 @@
                 id="currentPage">@products.getPageIndex</font>/<font id="countPage">@products.getPageCount</font>页&nbsp;
             </li>
             <li>
-                <a href="#" id="prePage" onclick="pageJump('@keyWord', @products.getPrevPageIndex)"
+                <a href="#" id="prePage" onclick="jumpToPage('@keyWord', @products.getPrevPageIndex)"
                 @if(!products.hasPrevPage){hidden}>
                     <span aria-hidden="true" aria-label="Previous">&laquo;</span>
                 </a>
             </li>
             <li>
                 @for((page, index) <- pageIndexList.zipWithIndex){
-                    <a href="#" onclick="pageJump('@keyWord', @products.getNavigationFrom + @index)"
+                    <a href="#" onclick="jumpToPage('@keyWord', @products.getNavigationFrom + @index)"
                         @if(products.getPageIndex == page){style="background-color: #ddd"}>
                         <span data-value="@products.getNavigationFrom" data-index="@index">@page</span>
                     </a>
                 }
             </li>
             <li>
-                <a href="#" id="nextPage" onclick="pageJump('@keyWord', @products.getNextPageIndex)"
+                <a href="#" id="nextPage" onclick="jumpToPage('@keyWord', @products.getNextPageIndex)"
                 @if(!products.hasNextPage){hidden}>
                     <span aria-hidden="true" aria-label="Next">&raquo;</span>
                 </a>
             </li>
             <li style="margin-left: 20px;margin-top: 5px">
               <input type="text" class="skip-text" id="jumpPage" value="@products.getPageIndex">
-              <button onclick="pageJump('@keyWord', 0)">跳转</button>
+              <button onclick="jumpToPage('@keyWord', 0)">跳转</button>
             </li>
           </ul>
         </nav>
@@ -185,65 +185,79 @@
             $("#a-next").addClass('disabled-a');
         }
 
-        var id ="";
-        var mall ="";
-        $("[id^='id']").each(function (index) {
+        $("[id^='id']").each(function(index) {
             var id = $(this).val();
             var mall = $(this).data("mall");
             $.ajax({
                 type: "get",
-                url: "/trend/" + "jd/"  + id,
+                url: "/product/prices/" + mall + "/" + id,
                 dataType: "json",
-                success: function(data) {
-                    $(".chart" + id).highcharts({
-                      chart: {
-                          type: 'line',
-                          width: 350,//宽
-                          height: 250,
-                          padding: 2
-                      },
-                      // 标题
-                      title: {
-                          text: data.results == "null" ? '暂无数据': "",
-                          verticalAlign: 'middle'
-                      },
-                      //副标题
-                      subtitle: {
-                          text: '价格走势'
-                      },
-                      xAxis: {
-                          tickInterval: data.step,
-                          categories: data.date
-                      },
-                      yAxis: {
-                          title: {
-                              text: null
-                          }
-                      },
-                      series: [{
-                          name: 'price',
-                          data: data.price
-                      }],
-                      //去掉图标上的官网地址
-                      credits: {
-                          text: ''
-                      },
-                      plotOptions: {
-                          series: {
-                              marker: {
-                                  radius: 3,  //曲线点半径，默认是4
-                                  symbol: 'diamond' //曲线点类型："circle", "square", "diamond", "triangle","triangle-down"，默认是"circle"
-                              }
-                          }
-                      }
-                  });
+                success: function (data) {
+                    $(".chart" + index).highcharts({
+                        chart: {
+                            type: 'line',
+                            width: 350,
+                            height: 250,
+                            padding: 2
+                        },
+                        colors: ['#ea5252', '#2f7ed8'],
+                        title: {
+                            text: data.results == "null" ? '暂无数据' : "",
+                            verticalAlign: 'middle'
+                        },
+                        subtitle: {
+                            text: '价格走势'
+                        },
+                        xAxis: {
+                            tickInterval: data.step,
+                            categories: data.date,
+                            gridLineWidth: 1,
+                            dateTimeLabelFormats: {
+                                day: '%m-%d',
+                                week: '%m-%d',
+                                month: '%m-%d',
+                                year: '%Y'
+                            }
+                        },
+                        yAxis: {
+                            title: {
+                                text: null
+                            }
+                        },
+                        tooltip: {
+                            shared: true,
+                            crosshairs: true,
+                            // 时间格式化字符
+                            // 默认会根据当前的数据点间隔取对应的值
+                            // 当前图表中数据点间隔为 1天，所以配置 day 值即可
+                            dateTimeLabelFormats: {
+                                day: '%m-%d'
+                            }
+                        },
+                        series: [{
+                            name: '价格:',
+                            data: data.price
+                        }],
+                        credits: {
+                            text: ''    //去掉图标上的官网地址
+                        },
+                        plotOptions: {
+                            series: {
+                                marker: {
+                                    radius: 3,    //曲线点半径，默认是4
+                                    //曲线点类型："circle", "square", "diamond", "triangle","triangle-down", 默认是"circle"
+                                    symbol: 'diamond'
+                                }
+                            }
+                        }
+                    });
                 },
                 error: function () {
                     consolg.log("no data");
                 }
             })
         })
-    })
+    });
 
     function storeUp(id) {
         if($("#store" + id).hasClass("glyphicon-heart-empty")) {
@@ -255,27 +269,26 @@
         }
     }
 
-    function nullChange(val) {
-        if (val == "") {
-            val = "*";
-        }
-        return val;
+    function formatStrIfNull(val) {
+        return val == "" ? "*" : val;
     }
 
-    function pageJump(kw, val) {
+    function jumpToPage(kw, page) {
+        // todo
         var sorter = "";
         var filter = "";
+        var pagesize = 12;
 
-        if (val == 0) {
-            val = $("#jumpPage").val();
+        if (page == 0) {
+            page = $("#jumpPage").val();
         }
 
-        $("#jumpPage").val(val);
-        $("#currentPage").text(val);
+        $("#jumpPage").val(page);
+        $("#currentPage").text(page);
 
-        kw = nullChange(kw);
-        sorter = nullChange(sorter);
-        filter = nullChange(filter);
-        window.location.href = '/search/'+ kw + '/' + val + '/12/' + sorter + '/' + filter;
+        kw = formatStrIfNull(kw);
+        var sorter = formatStrIfNull(sorter);
+        var filter = formatStrIfNull(filter);
+        window.location.href = '/search/'+ kw + '/' + page + '/' + pagesize + '/' + sorter + '/' + filter;
     }
   </script>

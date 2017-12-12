@@ -91,4 +91,10 @@ public class ConfigUtil {
         return getVal(key, defVal, Integer.class);
     }
 
+    public Integer getPagesizeOfProducts() {
+        final String key = "webapp.productspage.pagesize";
+        final int defVal = 12;
+        return getVal(key, defVal, Integer.class);
+    }
+
 }

@@ -112,7 +112,7 @@ public class PriceService {
     }
 
     private String getStrFromDate(Date date) {
-        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         return sdf.format(date);
     }
 
