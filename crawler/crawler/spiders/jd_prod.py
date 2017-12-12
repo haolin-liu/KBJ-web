@@ -59,13 +59,15 @@ class JDProductSpider(RedisCrawlSpider):
         skuid = response.meta['skuid']
         category_url = response.meta['req_url']
         redis_key = response.meta['redis_key']
-
         item['mall'] = 'jd'
         item['skuid'] = skuid
         item['name'] = response.xpath('string(//div[@class="sku-name"])').extract_first().strip()
         item['url'] = "http:" + response.meta['item_url']
-        item['kbj_category_id'] = self.redis.hget(redis_key, 'id')
-        item['kbj_category_name'] = self.redis.hget(redis_key, 'name')
+        # 如果是None 在插入daily_price时会报错 当没有绑定时cate是root
+        cat_id = self.redis.hget(redis_key, 'id')
+        cat_name = self.redis.hget(redis_key, 'name')
+        item['kbj_cate_id'] = (1 if cat_id else cat_id)
+        item['kbj_cate_name'] = ('root' if cat_name else cat_name)
         item['mall_cate_url'] = category_url
         item['stock_status'] = response.xpath('//div[@class="store-prompt"]/strong').extract_first()
         # imgs
@@ -77,7 +79,9 @@ class JDProductSpider(RedisCrawlSpider):
                 value = "http:" + img.xpath('./img/@src').extract_first()
                 item[index] = value
                 index_max = index + '_max'
+                # 转换成大图
                 value_max = str(value).replace('.com/n5', '.com/n1')
+                value_max = value_max.replace('s54x54', 's540x540')
                 item[index_max] = value_max
                 i += 1
             else:
@@ -129,10 +133,14 @@ class JDProductSpider(RedisCrawlSpider):
         item['comments_num'] = js['CommentsCount'][0]['CommentCount']
 
         cat = urlparse.parse_qs(urlparse.urlsplit(item['mall_cate_url']).query).get('cat')
+        # 如果能取到cat_id 再去取库存状态
+        # mall_cate_url = http://coll.jd.com/list.html?sub=1661 取不到cat_id
         if cat:
             url = 'http://c0.3.cn/stock?skuId=' + item[
                 'skuid'] + '&area=1_72_4137_0&cat=' + cat[0] + '&choseSuitSkuIds=&extraParam={"originid":"1"}'
             yield scrapy.Request(url, meta={'item': item}, callback=self.parse_stock)
+        else:
+            yield item
 
     def parse_stock(self, response):
         item = response.meta['item']
