@@ -47,79 +47,12 @@ public class KbjCategoryService {
         } else {
             page = 0;
         }
-
-        /*判断是否输入父分类Id，输入执行if，未输入执行else */
-        if(kbjCates.parentId != null){
-            long parentId = kbjCates.parentId;
-             /*判断是否选择 有效性，输入执行if，未输入执行else */
-            if(kbjCates.valid.equals("0") || kbjCates.valid.equals("1")) {
-                boolean isSelectValid = isSelected(kbjCates.valid);
-                 /*判断是否选择 爬取对象，输入执行if，未输入执行else */
-                if(kbjCates.isCrawlTarget.equals("0") || kbjCates.isCrawlTarget.equals("1")) {
-                    boolean isSelectCrawleTarget = isSelected(kbjCates.isCrawlTarget);
-                    return supplyAsync(() -> {
-                        /*所有检索条件都填写*/
-                        return kbjCategoryRepo.find(isSelectValid, page, sortBy, order, kbjCates.name, parentId, isSelectCrawleTarget);
-                    }, executionContext);
-                } else {
-                    return supplyAsync(() -> {
-                        /*爬取对象 条件未填写检索*/
-                        return kbjCategoryRepo.find(isSelectValid, page, sortBy, order, kbjCates.name, parentId);
-                    }, executionContext);
-                }
-            } else {
-                if(kbjCates.isCrawlTarget.equals("0") || kbjCates.isCrawlTarget.equals("1")) {
-                    boolean isSelectCrawleTarget = isSelected(kbjCates.isCrawlTarget);
-                    return supplyAsync(() -> {
-                        /*有效性 条件未填写检索*/
-                        return kbjCategoryRepo.find(page, sortBy, order, kbjCates.name, parentId, isSelectCrawleTarget);
-                    }, executionContext);
-                } else {
-                    return supplyAsync(() -> {
-                        /*爬取对象、有效性 条件未填写检索*/
-                        return kbjCategoryRepo.find(page, sortBy, order, kbjCates.name, parentId);
-                    }, executionContext);
-                }
-            }
-        } else {
-            if (kbjCates.parentId != null) {
-                /*判断是否输入父分类Id，输入执行if，未输入执行else */
-                if (kbjCates.valid.equals("0") || kbjCates.valid.equals("1")) {
-                    boolean isSelectValid = isSelected(kbjCates.valid);
-                    /*判断是否选择 爬取对象，输入执行if，未输入执行else */
-                    if (kbjCates.isCrawlTarget.equals("0") || kbjCates.isCrawlTarget.equals("1")) {
-                        boolean isSelectCrawleTarget = isSelected(kbjCates.isCrawlTarget);
-                        return supplyAsync(() -> {
-                            /*父分类Id 条件未填写检索*/
-                            return kbjCategoryRepo.find(isSelectValid, page, sortBy, order, kbjCates.name, isSelectCrawleTarget);
-                        }, executionContext);
-                    } else {
-                        return supplyAsync(() -> {
-                            /*父分类Id、爬取对象 条件未填写检索*/
-                            return kbjCategoryRepo.find(isSelectValid, page, sortBy, order, kbjCates.name);
-                        }, executionContext);
-                    }
-                } else {
-                    if (kbjCates.isCrawlTarget.equals("0") || kbjCates.isCrawlTarget.equals("1")) {
-                        boolean isSelectCrawleTarget = isSelected(kbjCates.isCrawlTarget);
-                        return supplyAsync(() -> {
-                            /*父分类Id、有效性 条件未填写检索*/
-                            return kbjCategoryRepo.find(page, sortBy, order, kbjCates.name, isSelectCrawleTarget);
-                        }, executionContext);
-                    } else {
-                        return supplyAsync(() -> {
-                            /*父分类Id、爬取对象、有效性 条件未填写检索*/
-                            return kbjCategoryRepo.find(page, sortBy, order, kbjCates.name);
-                        }, executionContext);
-                    }
-                }
-            }else {
-                return supplyAsync(() -> {
-                        /*父分类Id、爬取对象、有效性 条件未填写检索*/
-                    return kbjCategoryRepo.find(page, sortBy, order, kbjCates.name);
-                }, executionContext);
-            }
-        }
+        Long parentId = kbjCates.parentId;
+        Boolean isCrawlTarget = isSelected(kbjCates.isCrawlTarget);
+        Boolean valid = isSelected(kbjCates.valid);
+        return supplyAsync(() -> {
+            return kbjCategoryRepo.find(page, sortBy, order, kbjCates.name, parentId, isCrawlTarget, valid);
+        }, executionContext);
     }
 
     /**
@@ -128,12 +61,16 @@ public class KbjCategoryService {
      * @return 返回布尔型的值用于检索
      */
     @Contract(pure = true)
-    private boolean isSelected(String selection) {
-        boolean isSeleced;
-        if (selection.equals("0")) {
-            isSeleced = false;
+    private Boolean isSelected(String selection) {
+        Boolean isSeleced;
+        if ("0".equals(selection) || "1".equals(selection)) {
+            if (selection.equals("0")) {
+                isSeleced = false;
+            } else {
+                isSeleced = true;
+            }
         } else {
-            isSeleced = true;
+            isSeleced = null;
         }
         return isSeleced;
     }
@@ -219,23 +156,26 @@ public class KbjCategoryService {
      * @author daiqingyi
      * @date 2017-12-11
      */
-    public CompletionStage<Optional<Long>> updPriority(Boolean isUpOrDown, Long id, Integer priority) {
+    public CompletionStage<PagedList<KbjCategory>> updPriority(Boolean isUpOrDown, Long id, Integer priority, KbjCategoryForm kbjCates, String sortBy, String order) {
         return supplyAsync(()-> {
             if (isUpOrDown){
                 KbjCategory kbjCate = kbjCategoryRepo.find(priority + 1);
                 if(!isNull(kbjCate)){
                     kbjCategoryRepo.updPriority(id, (priority + 1));
                     kbjCategoryRepo.updPriority(kbjCate.id, priority);
-                } else {
-
                 }
-                return Optional.empty();
             } else {
                 KbjCategory kbjCate = kbjCategoryRepo.find(priority - 1);
-                kbjCategoryRepo.updPriority(id, (priority - 1));
-                kbjCategoryRepo.updPriority((id - 1), priority);
-                return Optional.empty();
+                if (priority > 1){
+                    kbjCategoryRepo.updPriority(id, (priority - 1));
+                    kbjCategoryRepo.updPriority(kbjCate.id, priority);
+                }
             }
-        }, executionContext);
+            return Optional.empty();
+        }, executionContext).thenApplyAsync((v) -> {
+            Boolean isCrawlTarget = isSelected(kbjCates.isCrawlTarget);
+            Boolean valid = isSelected(kbjCates.valid);
+            return kbjCategoryRepo.find(kbjCates.page, sortBy, order, kbjCates.name, kbjCates.parentId, isCrawlTarget, valid);
+        }, httpExecutionContext.current());
     }
 }
