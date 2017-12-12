@@ -4,6 +4,12 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
+/**
+ * 管理者组
+ *
+ * @author lichen
+ * @date 2017.12.7
+ */
 @Entity
 public class AdminGroup extends BaseModel {
 

@@ -5,6 +5,15 @@ body {
     -webkit-user-select: none;
 }
 
+a {
+    color: #4794c4;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #2a5e88;
+}
+
 header {
     box-sizing: border-box;
     padding: 10px;
@@ -62,7 +71,7 @@ form input {
     width: 100%;
 }
 
-form input invalid:not(:focus) {
+form input:invalid:not(:focus) {
     border-color: red;
 }
 
@@ -70,11 +79,8 @@ form button {
     padding: 2px 5px;
     border-radius: 3px;
     border: 1px solid #2a3a48;
-    .gradient(fadeout(#bff, 80%), fadeout(#bff, 100%));
     background-color: #2a3a48;
-    box-shadow: 0 1px 4px rgba(0,0,0,.3),
-    inset 0 1px 0 rgba(255,255,255,.2),
-    inset 0 -1px 0 rgba(0,0,0,.2);
+    box-shadow: 0 1px 4px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.2), inset 0 -1px 0 rgba(0,0,0,.2);
     text-shadow: -1px -1px 0 rgba(0,0,0,.3);
     color: #c7d1d8;
     cursor: pointer;
@@ -83,14 +89,20 @@ form button {
     width: 100%;
 }
 
-.card {
-    display: block;
-    overflow: hidden;
-    margin: 12px 25%;
-    border-radius: 2px;
-    width: calc(50%);
-    font-size: 1.4rem;
-    background: #fff;
-    -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.3);
-    box-shadow: 0 1px 2px rgba(0,0,0,.3);
+form button:hover {
+    background-color: #0f2b40;
+    color: #fff;
+}
+
+#logo {
+    color: #fff;
+    font-weight: bold;
+    font-size: 16px;
+    text-transform: uppercase;
+    letter-spacing: -2px;
+    text-shadow: 1px 1px 0 #000;
+}
+
+#logo span {
+    color: #5daad5;
 }

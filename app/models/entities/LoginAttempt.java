@@ -4,7 +4,16 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-//@Table(indexes = { @Index(name = "", columnList = "") })
+/**
+ * 用户登录尝试记录
+ *
+ * @author lichen
+ * @date 2017.12.7
+ */
+@Table(
+    name="login_attempt",
+    indexes = { @Index(name = "ix_login_attempt", columnList = "account_type, account, ip, vaild") }
+)
 @Entity
 public class LoginAttempt extends BaseModel {
 

@@ -9,12 +9,16 @@ import play.db.ebean.EbeanConfig;
 import javax.inject.Inject;
 import java.util.List;
 
-public class LoginAttemptRepository {
+/**
+ * @author lichen
+ * @date 2017.12.7
+ */
+public class LoginAttemptRepo {
 
     private final EbeanServer ebeanServer;
 
     @Inject
-    public LoginAttemptRepository(EbeanConfig ebeanConfig) {
+    public LoginAttemptRepo(EbeanConfig ebeanConfig) {
         this.ebeanServer = Ebean.getServer(ebeanConfig.defaultServer());
     }
 

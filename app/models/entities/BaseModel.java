@@ -19,13 +19,13 @@ public class BaseModel extends Model {
    public Date createDate;
 
    @Column(nullable = false, columnDefinition = "varchar(100) DEFAULT 'system'")
-   public String createUser;
+   public String createUser = "system";
 
    @Column(nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
    public Date updateDate;
 
    @Column(nullable = false, columnDefinition = "varchar(100) DEFAULT 'system'")
-   public String updateUser;
+   public String updateUser = "system";
 
    protected final void doBeforeSave() {
       Date now = new Date();
