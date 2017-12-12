@@ -23,28 +23,19 @@ public class KbjCategoryRepo {
         this.ebeanServer = Ebean.getServer(ebeanConfig.defaultServer());
     }
 
-    /**
-     * Return a paged list of KbjCategory
-     * @param page
-     * @param sortBy
-     * @param order
-     * @param name
-     * @param parentId
-     * @param isCrawlTarget
-     * @param valid
-     * @return
-     * @author daiqingyi
-     * @date 2017/12/12
-     */
-    public PagedList<KbjCategory> find(int page, String sortBy, String order, String name, Long parentId, Boolean isCrawlTarget, Boolean valid) {
+    public KbjCategory find(Long id) {
+        return  ebeanServer.find(KbjCategory.class, id);
+    }
 
-        if (name == null) {
-            name = "";
-        }
+    public PagedList<KbjCategory> find(int page, String sortBy, String order, String name,
+                                       Long parentId, Boolean isCrawlTarget, Boolean valid) {
         ExpressionList<KbjCategory> express = ebeanServer.find(KbjCategory.class)
-                .fetch("parent", "id, name").where()
-                .ilike("name", "%" + name + "%");
+                .fetch("parent", "id, name")
+                .where();
 
+        if (name != null) {
+            express = express.ilike("name", "%" + name + "%");
+        }
         if (parentId != null) {
             express = express.eq("parent.id", parentId);
         }
@@ -54,33 +45,20 @@ public class KbjCategoryRepo {
         if (valid != null) {
             express = express.eq("valid", valid);
         }
+
         return express.orderBy(sortBy + " " + order).setFirstRow(page * 10).setMaxRows(10).findPagedList();
     }
 
-    /**
-     * 通过id检索
-     * @param id
-     * @author daiqingyi
-     * @date 2017-12-5
-     */
-    public KbjCategory find(Long id) {
-        return  ebeanServer.find(KbjCategory.class, id);
-    }
-
     public KbjCategory find(Integer priority) {
-        return  ebeanServer.find(KbjCategory.class).where()
+        return ebeanServer.find(KbjCategory.class)
+                .where()
                 .eq("priority", priority)
+                .eq("valid", 1)
                 .findUnique();
     }
 
-    /**
-     * 更新
-     * @param category
-     * @author daiqingyi
-     * @date 2017-11-30
-     */
     @Transactional
-    public Optional<Long> update(KbjCategory category) {
+    public void update(KbjCategory category) {
         KbjCategory cate = ebeanServer.find(KbjCategory.class).where()
                 .eq("id", category.id)
                 .findUnique();
@@ -88,54 +66,30 @@ public class KbjCategoryRepo {
         cate.isCrawlTarget = category.isCrawlTarget;
         cate.valid = category.valid;
         cate.update();
-        return Optional.empty();
     }
 
-    /**
-     * 新规
-     * @param category
-     * @author daiqingyi
-     * @date 2017-12-5
-     */
     @Transactional
-    public Optional<Long> insert(KbjCategory category) {
+    public void insert(KbjCategory category) {
         category.insert();
-        return Optional.empty();
     }
 
-    /**
-     * 取得父分类
-     * @return
-     * @author daiqingyi
-     * @date 2017-12-7
-     */
-    public Map<String, String> getParents() {
+    public List<KbjCategory> getParents() {
         long rootId = 1;
-        List<KbjCategory> list = ebeanServer.find(KbjCategory.class)
+        return ebeanServer.find(KbjCategory.class)
                 .fetch("parent")
                 .where()
                 .eq("parent.id", rootId)
+                .ne("id", rootId)
+                .eq("valid", 1)
                 .orderBy("id")
                 .findList();
-        HashMap<String, String> options = new LinkedHashMap<String, String>();
-        for (KbjCategory c : list) {
-            options.put(c.id.toString(), c.name);
-        }
-        return options;
     }
 
-    /**
-     * 更新优先度
-     * @param id
-     * @param priority
-     * @return
-     * @author daiqingyi
-     * @date 2017-12-11
-     */
     @Transactional
     public Optional<Long> updPriority(Long id, Integer priority) {
         KbjCategory cate = ebeanServer.find(KbjCategory.class).where()
                 .eq("id", id)
+                .eq("valid", 1)
                 .findUnique();
         cate.priority = priority;
         cate.update();

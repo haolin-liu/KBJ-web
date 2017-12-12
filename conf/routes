@@ -32,12 +32,12 @@ POST   /manage/cate/map/findmallcate                            controllers.gui.
 POST   /manage/cate/map/edit                                    controllers.gui.manage.CategoryController.edit
 
 # controllers for kbj category mangement.
-GET    /manage/kbjcate/index                                    controllers.gui.manage.kbjCategoryController.index()
-POST   /manage/kbjcate/find                                     controllers.gui.manage.kbjCategoryController.list(s ?= "id", o ?= "asc")
-GET    /manage/kbjcate/add                                      controllers.gui.manage.kbjCategoryController.add()
-POST   /manage/kbjcate/save                                     controllers.gui.manage.kbjCategoryController.save()
-GET    /manage/kbjcate/edit/id                                  controllers.gui.manage.kbjCategoryController.update(id:Long)
-GET    /manage/kbjcate/upd/priority                             controllers.gui.manage.kbjCategoryController.updPriority(isUpOrDown:Boolean, id:Long, priority:Integer, page:Int)
+GET    /manage/kbjcate/index                                    controllers.gui.manage.KbjCategoryController.index()
+POST   /manage/kbjcate/find                                     controllers.gui.manage.KbjCategoryController.list(s ?= "id", o ?= "asc")
+GET    /manage/kbjcate/add                                      controllers.gui.manage.KbjCategoryController.add()
+POST   /manage/kbjcate/save                                     controllers.gui.manage.KbjCategoryController.save()
+GET    /manage/kbjcate/edit/id                                  controllers.gui.manage.KbjCategoryController.update(id:Long)
+GET    /manage/kbjcate/upd/priority                             controllers.gui.manage.KbjCategoryController.updPriority(isUpOrDown:Boolean, id:Long, priority:Integer, page:Int)
 
 # controllers for mall category management.
 GET    /manage/show                                             controllers.gui.manage.MallCategoryController.catgory()

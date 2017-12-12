@@ -9,8 +9,7 @@ import repository.DatabaseExecutionContext;
 import repository.KbjCategoryRepo;
 
 import javax.inject.Inject;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.CompletionStage;
 
 import static java.util.Objects.isNull;
@@ -21,22 +20,18 @@ import static java.util.concurrent.CompletableFuture.supplyAsync;
  *  @author daiqingyi
  *  @date 2017/12/1
  */
-
 public class KbjCategoryService {
 
     private final DatabaseExecutionContext executionContext;
     private final KbjCategoryRepo kbjCategoryRepo;
-    private final KbjCategoryForm kbjCategoryForm;
     private final HttpExecutionContext httpExecutionContext;
 
     @Inject
     public KbjCategoryService(DatabaseExecutionContext executionContext,
                               KbjCategoryRepo kbjCategoryRepo,
-                              KbjCategoryForm kbjCategoryForm,
                               HttpExecutionContext httpExecutionContext) {
         this.executionContext = executionContext;
         this.kbjCategoryRepo = kbjCategoryRepo;
-        this.kbjCategoryForm = kbjCategoryForm;
         this.httpExecutionContext = httpExecutionContext;
     }
 
@@ -55,33 +50,7 @@ public class KbjCategoryService {
         }, executionContext);
     }
 
-    /**
-     * 根据传递的字符串进行型转
-     * @param selection
-     * @return 返回布尔型的值用于检索
-     */
-    @Contract(pure = true)
-    private Boolean isSelected(String selection) {
-        Boolean isSeleced;
-        if ("0".equals(selection) || "1".equals(selection)) {
-            if (selection.equals("0")) {
-                isSeleced = false;
-            } else {
-                isSeleced = true;
-            }
-        } else {
-            isSeleced = null;
-        }
-        return isSeleced;
-    }
-
-    /**
-     *
-     * @param kbjCateform
-     * @author daiqingyi
-     * @date 2017-12-05
-     */
-    public CompletionStage<Optional<Long>> addKbjCate(KbjCategoryForm  kbjCateform) {
+    public CompletionStage<Void> addKbjCate(KbjCategoryForm  kbjCateform) {
         KbjCategory category = new KbjCategory();
         category.name = kbjCateform.name;
         category.isCrawlTarget = kbjCateform.bIsCrawlTarget;
@@ -90,28 +59,18 @@ public class KbjCategoryService {
         return supplyAsync(() -> {
             KbjCategory parentCate = kbjCategoryRepo.find(kbjCateform.parentId);
             category.parent = parentCate;
-            return kbjCategoryRepo.insert(category);
+            kbjCategoryRepo.insert(category);
+            return null;
         }, executionContext);
     }
 
-    /**
-     *
-     * @param id
-     * @return
-     */
     public CompletionStage<KbjCategory> find(Long id) {
         return supplyAsync(() -> {
             return kbjCategoryRepo.find(id);
         }, executionContext);
     }
 
-    /**
-     *
-     * @param kbjCateform
-     * @author daiqingyi
-     * @date 2017-12-05
-     */
-    public CompletionStage<Optional<Long>> updKbjCate(KbjCategoryForm  kbjCateform){
+    public CompletionStage<Void> updKbjCate(KbjCategoryForm  kbjCateform){
         KbjCategory category = new KbjCategory();
         category.id = kbjCateform.id;
         category.name = kbjCateform.name;
@@ -120,43 +79,20 @@ public class KbjCategoryService {
         return supplyAsync(() -> {
             KbjCategory parentCate = kbjCategoryRepo.find(kbjCateform.parentId);
             category.parent = parentCate;
-            return kbjCategoryRepo.update(category);
+            kbjCategoryRepo.update(category);
+            return null;
         }, executionContext);
     }
 
-    /**
-     * 异步取得父分类
-     * @return
-     * @author daiqingyi
-     * @date 2017-12-07
-     */
     public CompletionStage<Map<String, String>> getParents() {
-            Map<String, String> options = kbjCategoryRepo.getParents();
-            return supplyAsync(()-> {
-                return options;
-            }, httpExecutionContext.current());
+        return supplyAsync(()-> {
+            Map<String, String> options = getParent();
+            return options;
+        }, httpExecutionContext.current());
     }
 
-    /**
-     * 非异步取得父分类
-     * @return
-     * @author daiqingyi
-     * @date 2017-12-07
-     */
-    public Map<String, String> getParent() {
-        Map<String, String> options = kbjCategoryRepo.getParents();
-        return options;
-    }
-
-    /**
-     * 更新优先度
-     * @param id
-     * @param priority
-     * @return
-     * @author daiqingyi
-     * @date 2017-12-11
-     */
-    public CompletionStage<PagedList<KbjCategory>> updPriority(Boolean isUpOrDown, Long id, Integer priority, KbjCategoryForm kbjCates, String sortBy, String order) {
+    public CompletionStage<PagedList<KbjCategory>> updPriority(Boolean isUpOrDown, Long id, Integer priority,
+                                                               KbjCategoryForm kbjCates, String sortBy, String order) {
         return supplyAsync(()-> {
             if (isUpOrDown){
                 KbjCategory kbjCate = kbjCategoryRepo.find(priority + 1);
@@ -178,4 +114,19 @@ public class KbjCategoryService {
             return kbjCategoryRepo.find(kbjCates.page, sortBy, order, kbjCates.name, kbjCates.parentId, isCrawlTarget, valid);
         }, httpExecutionContext.current());
     }
+
+    public Map<String, String> getParent() {
+        List<KbjCategory> list = kbjCategoryRepo.getParents();
+        HashMap<String, String> options = new LinkedHashMap<>();
+        for (KbjCategory c : list) {
+            options.put(c.id.toString(), c.name);
+        }
+        return options;
+    }
+
+    @Contract(pure = true)
+    private Boolean isSelected(String selection) {
+        return "0".equals(selection) ? false : ("1".equals(selection) ? true : null);
+    }
+
 }

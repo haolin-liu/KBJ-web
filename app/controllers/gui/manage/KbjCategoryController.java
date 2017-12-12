@@ -19,14 +19,14 @@ import java.util.concurrent.CompletionStage;
  * @date 2017-11-27
  */
 
-public class kbjCategoryController extends Controller {
+public class KbjCategoryController extends Controller {
 
     private final FormFactory formFactory;
     private final HttpExecutionContext httpExecutionContext;
     private final KbjCategoryService kbjCategoryService;
 
     @Inject
-    public kbjCategoryController(FormFactory formFactory,
+    public KbjCategoryController(FormFactory formFactory,
                                  HttpExecutionContext httpExecutionContext,
                                  KbjCategoryService kbjCategoryService) {
         this.formFactory = formFactory;
