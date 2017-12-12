@@ -51,18 +51,7 @@ public class CategoryController extends Controller {
     }
 
     public CompletionStage<Result> getLeafCates(String cateRootId) {
-        return categoryMapService.getKbjLeafCates(cateRootId).thenApplyAsync(kbjChildCates -> {
-
-            ArrayNode catesJson = Json.newArray();
-
-            for(KbjCategory kbjChildCate: kbjChildCates) {
-                ObjectNode cateJson = Json.newObject();
-
-                cateJson.put("id", kbjChildCate.id);
-                cateJson.put("name", kbjChildCate.name);
-                catesJson.add(cateJson);
-            }
-//            System.out.println(catesJson);
+        return categoryMapService.getKbjLeafCates(cateRootId).thenApplyAsync(catesJson -> {
            return ok( Json.toJson(catesJson));
         }, httpExecutionContext.current());
     }

@@ -1,10 +1,13 @@
 package services;
 
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import models.entities.KbjCategory;
 import models.entities.MallCategory;
 import models.entities.form.BindCategory;
 import play.data.Form;
 import play.data.FormFactory;
+import play.libs.Json;
 import repository.CategoryMapRepo;
 import repository.DatabaseExecutionContext;
 
@@ -55,9 +58,18 @@ public class CategoryMapService {
      * @param cateRootId
      * @return
      */
-    public CompletionStage<List<KbjCategory>> getKbjLeafCates(String cateRootId) {
+    public CompletionStage<ArrayNode> getKbjLeafCates(String cateRootId) {
         return supplyAsync(() -> {
-            return categoryMapRepo.findLeafCates(cateRootId);
+            List<KbjCategory> leafCates = categoryMapRepo.findLeafCates(cateRootId);
+            ArrayNode catesJson = Json.newArray();
+            for(KbjCategory kbjChildCate: leafCates) {
+                ObjectNode cateJson = Json.newObject();
+
+                cateJson.put("id", kbjChildCate.id);
+                cateJson.put("name", kbjChildCate.name);
+                catesJson.add(cateJson);
+            }
+            return catesJson;
         }, executionContext);
     }
 
@@ -98,7 +110,6 @@ public class CategoryMapService {
         //处理绑定更新
         return supplyAsync(() -> {
             for (int i = 0; i < data.get("chgFlg").length; i++) {
-//                System.out.println("SERVICE 104" + data.get("bindFlg")[i]);
                 if (("1").equals(data.get("chgFlg")[i])) {
                     if (("0").equals(data.get("bindFlg")[i])) {
                         categoryMapRepo.delete(Long.valueOf(data.get("mapId")[i]));

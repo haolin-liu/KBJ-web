@@ -33,17 +33,20 @@ public class CategoryMapRepo {
     }
 
     public List<KbjCategory> findRootCates() {
-        return ebeanServer.find(KbjCategory.class).where()
-            .eq("parentId", 0)
-            .eq("isCrawlTarget", 1)
-            .eq("valid", 1).findList();
+        return ebeanServer.find(KbjCategory.class)
+                .where()
+                .notIn("id", 1)
+                .eq("parent.id", 1)
+                .eq("isCrawlTarget", 1)
+                .eq("valid", 1).findList();
     }
 
     public List<KbjCategory> findLeafCates(String cateFatherId) {
-        return ebeanServer.find(KbjCategory.class).where()
-            .eq("parentId", cateFatherId)
-            .eq("isCrawlTarget", 1)
-            .eq("valid", 1).findList();
+        return ebeanServer.find(KbjCategory.class)
+                .where()
+                .eq("parent.id", cateFatherId)
+                .eq("isCrawlTarget", 1)
+                .eq("valid", 1).findList();
     }
 
     public List<BindCategory> find(ArrayList<String> keyWord, BindCategory bindCategory) {

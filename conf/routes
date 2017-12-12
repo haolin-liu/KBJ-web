@@ -4,10 +4,9 @@
 
 # controllers for gui access
 GET    /                                                        controllers.gui.HomeController.index
-GET    /product/search                                          controllers.gui.ProductController.searchGoods()
-GET    /search/:kw/:start/:rows/:sort/:fq                       controllers.gui.ProductController.generalGoods(kw: String, start: Integer, rows: Integer, sort: String, fq: String)
-GET    /product/detail                                          controllers.gui.ProductController.productDetail
 
+GET    /home/root/cate/:rootId                                  controllers.gui.HomeController.getLeafCates(rootId: String)
+GET    /home/bargain/:cate                                      controllers.gui.HomeController.getBargains(cate: String)
 GET    /home/editPage/:id                                       controllers.gui.HomeController.editPage(id: Long)
 POST   /home/edit/:id                                           controllers.gui.HomeController.edit(id: Long)
 POST   /home/delete/:id                                         controllers.gui.HomeController.delete(id: Long)
@@ -18,17 +17,12 @@ POST   /login                                                   controllers.gui.
 GET    /register                                                controllers.gui.UserController.registerTop()
 POST   /register                                                controllers.gui.UserController.register()
 
+GET    /product/search                                          controllers.gui.ProductController.searchGoods()
+GET    /search/:kw/:start/:rows/:sort/:fq                       controllers.gui.ProductController.generalGoods(kw: String, start: Integer, rows: Integer, sort: String, fq: String)
+GET    /product/detail                                          controllers.gui.ProductController.productDetail
+
 # manage
 GET     /manage                                                 controllers.gui.manage.IndexController.index
-
-GET    /manage/show                                     controllers.gui.manage.MallCategoryController.catgory()
-POST   /manage/catgory/search                                   controllers.gui.manage.MallCategoryController.search()
-GET    /manage/catgory/create                                   controllers.gui.manage.MallCategoryController.create()
-POST   /manage/catgory/save                                     controllers.gui.manage.MallCategoryController.save()
-POST   /manage/catgory/update                                   controllers.gui.manage.MallCategoryController.update()
-GET    /manage/catgory/getOneEdit/:id                           controllers.gui.manage.MallCategoryController.getOneEdit(id: Long)
-POST   /manage/catgory/updateOne/:id                            controllers.gui.manage.MallCategoryController.updateOne(id: Long)
-
 
 GET     /manage/cate/map                                        controllers.gui.manage.CategoryController.getRootCates
 GET     /manage/cate/map/getleafcate/:cateRootId                controllers.gui.manage.CategoryController.getLeafCates(cateRootId: String)
@@ -41,6 +35,14 @@ GET     /manage/kbjcate/add                                     controllers.gui.
 POST    /manage/kbjcate/save                                    controllers.gui.manage.kbjCategoryController.save()
 GET     /manage/kbjcate/edit/id                                 controllers.gui.manage.kbjCategoryController.update(id:Long)
 GET     /manage/kbjcate/upd/priority                            controllers.gui.manage.kbjCategoryController.updPriority(isUpOrDown:Boolean, id:Long, priority:Integer, page:Int)
+# controllers for manage mallCate
+GET     /manage/show                                             controllers.gui.manage.MallCategoryController.catgory()
+POST    /manage/catgory/search                                   controllers.gui.manage.MallCategoryController.search()
+GET     /manage/catgory/create                                   controllers.gui.manage.MallCategoryController.create()
+POST    /manage/catgory/save                                     controllers.gui.manage.MallCategoryController.save()
+POST    /manage/catgory/update                                   controllers.gui.manage.MallCategoryController.update()
+GET     /manage/catgory/getOneEdit/:id                           controllers.gui.manage.MallCategoryController.getOneEdit(id: Long)
+POST    /manage/catgory/updateOne/:id                            controllers.gui.manage.MallCategoryController.updateOne(id: Long)
 
 GET     /trend/:mall/:skuid                                     controllers.gui.DailyPriceController.priceTrend(mall:String, skuid:String)
 
