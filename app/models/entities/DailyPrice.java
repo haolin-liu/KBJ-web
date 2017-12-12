@@ -12,6 +12,9 @@ public class DailyPrice extends BaseModel {
     @Id
     public Long id;
 
+    @ManyToOne
+    public KbjCategory kbjCategory;
+
     @Constraints.Required
     @Constraints.MaxLength(30)
     public String mall;
@@ -32,8 +35,6 @@ public class DailyPrice extends BaseModel {
 
     @Column(columnDefinition="decimal(15,2)")
     public Float discountRate;
-
-    public Long kbjCateId;
 
     @Constraints.Required
     @Temporal(TemporalType.DATE)
