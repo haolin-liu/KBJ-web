@@ -657,19 +657,52 @@
   margin-top: 5px;
 }
 
-.btn:focus,.btn:active {
+.btn:focus, .btn:active {
   outline: none !important;
   box-shadow: none;
   color: #ea5252;
+}
+
+.price-sort {
+  opacity: .4;
+}
+
+.sort-color {
+  color: #ea5252;
+}
+
+.btnHidden {
+  display: none;
+}
+
+.btnShow {
+  display: inline;
 }
 
 .buttonGroup :hover {
   color: #ea5252;
 }
 
-.defaultSort {
-  background-color:#5A5A5A;
-  color:#fff
+.btn-border {
+  border-radius: 0px !important;
+}
+
+.f-sort {
+  display: inline-block;
+  margin-left: 5px;
+  vertical-align: top;
+  width: 12px;
+  white-space: normal;
+}
+
+.arrow-top {
+  position: absolute;
+}
+
+.arrow-bottom {
+  white-space: pre;
+  position: absolute;
+  margin-top: 8px;
 }
 
 .btn-group-xs>.btn, .btn-xs {
@@ -716,14 +749,13 @@
 }
 
 .rangeFromTo {
-  max-width: 42px;
+  max-width: 60px;
   max-height: 30px;
 }
 
 .priceConfirm {
   margin-right: 10px;
   border: 1px solid #ccc;
-  border-radius: 2px;
   cursor: pointer;
   color: #6c6c6c;
   background: #ffffff;

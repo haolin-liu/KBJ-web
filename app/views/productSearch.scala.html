@@ -1,4 +1,4 @@
-@(products: utils.PageList[Product], hotProducts: List[String], pageIndexList: List[Integer], keyWord :String)
+@(products: utils.PageList[Product], hotProducts: List[String], pageIndexList: List[Integer], keyWord :String, sorter :String )
 
 @main() {
   @header.render(hotProducts, keyWord)
@@ -47,27 +47,31 @@
     <div class="row">
       <div class="topNavigation col-sm-10 col-sm-offset-1">
         <div class="btn-group btn-group-xs buttonGroup" role="group">
-          <button type="button" class="btn btn-default defaultSort">默认排序</button>
-          <button type="button" class="btn btn-default">评论数
+          <button type="button" id="defaultSort" class="btn btn-default btn-border sort-color" onclick="defaultSort('@keyWord', 1)">默认排序</button>
+          <button type="button" id="comment-sort" class="btn btn-default btn-border" onclick="commentSort('@keyWord', 1)">
+              <font>评论数</font>
               <span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span>
           </button>
-          <button type="button" class="btn btn-default">
-            价格<span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span>
-          </button>
-          <button type="button" class="btn btn-default">
-            价格<span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span>
+          <button id="sort-price" type="button" class="btn btn-default btn-border" onclick="priceSort('@keyWord', 1)">
+              <font>价格</font>
+              <span id="span-price" class="f-sort">
+                  <i id="price-up" class="fa fa-caret-up arrow-top"></i>
+                  <i id="price-down" class="fa fa-caret-down arrow-bottom"></i>
+              </span>
           </button>
         </div>
         <div class="priceRange">
           价格&nbsp;&nbsp;<input type="text" class="rangeFromTo">&nbsp;-&nbsp;<input type="text" class="rangeFromTo">
-          <button class="priceConfirm">确定</button>
+
+            <button id="priceFrom" class="priceConfirm btnHidden" onclick="priceRange()">确定</button>
+            <button id="priceTo" class="priceConfirm btnHidden" onclick="clearPrice()">清空</button>
         </div>
         <div class="flip">
             <span class="span-page">
                <font color="red" id="currentPage">@products.getPageIndex</font>/<font id="countPage">@products.getPageCount</font>
             </span>
-            <a class="p-pre" id="a-prev" onclick="jumpToPage('@keyWord', @products.getPrevPageIndex)"> < </a>
-            <a class="p-pre p-next" id="a-next" onclick="jumpToPage('@keyWord', @products.getNextPageIndex)"> > </a>
+            <a class="p-pre" id="a-prev" onclick="jumpToPage('@keyWord', @products.getPrevPageIndex, '@sorter')"> < </a>
+            <a class="p-pre p-next" id="a-next" onclick="jumpToPage('@keyWord', @products.getNextPageIndex, '@sorter')"> > </a>
         </div>
       </div>
           <div class="searchProductPlace col-sm-10 col-sm-offset-1">
@@ -96,8 +100,8 @@
                         <div class="price">
                           <em>¥</em>@product.getPrice
                             <a class="price-a" style="text-decoration:none;">
-                                <span id="trend@product.getSkuid" class="icon-bar-chart"></span>
-                                <div class="chart@index chart-div" id="pop@product.getSkuid"></div>
+                                <span id="trend@product.getSkuid" class="fa fa-bar-chart"></span>
+                                <div class="chart@product.getSkuid chart-div" id="pop@product.getSkuid"></div>
                             </a>
 
                           <div class="shopName" style="float:right; margin-top: -3px;">
@@ -138,28 +142,28 @@
                 id="currentPage">@products.getPageIndex</font>/<font id="countPage">@products.getPageCount</font>页&nbsp;
             </li>
             <li>
-                <a href="#" id="prePage" onclick="jumpToPage('@keyWord', @products.getPrevPageIndex)"
+                <a href="#" id="prePage" onclick="jumpToPage('@keyWord', @products.getPrevPageIndex, '@sorter')"
                 @if(!products.hasPrevPage){hidden}>
                     <span aria-hidden="true" aria-label="Previous">&laquo;</span>
                 </a>
             </li>
             <li>
                 @for((page, index) <- pageIndexList.zipWithIndex){
-                    <a href="#" onclick="jumpToPage('@keyWord', @products.getNavigationFrom + @index)"
+                    <a href="#" onclick="jumpToPage('@keyWord', @products.getNavigationFrom + @index, '@sorter')"
                         @if(products.getPageIndex == page){style="background-color: #ddd"}>
                         <span data-value="@products.getNavigationFrom" data-index="@index">@page</span>
                     </a>
                 }
             </li>
             <li>
-                <a href="#" id="nextPage" onclick="jumpToPage('@keyWord', @products.getNextPageIndex)"
+                <a href="#" id="nextPage" onclick="jumpToPage('@keyWord', @products.getNextPageIndex, '@sorter')"
                 @if(!products.hasNextPage){hidden}>
                     <span aria-hidden="true" aria-label="Next">&raquo;</span>
                 </a>
             </li>
             <li style="margin-left: 20px;margin-top: 5px">
               <input type="text" class="skip-text" id="jumpPage" value="@products.getPageIndex">
-              <button onclick="jumpToPage('@keyWord', 0)">跳转</button>
+              <button onclick="jumpToPage('@keyWord', 0, '@sorter')">跳转</button>
             </li>
           </ul>
         </nav>
@@ -185,7 +189,29 @@
             $("#a-next").addClass('disabled-a');
         }
 
-        $("[id^='id']").each(function(index) {
+        @if(sorter.equals("price desc")) {
+            $("#price-up").addClass("price-sort");
+            $("#sort-price").children("font").addClass("sort-color");
+            $("#sort-price").children("span").addClass("sort-color");
+            $("#defaultSort").removeClass("sort-color");
+        }
+
+        @if(sorter.equals("price asc")){
+            $("#price-down").addClass("price-sort");
+            $("#sort-price").children("font").addClass("sort-color");
+            $("#sort-price").children("span").addClass("sort-color");
+            $("#defaultSort").removeClass("sort-color");
+        }
+
+        @if(sorter.equals("comments_num desc")) {
+            $("#comment-sort").children("font").addClass("sort-color");
+            $("#comment-sort").children("span").addClass("sort-color");
+            $("#defaultSort").removeClass("sort-color");
+        }
+
+        var id ="";
+        var mall ="";
+        $("[id^='id']").each(function (index) {
             var id = $(this).val();
             var mall = $(this).data("mall");
             $.ajax({
@@ -288,9 +314,7 @@
         return val == "" ? "*" : val;
     }
 
-    function jumpToPage(kw, page) {
-        // todo
-        var sorter = "";
+    function jumpToPage(kw, page, sorter) {
         var filter = "";
         var pagesize = 12;
 
@@ -302,8 +326,62 @@
         $("#currentPage").text(page);
 
         kw = formatStrIfNull(kw);
-        var sorter = formatStrIfNull(sorter);
-        var filter = formatStrIfNull(filter);
+        sorter = formatStrIfNull(sorter);
+        filter = formatStrIfNull(filter);
         window.location.href = '/search/'+ kw + '/' + page + '/' + pagesize + '/' + sorter + '/' + filter;
+    }
+
+    function priceSort(kw, page) {
+        var sorter = "";
+        var filter = "";
+        var pagesize = 12;
+
+        if($("#price-up").hasClass("price-sort")) {
+            sorter = "price asc";
+        }
+        else if($("#price-down").hasClass("price-sort")) {
+            sorter = "price desc";
+        } else {
+            sorter = "price desc";
+        }
+        kw = formatStrIfNull(kw);
+        filter = formatStrIfNull(filter);
+        window.location.href = '/search/'+ kw + '/' + page + '/' + pagesize + '/' + sorter + '/' + filter;
+    }
+
+    function commentSort(kw, page) {
+        var filter = "";
+        var sorter = "comments_num desc";
+        var pagesize = 12;
+
+        kw = formatStrIfNull(kw);
+        filter = formatStrIfNull(filter);
+        window.location.href = '/search/'+ kw + '/' + page + '/' + pagesize + '/' + sorter + '/' + filter;
+    }
+
+    function defaultSort(kw, page) {
+        var filter = "";
+        var sorter = "";
+        var pagesize = 12;
+
+        kw = formatStrIfNull(kw);
+        filter = formatStrIfNull(filter);
+        sorter = formatStrIfNull(sorter);
+        window.location.href = '/search/'+ kw + '/' + page + '/' + pagesize + '/' + sorter + '/' + filter;
+    }
+
+    $(".rangeFromTo").focus(function() {
+        $(".priceConfirm").removeClass("btnHidden");
+        $(".priceConfirm").addClass("btnShow");
+    })
+
+    $(".rangeFromTo").blur(function() {
+        $(".priceConfirm").removeClass("btnShow");
+        $(".priceConfirm").addClass("btnHidden");
+    })
+
+    function clearPrice() {
+        $("#priceFrom").val("");
+        $("#priceTo").val("");
     }
   </script>
