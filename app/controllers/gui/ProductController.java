@@ -80,7 +80,7 @@ public class ProductController extends Controller{
         for (int i = products.getNavigationFrom(); i <= products.getNavigationTo(); i++) {
             pageIndexList.add(i);
         }
-        return ok(productSearch.render(products, hotProducts, pageIndexList, keyWord));
+        return ok(productSearch.render(products, hotProducts, pageIndexList, keyWord, ""));
     }
 
     public Result generalGoods(String keyword, Integer start, Integer rows, String sorter, String filter) {
@@ -110,7 +110,7 @@ public class ProductController extends Controller{
         for (int i = products.getNavigationFrom(); i <= products.getNavigationTo(); i++) {
             pageIndexList.add(i);
         }
-        return ok(productSearch.render(products, hotProducts, pageIndexList, keyword));
+        return ok(productSearch.render(products, hotProducts, pageIndexList, keyword, sorter));
     }
 
     public CompletionStage<Result> getPrices(String mall, String skuid) {
@@ -118,6 +118,4 @@ public class ProductController extends Controller{
             return ok(Json.toJson(json));
         }, httpExecutionContext.current());
     }
-
-
 }
